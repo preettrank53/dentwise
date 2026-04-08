@@ -4,9 +4,9 @@ This document serves as the private log and technical reference for the Dentwise
 
 ---
 
-## Project Status: Database Schema Complete
+## Project Status: Project Structure and Layout Complete
 
-The foundation and database layer of the project are fully established.
+The foundation, database layer, and authentication layer of the project are fully established.
 
 ### Core Tech Stack
 - **Framework:** Next.js 16 (App Router)
@@ -78,6 +78,58 @@ Commands run:
 - npx prisma db push — schema applied to database successfully
 - npx prisma generate — Prisma Client (v7.7.0) generated successfully
 
+### 5. Auth and Prisma Client Setup (April 8, 2026)
+Three files created to wire up the Prisma client singleton and NextAuth v5 with Google OAuth.
+
+| File | Purpose |
+| :--- | :--- |
+| src/lib/prisma.js | Prisma singleton — prevents multiple client instances during HMR in development |
+| src/lib/auth.js | NextAuth config — Google OAuth, Prisma adapter, JWT strategy, session/jwt callbacks |
+| src/app/api/auth/[...nextauth]/route.js | NextAuth catch-all route — exposes GET and POST handlers at /api/auth/* |
+
+Key decisions:
+- JWT session strategy used (not database sessions) so the session is stored in a cookie, not the DB.
+- User id and role are attached to the JWT token via callbacks for easy access in server components.
+- Sign-in redirect set to /login (custom page to be built later).
+
+### 6. Project Structure, Config, and Root Layout (April 8, 2026)
+Full folder scaffold created. Core configuration and layout files set up.
+
+**Folders created** (with .gitkeep for git tracking):
+```
+src/
+  app/
+    (auth)/login/
+    (dashboard)/appointments/
+    (dashboard)/voice/
+    (dashboard)/profile/
+    admin/
+    api/appointments/
+    api/doctors/
+    api/stripe/
+    api/send-appointment-email/
+  components/
+    ui/
+    layout/
+    appointments/
+    admin/
+    voice/
+  hooks/
+  actions/
+  utils/
+```
+
+**Files created or updated:**
+
+| File | Change |
+| :--- | :--- |
+| next.config.mjs | Added remotePatterns for Unsplash, Google, and GitHub image domains |
+| src/components/layout/Providers.jsx | Global client wrapper — SessionProvider + QueryClientProvider |
+| src/app/layout.js | Async root layout — fetches session server-side, wraps tree in Providers |
+| src/utils/cn.js | cn() utility — clsx + tailwind-merge for conditional class merging |
+
+Dev server confirmed running on localhost:3000 with zero errors.
+
 ---
 
 ## Essential Commands
@@ -111,4 +163,4 @@ git push origin main
 - **Prisma v7:** Do not add url to datasource block in schema.prisma — it is handled by prisma.config.ts.
 - **Environment Sync:** Always update .env.example when adding new environment variables.
 
-*Last Updated: April 8, 2026*
+*Last Updated: April 8, 2026 — Project structure, layout, and Providers configured*
