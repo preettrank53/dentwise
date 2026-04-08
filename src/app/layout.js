@@ -1,7 +1,6 @@
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Providers from '@/components/layout/Providers'
-import { auth } from '@/lib/auth'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -18,15 +17,13 @@ export const metadata = {
   description: 'Book appointments, manage your dental health, and get AI-powered dental advice.',
 }
 
-export default async function RootLayout({ children }) {
-  const session = await auth()
-
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers session={session}>
+        <Providers>
           {children}
         </Providers>
       </body>

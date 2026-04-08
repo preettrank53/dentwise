@@ -4,7 +4,7 @@ This document serves as the private log and technical reference for the Dentwise
 
 ---
 
-## Project Status: Project Structure and Layout Complete
+## Project Status: Day 1 Complete — Fully Configured
 
 The foundation, database layer, and authentication layer of the project are fully established.
 
@@ -155,12 +155,55 @@ git commit -m "your message"
 git push origin main
 ```
 
+### 7. Shadcn UI, Global CSS Theme, and Middleware (April 8, 2026)
+
+**Shadcn UI initialized and components installed:**
+
+| Component | File |
+| :--- | :--- |
+| Button | src/components/ui/button.jsx |
+| Input | src/components/ui/input.jsx |
+| Label | src/components/ui/label.jsx |
+| Card | src/components/ui/card.jsx |
+| Badge | src/components/ui/badge.jsx |
+| Avatar | src/components/ui/avatar.jsx |
+| Dialog | src/components/ui/dialog.jsx |
+| Select | src/components/ui/select.jsx |
+| Textarea | src/components/ui/textarea.jsx |
+| Separator | src/components/ui/separator.jsx |
+| Dropdown Menu | src/components/ui/dropdown-menu.jsx |
+| Sonner (Toast) | src/components/ui/sonner.jsx |
+| Skeleton | src/components/ui/skeleton.jsx |
+| Table | src/components/ui/table.jsx |
+
+Note: `toast` is deprecated in shadcn@4 — replaced with `sonner`.
+
+**globals.css** — Updated with Dentwise dental theme (cyan/blue primary, full light/dark CSS variables).
+Rewritten for Tailwind v4 compatibility: uses @import and var() directly instead of @apply with shorthand utilities.
+
+**middleware.js** — Route protection using `next-auth/jwt getToken()` (Edge-compatible).
+Protects: /appointments, /voice, /profile (auth required), /admin (admin email check).
+Note: Original implementation using `auth()` from @/lib/auth was replaced because it pulled Prisma into the Edge Runtime.
+
+**Key bug fixes in this session:**
+- prisma.js converted from CommonJS to ESM (import/export)
+- `server-only` added to prisma.js and auth.js to prevent browser bundling
+- layout.js removed `auth()` call (Prisma cannot run in client bundle)
+- middleware rewritten to use `getToken()` instead of auth() (Edge Runtime safe)
+- globals.css rewritten for Tailwind v4 (no @apply with CSS variable shorthands)
+
+**Dev server status:** Running on localhost:3000, page loads HTTP 200 with zero Prisma errors.
+Remaining console warning: `GET /api/auth/session 500` — expected; resolves when real Google OAuth credentials are set in .env.
+
 ---
 
 ## Developer Notes
 - **Authentication:** Google OAuth is the primary provider configured via NextAuth.
 - **Payments:** Stripe is currently in test mode.
 - **Prisma v7:** Do not add url to datasource block in schema.prisma — it is handled by prisma.config.ts.
-- **Environment Sync:** Always update .env.example when adding new environment variables.
+- **Middleware:** Uses next-auth/jwt getToken() — do NOT import auth() in middleware (Edge Runtime incompatible with Prisma).
+- **server-only:** Added to both prisma.js and auth.js — prevents accidental client bundling.
+- **Shadcn Toast:** Use sonner component, not the deprecated toast component.
+- **Tailwind v4:** Use var(--token) in CSS, not @apply with CSS variable shortcuts like border-border.
 
-*Last Updated: April 8, 2026 — Project structure, layout, and Providers configured*
+*Last Updated: April 8, 2026 — Day 1 complete. Shadcn, CSS theme, middleware, all errors resolved.*
