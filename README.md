@@ -195,15 +195,35 @@ Note: Original implementation using `auth()` from @/lib/auth was replaced becaus
 **Dev server status:** Running on localhost:3000, page loads HTTP 200 with zero Prisma errors.
 Remaining console warning: `GET /api/auth/session 500` — expected; resolves when real Google OAuth credentials are set in .env.
 
+### 8. Frontend UI and Dashboard Assembly (April 8-9, 2026)
+Assembled the core user experience and protected dashboard environment.
+
+- **Landing Page:** Integrated all layout components (`Navbar`, `HeroSection`, `ServicesSection`, `DoctorsSection`, `PricingSection`, `CTASection`, `Footer`) into `app/page.js`.
+- **Dashboard Infrastructure:**
+  - **Sidebar:** Created `Sidebar.jsx` with a fixed desktop position and a mobile bottom-navigation variant.
+  - **Layout:** Built `(dashboard)/layout.js` with server-side authentication redirects and headers.
+  - **Home Page:** Created `(dashboard)/dashboard/page.js` featuring welcome banners and summary cards.
+- **Routing Strategy:** Updated the root page (`/`) to automatically redirect authenticated users to `/dashboard` while guests see the landing page.
+
+### 9. Doctor Management System (April 9, 2026)
+Built a high-performance administration module for clinic staff management.
+
+- **Server Actions:** Implemented a robust data layer in `doctor.actions.js` using Prisma v7 (CRUD operations + status toggling).
+- **TanStack Query Hooks:** Encapsulated server actions into custom hooks in `useDoctors.js` for seamless state management, automatic cache invalidation, and refined loading/error states.
+- **Admin UI:** 
+  - **DoctorsTable:** Professional data table with skeletal loading states and status badges.
+  - **DoctorFormModal:** Flexible modal form utilizing `react-hook-form` and `zod` for strict schema validation.
+- **Admin Shield:** Hardened the `/admin/doctors` route with mandatory server-side session and `ADMIN_EMAIL` verification.
+
 ---
 
 ## Developer Notes
 - **Authentication:** Google OAuth is the primary provider configured via NextAuth.
-- **Payments:** Stripe is currently in test mode.
-- **Prisma v7:** Do not add url to datasource block in schema.prisma — it is handled by prisma.config.ts.
-- **Middleware:** Uses next-auth/jwt getToken() — do NOT import auth() in middleware (Edge Runtime incompatible with Prisma).
-- **server-only:** Added to both prisma.js and auth.js — prevents accidental client bundling.
-- **Shadcn Toast:** Use sonner component, not the deprecated toast component.
-- **Tailwind v4:** Use var(--token) in CSS, not @apply with CSS variable shortcuts like border-border.
+- **Dashboard Routing:** The root page (`/`) acts as a router based on auth status.
+- **Doctor Stats:** Currently using static placeholders; real data integration planned for the next sprint.
+- **Icon Compatibility:** Certain brand icons (Twitter, FB) were replaced with `Globe`, `Camera`, etc., due to version-specific limitations in `lucide-react`.
+- **Prisma v7:** Do not add url to datasource block in schema.prisma.
+- **Middleware:** Uses next-auth/jwt getToken() — Edge Runtime safe.
+- **server-only:** Prevents server-side secrets from appearing in the client-side bundle.
 
-*Last Updated: April 8, 2026 — Day 1 complete. Shadcn, CSS theme, middleware, all errors resolved.*
+*Last Updated: April 9, 2026 — Day 2 complete. Dashboard, Doctors CRUD, and Admin controls fully established.*
