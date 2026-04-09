@@ -215,15 +215,39 @@ Built a high-performance administration module for clinic staff management.
   - **DoctorFormModal:** Flexible modal form utilizing `react-hook-form` and `zod` for strict schema validation.
 - **Admin Shield:** Hardened the `/admin/doctors` route with mandatory server-side session and `ADMIN_EMAIL` verification.
 
+### 10. Admin Dashboard Infrastructure (April 9, 2026)
+Established a dedicated administrative zone with real-time analytics.
+
+- **Admin Layout:** Created `src/app/admin/layout.js` as a secure wrapper for all `/admin/*` routes. Centralizes session validation and admin authorization.
+- **Admin Sidebar:** Built `src/components/admin/AdminSidebar.jsx` with a high-contrast dark theme (Gray-900) to visually distinguish the administrative panel.
+- **Overview Dashboard:** Developed the main admin landing page (`src/app/admin/page.js`) using parallel Prisma queries (`Promise.all()`). Fetches live counts for Doctors, Patients, and Appointments, plus a detailed list of recent clinic activity with relational data.
+
+### 11. Database Seeding and System Verification (April 9, 2026)
+Finalized the administrative core by populating sample data and verifying system security.
+
+- **Database Seeding:** Created a comprehensive `prisma/seed.js` script that inserts 6 realistic doctor profiles with varied specialties (Orthodontics, Implants, etc.) and driver-adapter support.
+- **Configuration:** Updated `package.json` and `prisma.config.ts` to integrate the seed command into the Prisma v7 lifecycle.
+- **E2E Verification:** Verified unauthenticated redirects to `/login` and performed a security audit on secondary admin routes. Confirmed landing page stability and database session management.
+- **Hardening:** Identified and fixed a string-comparison mismatch in the security middleware by normalizing `.env` variable formatting.
+
+### 12. Appointment Management Logic (April 9, 2026)
+Implemented the core business logic for the scheduling system.
+
+- **Appointment Actions:** Created `src/actions/appointment.actions.js` with 5 essential server actions:
+  - **getAvailableTimeSlots:** Dynamic time-slot generator (9:00 AM - 5:00 PM) with 30-minute interval logic and real-time availability checks.
+  - **createAppointment:** Secure booking with session validation, slot-conflict prevention, and automated status management.
+  - **getUserAppointments:** Optimized retrieval of personal schedules with comprehensive relational data for doctor profiles.
+  - **cancelAppointment:** Protected cancellation workflow featuring strict user-ownership verification and security fallback for admins.
+  - **getBookedSlotsForDoctor:** High-performance utility for fetching daily schedules.
+- **Revalidation:** Integrated `next/cache` revalidation to ensure seamless data synchronization across the Patient Dashboard and Admin Overview.
+
 ---
 
 ## Developer Notes
+- **Admin Security:** All routes under `/admin` are protected globally by the `AdminLayout` and middleware.
 - **Authentication:** Google OAuth is the primary provider configured via NextAuth.
-- **Dashboard Routing:** The root page (`/`) acts as a router based on auth status.
-- **Doctor Stats:** Currently using static placeholders; real data integration planned for the next sprint.
-- **Icon Compatibility:** Certain brand icons (Twitter, FB) were replaced with `Globe`, `Camera`, etc., due to version-specific limitations in `lucide-react`.
-- **Prisma v7:** Do not add url to datasource block in schema.prisma.
-- **Middleware:** Uses next-auth/jwt getToken() — Edge Runtime safe.
-- **server-only:** Prevents server-side secrets from appearing in the client-side bundle.
+- **Data Fetching:** Mixed strategy — Server-side parallel queries for dashboards, Server Actions for mutations, and TanStack Query for dynamic client-side CRUD sets.
+- **Icon Compatibility:** Certain brand icons (Twitter, FB) were replaced with `Globe`, `Camera`, etc.
+- **Prisma v7:** Dedicated connection management via singleton in `lib/prisma.js` featuring driver adapter support.
 
-*Last Updated: April 9, 2026 — Day 2 complete. Dashboard, Doctors CRUD, and Admin controls fully established.*
+*Last Updated: April 9, 2026 — Appointment management logic and secure booking infrastructure established.*
