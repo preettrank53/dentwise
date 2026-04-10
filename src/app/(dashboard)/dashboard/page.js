@@ -81,20 +81,19 @@ export default async function DashboardPage() {
   ]
 
   return (
-    <div className="p-4 md:p-8 space-y-8 animate-in fade-in duration-700">
+    <div className="space-y-8 animate-in fade-in duration-700">
       
       {/* Welcome Banner */}
-      <Card className="relative overflow-hidden border-0 shadow-lg shadow-cyan-100/50">
+      <Card className="relative overflow-hidden border-0 shadow-sm rounded-2xl">
         <div className="gradient-primary p-6 md:p-10 text-white relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-4 text-center md:text-left">
             <h1 className="text-3xl md:text-4xl font-black italic">
-              Welcome back, {session.user?.name}!
+              Welcome back, {session.user?.name?.split(' ')[0]}!
             </h1>
             <p className="text-white/90 max-w-md text-lg leading-relaxed">
-              Managing your dental health has never been easier. 
               {upcomingCount > 0 
-                ? `You have ${upcomingCount} upcoming appointment${upcomingCount > 1 ? 's' : ''} scheduled.`
-                : "Your health overview is looking great. You're all caught up for now!"}
+                ? `You have ${upcomingCount} upcoming appointment${upcomingCount > 1 ? 's' : ''}`
+                : "Ready to book your first appointment?"}
             </p>
           </div>
           <div className="hidden sm:block">
@@ -116,14 +115,14 @@ export default async function DashboardPage() {
         {stats.map((stat) => {
           const Icon = stat.icon
           return (
-            <Card key={stat.label} className="card-hover border-0 shadow-sm">
+            <Card key={stat.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-shadow hover:shadow-md">
               <CardContent className="p-6 flex items-center gap-4">
-                <div className={cn('h-14 w-14 rounded-2xl flex items-center justify-center shrink-0 shadow-inner', stat.color)}>
-                  <Icon className="h-7 w-7" />
+                <div className={cn('h-12 w-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm', stat.color)}>
+                  <Icon className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{stat.label}</p>
-                  <p className="text-2xl font-black italic text-primary">{stat.value}</p>
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-sm text-gray-500 mt-0.5">{stat.label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -139,106 +138,96 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Button 
               size="lg" 
-              className="gradient-primary text-white border-0 h-16 text-lg font-bold group shadow-lg shadow-cyan-200"
+              className="gradient-primary text-white border-0 h-16 text-lg font-bold group shadow-md shadow-cyan-100 hover:shadow-lg rounded-2xl transition-all"
               asChild
             >
               <Link href="/appointments">
                 <Plus className="mr-2 h-6 w-6" />
-                Book Now
+                Book New Appointment
                 <ArrowRight className="ml-2 h-5 w-5 opacity-50 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
             <Button 
               size="lg" 
               variant="outline" 
-              className="h-16 text-lg font-bold border-2 border-cyan-100 hover:bg-cyan-50/50 hover:border-primary transition-all rounded-xl"
+              className="h-16 text-lg font-bold border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all rounded-2xl shadow-sm hover:shadow"
               asChild
             >
-              <Link href="/voice">
-                <Mic className="mr-2 h-6 w-6 text-primary" />
-                Talk to AI
+              <Link href="/appointments/my">
+                <Calendar className="mr-2 h-6 w-6 text-gray-500" />
+                View My Appointments
               </Link>
             </Button>
           </div>
 
-          <div className="space-y-4">
-            <h2 className="text-2xl font-black italic text-primary flex items-center gap-2">
-              <Calendar className="h-6 w-6" />
-              Recent Appointments
-            </h2>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Recent Appointments</h2>
+              <Link href="/appointments/my" className="text-sm font-medium text-cyan-600 hover:text-cyan-700 transition-colors">
+                View All
+              </Link>
+            </div>
             
             {recentAppointments.length > 0 ? (
-              <Card className="border-0 shadow-sm overflow-hidden bg-white">
-                <CardContent className="p-0">
-                  {recentAppointments.map((app, index) => (
-                    <div key={app.id}>
-                      <div className="p-6 flex items-center justify-between group hover:bg-muted/30 transition-colors">
-                        <div className="flex items-center gap-4">
-                          <Avatar className="h-12 w-12 border shadow-sm">
-                            <AvatarImage src={app.doctor.imageURL} />
-                            <AvatarFallback><User /></AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-bold text-lg leading-tight">{app.doctor.name}</p>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
-                              <span>{new Date(app.dateTime).toLocaleDateString()}</span>
-                              <span className="h-1 w-1 bg-muted-foreground/30 rounded-full" />
-                              <span>{new Date(app.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <Badge 
-                          className={cn(
-                            "font-bold uppercase text-[10px] tracking-widest px-3 py-1",
-                            app.status === 'CONFIRMED' ? "bg-cyan-100 text-cyan-700 hover:bg-cyan-100" : 
-                            app.status === 'COMPLETED' ? "bg-green-100 text-green-700 hover:bg-green-100" :
-                            "bg-red-100 text-red-700 hover:bg-red-100"
-                          )}
-                        >
-                          {app.status}
-                        </Badge>
-                      </div>
-                      {index < recentAppointments.length - 1 && <Separator className="opacity-50" />}
+              <div className="divide-y divide-gray-50">
+                {recentAppointments.map((app) => (
+                  <div key={app.id} className="flex flex-wrap sm:flex-nowrap items-center gap-4 py-4 px-2 first:pt-0 last:pb-0 hover:bg-gray-50/50 transition-colors rounded-xl mx-[-8px]">
+                    <Avatar className="h-10 w-10 border border-gray-100 shrink-0">
+                      <AvatarImage src={app.doctor.imageURL} />
+                      <AvatarFallback className="bg-gray-100 text-gray-500 font-medium">DR</AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{app.doctor.name}</p>
+                      <p className="text-xs text-gray-500 mt-0.5 truncate gap-1 flex items-center">
+                        {new Date(app.dateTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        <span className="w-1 h-1 rounded-full bg-gray-300 inline-block mx-1" />
+                        {new Date(app.dateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                      </p>
                     </div>
-                  ))}
-                </CardContent>
-              </Card>
+                    <Badge 
+                      className={cn(
+                        "ml-auto rounded-full px-2.5 py-1 text-[10px] sm:text-xs font-medium tracking-wider uppercase border-0 shrink-0",
+                        app.status === 'CONFIRMED' && "bg-cyan-50 text-cyan-700 hover:bg-cyan-50",
+                        app.status === 'COMPLETED' && "bg-green-50 text-green-700 hover:bg-green-50",
+                        app.status === 'CANCELLED' && "bg-gray-100 text-gray-500 hover:bg-gray-100"
+                      )}
+                    >
+                      {app.status}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
             ) : (
-              <Card className="border-2 border-dashed bg-muted/20 py-12">
-                <CardContent className="flex flex-col items-center justify-center text-center gap-4">
-                  <div className="h-14 w-14 bg-white rounded-full flex items-center justify-center shadow-sm">
-                    <Calendar className="h-7 w-7 text-muted-foreground/30" />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="font-bold text-lg">No appointments yet</p>
-                    <p className="text-sm text-muted-foreground max-w-xs">
-                      Your recent activity will appear here once you book your first visit.
-                    </p>
-                  </div>
-                  <Button variant="outline" size="sm" className="font-bold border-2" asChild>
-                    <Link href="/appointments">Book Appointment</Link>
-                  </Button>
-                </CardContent>
-              </Card>
+              <div className="py-12 flex flex-col items-center justify-center text-center">
+                <div className="h-12 w-12 bg-gray-50 rounded-full flex items-center justify-center mb-3">
+                  <Calendar className="h-6 w-6 text-gray-400" />
+                </div>
+                <p className="font-medium text-gray-900 mb-1">No recent appointments</p>
+                <p className="text-sm text-gray-500 max-w-[250px] mb-4">
+                  When you book a dental visit, it will appear here.
+                </p>
+                <Button variant="outline" size="sm" className="rounded-xl border-gray-200" asChild>
+                  <Link href="/appointments">Book Now</Link>
+                </Button>
+              </div>
             )}
           </div>
         </div>
 
         {/* Right: Promotion or Tips Card */}
         <div className="lg:col-span-1">
-          <Card className="gradient-primary text-white border-0 shadow-xl p-6 h-full flex flex-col justify-between overflow-hidden relative group">
-            <div className="relative z-10">
-              <Badge className="bg-white/20 text-white border-0 mb-4 font-bold shadow-sm">NEW FEATURE</Badge>
-              <h3 className="text-2xl font-black italic mb-4 leading-tight">Elevate Your Care with AI Pro</h3>
-              <p className="text-white/80 text-sm leading-relaxed mb-6">
-                Get 24/7 access to your AI Dental Assistant, priority booking, and personalized oral health tracking.
-              </p>
-              <Button className="bg-white text-primary font-black w-full hover:bg-white/90 shadow-lg group-hover:scale-[1.02] transition-transform">
-                Upgrade Now
-              </Button>
+          <Card className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 overflow-hidden relative group h-full flex flex-col items-center text-center justify-center">
+            <div className="h-16 w-16 bg-cyan-50 rounded-2xl flex items-center justify-center mb-4 text-cyan-600 transition-transform group-hover:scale-110 duration-500">
+              <Mic className="h-8 w-8" />
             </div>
-            {/* Background elements */}
-            <Crown className="absolute -bottom-6 -right-6 h-48 w-48 text-white/10 rotate-12 group-hover:scale-110 group-hover:rotate-0 transition-transform duration-700" />
+            <Badge className="bg-cyan-50 text-cyan-700 border-0 mb-3 font-bold hover:bg-cyan-50 px-3 py-1">AI ASSISTANT</Badge>
+            <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">Need help booking?</h3>
+            <p className="text-sm text-gray-500 leading-relaxed mb-6 px-2">
+              Talk to our intelligent voice assistant to schedule or modify your next dental visit hands-free.
+            </p>
+            <Button className="gradient-primary text-white rounded-xl font-bold w-full shadow-md shadow-cyan-100 hover:shadow-lg transition-all" asChild>
+               <Link href="/voice">Talk to AI Assistant</Link>
+            </Button>
           </Card>
         </div>
 
