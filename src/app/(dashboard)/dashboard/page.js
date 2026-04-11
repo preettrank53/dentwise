@@ -84,7 +84,7 @@ export default async function DashboardPage() {
     <div className="space-y-8 animate-in fade-in duration-700">
       
       {/* Welcome Banner */}
-      <Card className="relative overflow-hidden border-0 shadow-sm rounded-2xl">
+      <div className="relative overflow-hidden border-0 shadow-sm rounded-2xl">
         <div className="gradient-primary p-6 md:p-10 text-white relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="space-y-4 text-center md:text-left">
             <h1 className="text-3xl md:text-4xl font-black italic">
@@ -108,7 +108,7 @@ export default async function DashboardPage() {
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-44 h-44 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-      </Card>
+      </div>
 
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

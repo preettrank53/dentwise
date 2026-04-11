@@ -165,21 +165,21 @@ export default function UserAppointmentsList() {
                       )}
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="bg-white sm:rounded-2xl p-6 shadow-xl max-w-md border-gray-100">
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Cancel Appointment?</AlertDialogTitle>
-                      <AlertDialogDescription>
+                      <AlertDialogTitle className="text-xl font-bold">Cancel Appointment?</AlertDialogTitle>
+                      <AlertDialogDescription className="text-gray-500">
                         This action cannot be undone. Your slot will be released.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel className="rounded-xl">Keep Appointment</AlertDialogCancel>
+                    <AlertDialogFooter className="mt-4 flex gap-3 sm:justify-end">
+                      <AlertDialogCancel className="rounded-xl border-gray-200 m-0 hover:bg-gray-50">Keep Appointment</AlertDialogCancel>
                       <AlertDialogAction 
                         onClick={(e) => {
                           e.preventDefault()
                           handleCancel(appointment.id)
                         }}
-                        className="bg-red-600 hover:bg-red-700 text-white rounded-xl border-0"
+                        className="bg-red-600 hover:bg-red-700 text-white rounded-xl border-0 m-0"
                         disabled={cancellingId === appointment.id}
                       >
                         {cancellingId === appointment.id ? (

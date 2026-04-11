@@ -1,6 +1,7 @@
 'use server'
 
-import { stripe, PLANS } from '@/lib/stripe'
+import { stripe } from '@/lib/stripe'
+import { PLANS } from '@/lib/plans'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
 

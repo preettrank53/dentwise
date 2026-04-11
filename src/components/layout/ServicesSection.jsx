@@ -1,3 +1,5 @@
+'use client'
+
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -8,6 +10,7 @@ import {
   Microscope,
   Sparkles,
 } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
 
 const services = [
   {
@@ -67,8 +70,25 @@ const services = [
 ]
 
 export default function ServicesSection() {
+  const sectionRef = useRef(null)
+  const [inView, setInView] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setInView(true)
+      }
+    }, { threshold: 0.2 })
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <section id="services" className="bg-gray-50">
+    <section id="services" className="bg-gray-50" ref={sectionRef}>
       <div className="page-container section-padding">
 
         {/* Header */}
@@ -91,12 +111,13 @@ export default function ServicesSection() {
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service) => {
+          {services.map((service, index) => {
             const Icon = service.icon
             return (
               <Card
                 key={service.title}
-                className="card-hover border bg-white group cursor-pointer"
+                className={`card-hover border bg-white group cursor-pointer opacity-0-initial ${inView ? 'animate-fade-up' : ''}`}
+                style={{ animationDelay: `${index * 100}ms` }}
               >
                 <CardContent className="p-6 flex flex-col gap-4">
                   <div className="flex items-start justify-between">

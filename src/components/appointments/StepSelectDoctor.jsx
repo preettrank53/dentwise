@@ -72,8 +72,8 @@ export default function StepSelectDoctor({ onSelect, selectedDoctorId }) {
         >
           {/* Selected Indicator Overlay */}
           {selectedDoctorId === doctor.id && (
-            <div className="absolute top-2 right-2 z-10 bg-primary text-white rounded-full p-0.5 shadow-lg">
-              <CheckCircle2 className="h-5 w-5" />
+            <div className="absolute top-3 right-3 z-10 shadow-lg rounded-full bg-white flex items-center justify-center">
+              <CheckCircle2 className="h-7 w-7 text-white fill-cyan-600" />
             </div>
           )}
 
@@ -83,7 +83,7 @@ export default function StepSelectDoctor({ onSelect, selectedDoctorId }) {
                 src={doctor.imageURL}
                 alt={doctor.name}
                 fill
-                className="object-cover transition-transform group-hover:scale-105"
+                className="object-cover object-top transition-transform group-hover:scale-105"
               />
             ) : (
               <div className="flex items-center justify-center h-full">
@@ -92,11 +92,11 @@ export default function StepSelectDoctor({ onSelect, selectedDoctorId }) {
             )}
           </div>
 
-          <CardContent className="p-4">
+          <CardContent className="p-4 bg-white">
             <div className="flex items-start justify-between mb-2">
               <div>
-                <h3 className="font-bold text-lg leading-tight line-clamp-1">{doctor.name}</h3>
-                <p className="text-sm text-muted-foreground">{doctor.specialty}</p>
+                <h3 className="font-bold text-lg leading-tight line-clamp-1 text-gray-900">{doctor.name}</h3>
+                <p className="text-sm text-gray-500">{doctor.specialty}</p>
               </div>
               <Avatar className="h-10 w-10 border-2 border-background shadow-sm -mt-8 bg-white">
                 <AvatarImage src={doctor.imageURL} />

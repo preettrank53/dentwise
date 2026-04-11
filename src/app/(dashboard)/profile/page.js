@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useGetUserProfile, useUpdateUserProfile } from '@/hooks/useProfile'
+import { useGetUserSubscription } from '@/hooks/useStripe'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,7 +13,8 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react'
+import { Loader2, CheckCircle, AlertCircle, Crown } from 'lucide-react'
+import SubscriptionActions from '@/components/billing/SubscriptionActions'
 
 // Using an SVG from lucide or custom for Google
 const GoogleIcon = () => (
@@ -28,6 +30,7 @@ const formSchema = z.object({
 
 export default function ProfilePage() {
   const { data: user, isLoading, isError } = useGetUserProfile()
+  const { data: subscription, isLoading: isSubLoading } = useGetUserSubscription()
   const { mutate: updateUser, isPending: isUpdating } = useUpdateUserProfile()
   
   const [successMsg, setSuccessMsg] = useState('')
@@ -71,7 +74,7 @@ export default function ProfilePage() {
     })
   }
 
-  if (isLoading) {
+  if (isLoading || isSubLoading) {
     return (
       <main className="page-container section-padding">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -137,11 +140,6 @@ export default function ProfilePage() {
                 {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
               </p>
               <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Member Since</p>
-            </div>
-            <div className="col-span-2 text-center mt-3">
-              <Badge className="bg-purple-50 text-purple-700 border-0 font-bold px-4 py-1.5 uppercase tracking-widest">
-                FREE PLAN
-              </Badge>
             </div>
           </div>
 
@@ -252,6 +250,26 @@ export default function ProfilePage() {
         </div>
         
       </div>
+
+      {/* Subscription Status Card */}
+      <div className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="space-y-1.5">
+          <h3 className="text-base font-semibold text-gray-900">Subscription Plan</h3>
+          <div className="flex items-center">
+             {subscription?.plan === 'FREE' && <Badge className="bg-gray-100 text-gray-600 border-0 uppercase hover:bg-gray-100 font-bold tracking-wider px-3 py-1 text-xs">Free</Badge>}
+             {subscription?.plan === 'BASIC' && <Badge className="bg-cyan-50 text-cyan-700 border-0 uppercase hover:bg-cyan-50 font-bold tracking-wider px-3 py-1 text-xs">Basic</Badge>}
+             {subscription?.plan === 'AI_PRO' && <Badge className="bg-purple-50 text-purple-700 border-0 uppercase hover:bg-purple-50 flex items-center px-3 py-1 text-xs font-bold tracking-wider"><Crown className="h-3 w-3 mr-1.5" /> AI Pro</Badge>}
+          </div>
+          <p className="text-xs text-gray-500 font-medium">
+            {(!subscription || subscription.plan === 'FREE')
+               ? "Free plan — no billing"
+               : `Renews on ${new Date(subscription?.currentPeriodEnd).toLocaleDateString()}`}
+          </p>
+        </div>
+        <SubscriptionActions plan={subscription?.plan || 'FREE'} />
+      </div>
+
     </main>
   )
 }
+

@@ -11,7 +11,8 @@ export async function middleware(req) {
   const isDashboardRoute =
     pathname.startsWith('/appointments') ||
     pathname.startsWith('/voice') ||
-    pathname.startsWith('/profile')
+    pathname.startsWith('/profile') ||
+    pathname.startsWith('/billing')
   const isAdminRoute = pathname.startsWith('/admin')
 
   if (isAuthRoute && isLoggedIn) {

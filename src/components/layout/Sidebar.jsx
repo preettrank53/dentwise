@@ -6,6 +6,8 @@ import { useSession, signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
+import { useGetUserSubscription } from '@/hooks/useStripe'
+import PlanBadge from '@/components/billing/PlanBadge'
 import {
   LayoutDashboard,
   CalendarPlus,
@@ -14,16 +16,20 @@ import {
   User,
   LogOut,
   Stethoscope,
+  CreditCard
 } from 'lucide-react'
 
 export default function Sidebar() {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const { data: subscription, isLoading, isError } = useGetUserSubscription()
+  const currentPlan = (isLoading || isError || !subscription) ? 'FREE' : subscription.plan
 
   const navLinks = [
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { label: 'Book Appointment', href: '/appointments', icon: CalendarPlus },
     { label: 'My Appointments', href: '/appointments/my', icon: CalendarCheck },
+    { label: 'Billing', href: '/billing', icon: CreditCard },
     { label: 'AI Assistant', href: '/voice', icon: Mic },
     { label: 'Profile', href: '/profile', icon: User },
   ]
@@ -106,9 +112,12 @@ export default function Sidebar() {
                 <p className="text-sm font-medium text-gray-900 truncate">
                   {session?.user?.name || 'User'}
                 </p>
-                <p className="text-xs text-gray-500 capitalize truncate">
-                  {session?.user?.role?.toLowerCase() || 'patient'}
-                </p>
+                <div className="flex flex-col gap-1 items-start mt-0.5">
+                  <p className="text-[10px] text-gray-500 capitalize truncate font-medium">
+                    {session?.user?.role?.toLowerCase() || 'patient'}
+                  </p>
+                  <PlanBadge plan={currentPlan} className="scale-[0.8] origin-left border-0 px-2!" />
+                </div>
               </div>
             </div>
             <button
