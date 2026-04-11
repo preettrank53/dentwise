@@ -85,9 +85,11 @@ export async function createAppointment(formData) {
 
     const { doctorId, dateTime, reason, note } = formData
 
-    if (!doctorId || !dateTime || !reason) {
+    if (!doctorId || !dateTime) {
       throw new Error('Missing required fields')
     }
+    
+    const validReason = reason || 'General Consultation'
 
     // Get the user from DB
     const user = await prisma.user.findUnique({
@@ -117,8 +119,8 @@ export async function createAppointment(formData) {
         userId: user.id,
         doctorId,
         dateTime: new Date(dateTime),
-        reason,
-        note,
+        reason: validReason,
+        note: note || '',
         duration: 30,
         status: 'CONFIRMED'
       },
