@@ -13,14 +13,10 @@ import {
   ArrowLeft,
   LogOut,
   Stethoscope,
-  ChevronRight,
 } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ totalPatients = 0, thisMonthCount = 0 }) {
   const pathname = usePathname()
   const { data: session } = useSession()
 
@@ -32,102 +28,115 @@ export default function AdminSidebar() {
   ]
 
   const isActive = (href) => {
-    if (href === '/admin' && pathname !== '/admin') return false
+    if (href === '/admin') return pathname === '/admin'
     return pathname.startsWith(href)
   }
+
+  const mobileNavLinks = navLinks.filter(link => link.href !== '/admin/subscriptions')
 
   return (
     <>
       {/* Desktop Admin Sidebar */}
-      <aside className="hidden md:flex flex-col w-60 h-screen sticky top-0 bg-gray-900 text-white p-4 shrink-0 transition-all border-r border-gray-800">
-        {/* Logo & Admin Badge */}
-        <div className="flex items-center gap-2 px-2 py-6 mb-4 mt-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-500 shadow-lg shadow-cyan-500/20">
-            <Stethoscope className="h-5 w-5 text-white" />
+      <aside className="hidden md:flex flex-col w-64 h-screen sticky top-0 bg-gray-900 border-r border-gray-800 text-gray-100 shrink-0">
+        
+        {/* LOGO SECTION */}
+        <div className="px-6 py-5 border-b border-gray-800 flex items-center gap-3">
+          <div className="gradient-primary rounded-xl h-8 w-8 flex items-center justify-center shadow-lg shadow-cyan-500/20 shrink-0">
+            <Stethoscope className="h-4 w-4 text-white" />
           </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold tracking-tight text-white leading-none">Dentwise</span>
-            <div className="mt-1">
-              <Badge variant="outline" className="text-[10px] h-4 py-0 px-1.5 border-cyan-500/50 text-cyan-400 bg-cyan-500/5 font-extrabold uppercase">
-                Admin Panel
-              </Badge>
-            </div>
-          </div>
+          <span className="text-white font-bold text-xl tracking-tight">Dentwise</span>
+          <span className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full ml-auto">
+            Admin
+          </span>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 flex flex-col gap-1.5 mt-4">
-          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest px-3 mb-2">Main Menu</p>
+        {/* NAV SECTION */}
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
           {navLinks.map((link) => {
             const Icon = link.icon
             const active = isActive(link.href)
+            
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group',
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150',
                   active
-                    ? 'bg-white text-gray-900 shadow-xl shadow-black/20'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
+                    ? 'bg-gray-800 text-white border-l-2 border-cyan-500 pl-[10px]'
+                    : 'text-gray-400 hover:bg-gray-800/60 hover:text-gray-200'
                 )}
               >
-                <Icon className={cn('h-4 w-4 shrink-0 transition-transform group-hover:scale-110', active ? 'text-gray-900 font-bold' : '')} />
+                <Icon className={cn('h-4 w-4 shrink-0', active ? 'text-cyan-400' : 'text-gray-500')} />
                 {link.label}
-                {active && <ChevronRight className="ml-auto h-3 w-3 opacity-50" />}
               </Link>
             )
           })}
+
+          {/* DIVIDER SECTION */}
+          <div className="mx-3 my-4 border-t border-gray-800" />
+
+          {/* QUICK STATS MINI SECTION */}
+          <div className="space-y-2">
+            <div className="bg-gray-800 rounded-xl px-3 py-2 mx-3 flex justify-between items-center">
+              <div className="flex items-center gap-2 text-xs text-gray-400">
+                <Users className="h-3.5 w-3.5" />
+                Total Patients
+              </div>
+              <span className="text-gray-200 font-medium text-xs">{totalPatients}</span>
+            </div>
+            
+            <div className="bg-gray-800 rounded-xl px-3 py-2 mx-3 flex justify-between items-center">
+              <div className="flex items-center gap-2 text-xs text-gray-400">
+                <Calendar className="h-3.5 w-3.5" />
+                This Month
+              </div>
+              <span className="text-gray-200 font-medium text-xs">{thisMonthCount}</span>
+            </div>
+          </div>
         </nav>
 
-        {/* Bottom Section */}
-        <div className="mt-auto flex flex-col gap-4">
-          <Separator className="bg-gray-800" />
-          <div className="flex items-center gap-3 px-2">
-            <Avatar className="h-9 w-9 border-2 border-gray-800">
+        {/* BOTTOM USER SECTION */}
+        <div className="border-t border-gray-800 p-4">
+          <div className="flex items-center gap-3 mb-4">
+            <Avatar className="h-9 w-9 rounded-xl border border-gray-700">
               <AvatarImage src={session?.user?.image} />
-              <AvatarFallback className="bg-cyan-500 text-white text-xs font-bold">
-                {session?.user?.name?.charAt(0).toUpperCase()}
+              <AvatarFallback className="bg-cyan-500 text-white font-bold text-xs rounded-xl">
+                {session?.user?.name?.charAt(0).toUpperCase() || 'A'}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col min-w-0">
-              <p className="text-sm font-semibold truncate leading-none">
+              <p className="text-sm font-medium text-gray-200 truncate">
                 {session?.user?.name || 'Admin'}
               </p>
-              <p className="text-[10px] text-gray-500 truncate mt-1">
+              <p className="text-xs text-gray-500 truncate max-w-[120px]">
                 {session?.user?.email}
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              asChild
-              className="justify-center text-gray-400 hover:text-white hover:bg-gray-800 gap-2 text-[11px] h-9 px-0"
+          <div className="flex flex-col gap-2">
+            <Link 
+              href="/" 
+              className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-300 transition-colors"
             >
-              <Link href="/">
-                <ArrowLeft className="h-3 w-3" />
-                App
-              </Link>
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Back to App
+            </Link>
+            <button 
               onClick={() => signOut({ callbackUrl: '/' })}
-              className="justify-center text-gray-400 hover:text-red-400 hover:bg-red-500/10 gap-2 text-[11px] h-9 px-0"
+              className="flex items-center gap-2 text-xs text-gray-500 hover:text-red-400 transition-colors text-left w-full"
             >
-              <LogOut className="h-3 w-3" />
+              <LogOut className="h-3.5 w-3.5" />
               Sign out
-            </Button>
+            </button>
           </div>
         </div>
       </aside>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 h-16 bg-gray-900 border-t border-gray-800 flex md:hidden items-center justify-around z-50 px-2 pb-safe">
-        {navLinks.map((link) => {
+      {/* MOBILE NAV (Fixed Bottom) */}
+      <nav className="fixed bottom-0 left-0 right-0 h-[68px] bg-gray-900 border-t border-gray-800 flex md:hidden items-center justify-around z-50 px-2 pb-safe">
+        {mobileNavLinks.map((link) => {
           const Icon = link.icon
           const active = isActive(link.href)
           return (
@@ -135,27 +144,14 @@ export default function AdminSidebar() {
               key={link.href}
               href={link.href}
               className={cn(
-                'flex flex-col items-center justify-center gap-1 w-full h-full text-[10px] font-medium transition-all',
-                active ? 'text-white' : 'text-gray-500'
+                'flex flex-col items-center justify-center p-2 rounded-xl transition-all',
+                active ? 'text-cyan-400' : 'text-gray-600 hover:text-gray-400'
               )}
             >
-              <div className={cn(
-                'flex items-center justify-center w-10 h-10 rounded-xl transition-all',
-                active ? 'bg-gray-800 text-cyan-400' : ''
-              )}>
-                <Icon className="h-5 w-5" />
-              </div>
+              <Icon className="h-5 w-5" />
             </Link>
           )
         })}
-        <button 
-          onClick={() => signOut({ callbackUrl: '/' })}
-          className="flex flex-col items-center justify-center w-full h-full text-gray-500"
-        >
-          <div className="flex items-center justify-center w-10 h-10 rounded-xl">
-            <LogOut className="h-5 w-5" />
-          </div>
-        </button>
       </nav>
     </>
   )
