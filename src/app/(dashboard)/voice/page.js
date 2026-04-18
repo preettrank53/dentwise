@@ -5,6 +5,11 @@ import VoiceInterface from '@/components/voice/VoiceInterface'
 import UpgradePrompt from '@/components/billing/UpgradePrompt'
 import { Mic, Crown } from 'lucide-react'
 
+export const metadata = {
+  title: 'AI Assistant — Dentwise',
+  description: 'Talk to Riley, your AI-powered dental assistant.',
+}
+
 export default async function VoicePage() {
   const session = await auth()
 

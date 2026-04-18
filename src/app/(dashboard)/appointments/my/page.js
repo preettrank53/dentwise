@@ -7,7 +7,7 @@ import { Plus } from 'lucide-react'
 import UserAppointmentsList from '@/components/appointments/UserAppointmentsList'
 
 export const metadata = {
-  title: 'My Appointments | Dentwise',
+  title: 'My Appointments — Dentwise',
   description: 'View and manage your scheduled dental appointments.',
 }
 

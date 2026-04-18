@@ -45,8 +45,8 @@ export default function PricingPlans({ currentPlan = 'FREE' }) {
           <div 
             key={planKey}
             className={cn(
-              "bg-white rounded-2xl border shadow-sm p-8 flex flex-col gap-6 relative transition-all duration-200 hover:shadow-md",
-              isFeatured ? "border-cyan-500 border-2 shadow-lg shadow-cyan-100" : "border-gray-100"
+              "bg-white rounded-2xl border shadow-sm p-6 sm:p-8 flex flex-col gap-6 relative transition-all duration-200 hover:shadow-md",
+              isFeatured ? "border-cyan-500 border-2 shadow-lg shadow-cyan-100 mt-6 md:mt-0" : "border-gray-100"
             )}
           >
             {isFeatured && (
@@ -68,8 +68,8 @@ export default function PricingPlans({ currentPlan = 'FREE' }) {
                 {planKey === 'FREE' ? 'Essential tools.' : planKey === 'BASIC' ? 'For active care.' : 'Ultimate tracking.'}
               </p>
               
-              <div className="pt-2 flex items-end gap-1">
-                <span className="text-4xl font-bold text-gray-900">${plan.price}</span>
+               <div className="pt-2 flex items-end gap-1">
+                <span className="text-3xl sm:text-4xl font-bold text-gray-900">${plan.price}</span>
                 <span className="text-sm text-gray-500 mb-1 font-medium">
                   {planKey === 'FREE' ? 'forever' : 'per month'}
                 </span>

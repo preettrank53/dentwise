@@ -1,4 +1,9 @@
 import { auth } from '@/lib/auth'
+
+export const metadata = {
+  title: 'Dentwise — Smart Dental Care',
+  description: 'Book dental appointments, consult AI, and manage your dental health with Dentwise.',
+}
 import { redirect } from 'next/navigation'
 import Navbar from '@/components/layout/Navbar'
 import HeroSection from '@/components/layout/HeroSection'

@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import BookingWizard from '@/components/appointments/BookingWizard'
 
 export const metadata = {
-  title: 'Book Appointment | Dentwise',
+  title: 'Book Appointment — Dentwise',
   description: 'Schedule your next dental visit with our expert doctors.',
 }
 

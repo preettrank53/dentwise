@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery, useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import {
   getUserSubscription,
   createCheckoutSession,
@@ -24,6 +25,10 @@ export function useCreateCheckoutSession() {
     },
     onError: (error) => {
       console.error('Failed to create checkout session:', error)
+      toast.error('Payment Setup Failed', {
+        description: 'Could not start checkout. Please try again.',
+        duration: 5000,
+      })
     }
   })
 }
@@ -38,6 +43,10 @@ export function useCreateBillingPortal() {
     },
     onError: (error) => {
       console.error('Failed to create billing portal:', error)
+      toast.error('Portal Access Failed', {
+        description: 'Could not open billing portal. Try again.',
+        duration: 5000,
+      })
     }
   })
 }

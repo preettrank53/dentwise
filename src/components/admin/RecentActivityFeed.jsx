@@ -2,7 +2,8 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { Calendar, CheckCircle, Clock, ChevronRight } from 'lucide-react'
+import { Calendar, CheckCircle, Clock, ChevronRight, Activity } from 'lucide-react'
+import EmptyState from '@/components/ui/EmptyState'
 
 function getTimeAgo(date) {
   const seconds = Math.floor((new Date() - new Date(date)) / 1000)
@@ -37,11 +38,13 @@ export default function RecentActivityFeed({ activities = [] }) {
       </div>
 
       {!activities || activities.length === 0 ? (
-        <div className="py-12 flex flex-col items-center justify-center text-center my-auto">
-          <div className="h-12 w-12 bg-gray-50 rounded-full flex items-center justify-center mb-3">
-            <Clock className="h-6 w-6 text-gray-400" />
-          </div>
-          <p className="font-medium text-gray-900">No recent activity</p>
+        <div className="my-auto flex justify-center">
+          <EmptyState
+            icon={Activity}
+            title="No Recent Activity"
+            description="Appointment activity will appear here as patients book and complete visits."
+            size="sm"
+          />
         </div>
       ) : (
         <div className="flex flex-col">

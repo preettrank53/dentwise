@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Download } from 'lucide-react'
 
 export const metadata = {
-  title: 'Appointments Management | Admin | Dentwise',
+  title: 'Appointments — Dentwise Admin',
+  description: 'Manage all clinic appointments and update their status.',
 }
 
 export default async function AdminAppointmentsPage() {

@@ -5,6 +5,12 @@ import { getAllSubscriptions, getRevenueStats } from '@/actions/admin.actions'
 import { DollarSign, Users, CreditCard, ExternalLink } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import PlanBadge from '@/components/billing/PlanBadge'
+import EmptyState from '@/components/ui/EmptyState'
+
+export const metadata = {
+  title: 'Subscriptions — Dentwise Admin',
+  description: 'Monitor subscriber plans, billing status, and revenue.',
+}
 
 export default async function AdminSubscriptionsPage() {
   const session = await auth()
@@ -95,19 +101,15 @@ export default async function AdminSubscriptionsPage() {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           {paidSubscriptions.length === 0 ? (
-            <div className="py-20 flex flex-col items-center justify-center text-center px-4">
-              <div className="h-14 w-14 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                <CreditCard className="h-6 w-6 text-gray-300" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">No subscribers yet</h3>
-              <p className="text-gray-500 mb-6 max-w-sm">Share your pricing page to get your first subscriber.</p>
-              <Link 
-                href="/billing"
-                target="_blank"
-                className="bg-gray-900 hover:bg-gray-800 text-white px-6 py-2.5 rounded-xl font-medium transition-colors"
-              >
-                View Patient Pricing
-              </Link>
+            <div className="min-h-[40vh] flex items-center justify-center">
+              <EmptyState
+                icon={CreditCard}
+                title="No Subscribers Yet"
+                description="No patients have upgraded to a paid plan. Share the pricing page to get started."
+                actionLabel="View Pricing Page"
+                actionHref="/billing"
+                size="lg"
+              />
             </div>
           ) : (
             <table className="w-full text-left border-collapse min-w-[900px]">

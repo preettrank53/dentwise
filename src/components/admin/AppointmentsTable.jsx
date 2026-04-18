@@ -9,9 +9,11 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { Search, ChevronLeft, ChevronRight, Loader2, User } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, Loader2, User, CalendarX } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
+import EmptyState from '@/components/ui/EmptyState'
+import ErrorState from '@/components/ui/ErrorState'
 
 export default function AppointmentsTable() {
   const [searchInput, setSearchInput] = useState('')
@@ -65,8 +67,8 @@ export default function AppointmentsTable() {
   return (
     <div className="space-y-6">
       {/* Filters Bar */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-3 items-center flex-wrap">
-        <div className="relative flex-1 min-w-[250px]">
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col sm:flex-row gap-3 items-center">
+        <div className="relative w-full sm:flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input 
             placeholder="Search patient or doctor..." 
@@ -76,7 +78,7 @@ export default function AppointmentsTable() {
           />
         </div>
         <Select value={filters.status} onValueChange={handleStatusChange}>
-          <SelectTrigger className="w-[180px] rounded-xl border-gray-200">
+          <SelectTrigger className="w-full sm:w-[180px] rounded-xl border-gray-200">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -86,7 +88,7 @@ export default function AppointmentsTable() {
             <SelectItem value="CANCELLED">Cancelled</SelectItem>
           </SelectContent>
         </Select>
-        <div className="text-sm text-gray-500 font-medium px-2 whitespace-nowrap">
+        <div className="text-sm text-gray-500 font-medium px-2 whitespace-nowrap hidden sm:block">
           Showing {tableData.length} appointments
         </div>
       </div>
@@ -94,7 +96,7 @@ export default function AppointmentsTable() {
       {/* Table Container */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
+          <table className="w-full text-sm text-left min-w-[700px]">
             <thead className="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100">
               <tr>
                 <th className="px-6 py-4">Patient</th>
@@ -127,25 +129,34 @@ export default function AppointmentsTable() {
               {isError && (
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-red-500">
-                    Error loading appointments data.
+                    <ErrorState onRetry={() => refetch()} />
                   </td>
                 </tr>
               )}
 
               {!isLoading && !isError && currentData.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500 bg-white">
-                    <p className="mb-4">No appointments found.</p>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => {
-                        setSearchInput('')
-                        setFilters({ search: '', status: 'ALL' })
-                      }}
-                      className="rounded-xl border-gray-200"
-                    >
-                      Clear filters
-                    </Button>
+                  <td colSpan={6} className="px-6 py-12 bg-white">
+                    {filters.search !== '' || filters.status !== 'ALL' ? (
+                      <EmptyState
+                        icon={Search}
+                        title="No Results Found"
+                        description="No appointments match your current filters. Try adjusting your search or filter criteria."
+                        actionLabel="Clear Filters"
+                        actionOnClick={() => {
+                          setSearchInput('')
+                          setFilters({ search: '', status: 'ALL' })
+                        }}
+                        size="md"
+                      />
+                    ) : (
+                      <EmptyState
+                        icon={CalendarX}
+                        title="No Appointments Yet"
+                        description="No appointments have been booked at the clinic yet."
+                        size="md"
+                      />
+                    )}
                   </td>
                 </tr>
               )}
@@ -216,7 +227,7 @@ export default function AppointmentsTable() {
                     </Badge>
                   </td>
                   <td className="px-6 py-4 text-right whitespace-nowrap">
-                    {apt.status === 'CONFIRMED' ? (
+                    {apt.status === 'CONFIRMED' && (
                       <Button 
                         size="sm" 
                         variant="ghost"
@@ -233,8 +244,6 @@ export default function AppointmentsTable() {
                           "Mark Complete"
                         )}
                       </Button>
-                    ) : (
-                      <span className="text-gray-400 text-xs italic pr-2">No actions</span>
                     )}
                   </td>
                 </tr>

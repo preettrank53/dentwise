@@ -12,7 +12,17 @@ import {
   Cell
 } from 'recharts'
 
-export default function DoctorPerformanceChart({ data = [] }) {
+import ErrorState from '@/components/ui/ErrorState'
+
+export default function DoctorPerformanceChart({ data }) {
+  if (!data) {
+    return (
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 w-full">
+         <ErrorState />
+      </div>
+    )
+  }
+
   const topDoctors = data.slice(0, 5)
 
   return (

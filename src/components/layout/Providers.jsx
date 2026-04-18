@@ -23,12 +23,20 @@ export default function Providers({ children }) {
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
         {children}
-        <Toaster 
+        <Toaster
           position="bottom-right"
+          expand={false}
+          richColors
           toastOptions={{
             style: {
               borderRadius: '12px',
               border: '1px solid #e5e7eb',
+              fontSize: '14px',
+            },
+            classNames: {
+              toast: 'font-sans',
+              title: 'font-semibold',
+              description: 'text-gray-500',
             },
           }}
         />

@@ -4,6 +4,11 @@ import { auth } from '@/lib/auth'
 import { getUserSubscription } from '@/actions/stripe.actions'
 import PricingPlans from '@/components/billing/PricingPlans'
 
+export const metadata = {
+  title: 'Billing & Plans — Dentwise',
+  description: 'Manage your subscription plan and billing for Dentwise.',
+}
+
 export default async function BillingPage() {
   const session = await auth()
   

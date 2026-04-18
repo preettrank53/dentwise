@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 import {
   getAvailableTimeSlots,
   createAppointment,
@@ -42,6 +43,10 @@ export const useCreateAppointment = () => {
   return useMutation({
     mutationFn: (formData) => createAppointment(formData),
     onSuccess: () => {
+      toast.success('Appointment Booked!', {
+        description: 'Check your email for confirmation details.',
+        duration: 5000,
+      })
       // Invalidate current user's appointments
       queryClient.invalidateQueries({ queryKey: ['user-appointments'] })
       // Invalidate all slot queries since availability has changed
@@ -52,6 +57,10 @@ export const useCreateAppointment = () => {
     },
     onError: (error) => {
       console.error('Error creating appointment:', error)
+      toast.error('Booking Failed', {
+        description: error.message || 'Something went wrong. Please try again.',
+        duration: 5000,
+      })
     },
   })
 }
@@ -65,6 +74,10 @@ export const useCancelAppointment = () => {
   return useMutation({
     mutationFn: (appointmentId) => cancelAppointment(appointmentId),
     onSuccess: () => {
+      toast.success('Appointment Cancelled', {
+        description: 'Your appointment has been cancelled successfully.',
+        duration: 4000,
+      })
       queryClient.invalidateQueries({ queryKey: ['user-appointments'] })
       // Notice: We don't necessarily invalidate slots here unless 
       // the business requirement specifies that cancelled slots return to pool instantly.
@@ -72,6 +85,10 @@ export const useCancelAppointment = () => {
     },
     onError: (error) => {
       console.error('Error cancelling appointment:', error)
+      toast.error('Cancellation Failed', {
+        description: error.message || 'Could not cancel. Try again.',
+        duration: 4000,
+      })
     },
   })
 }

@@ -96,13 +96,13 @@ export default function VoiceInterface() {
 
       {/* LEFT COLUMN - RILEY PANEL */}
       <div className="flex flex-col gap-6">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex flex-col items-center gap-5">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 flex flex-col items-center gap-5">
           
           {/* Riley Profile Array */}
           <div className="flex flex-col items-center gap-3">
-            <div className={`h-28 w-28 rounded-full flex items-center justify-center transition-all duration-300 ${isActive || isConnecting ? 'ring-4 ring-cyan-500/30' : 'ring-2 ring-gray-100'}`}>
-              <div className="h-24 w-24 gradient-primary rounded-full flex items-center justify-center shadow-lg shadow-cyan-200">
-                <span className="text-4xl font-bold text-white">R</span>
+            <div className={`h-24 w-24 sm:h-28 sm:w-28 rounded-full flex items-center justify-center transition-all duration-300 ${isActive || isConnecting ? 'ring-4 ring-cyan-500/30' : 'ring-2 ring-gray-100'}`}>
+              <div className="h-20 w-20 sm:h-24 sm:w-24 gradient-primary rounded-full flex items-center justify-center shadow-lg shadow-cyan-200">
+                <span className="text-3xl sm:text-4xl font-bold text-white">R</span>
               </div>
             </div>
             

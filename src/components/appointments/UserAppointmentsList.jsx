@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Calendar, Clock, Timer, FileText, Loader2, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import EmptyState from '@/components/ui/EmptyState'
+import ErrorState from '@/components/ui/ErrorState'
 
 export default function UserAppointmentsList() {
   const { data: appointments, isLoading, isError, refetch } = useGetUserAppointments()
@@ -63,24 +65,23 @@ export default function UserAppointmentsList() {
 
   if (isError) {
     return (
-      <Card className="rounded-2xl border border-gray-100 shadow-sm p-6 bg-white text-center py-12">
-        <p className="text-red-500 mb-4">Failed to load appointments</p>
-        <Button variant="outline" onClick={() => refetch()}>Try Again</Button>
+      <Card className="rounded-2xl border border-gray-100 shadow-sm p-6 bg-white flex justify-center">
+        <ErrorState onRetry={() => refetch()} />
       </Card>
     )
   }
 
   if (!appointments || appointments.length === 0) {
     return (
-      <Card className="rounded-2xl border border-gray-100 shadow-sm p-6 bg-white text-center py-20">
-        <div className="mx-auto w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-          <Calendar className="h-6 w-6 text-gray-400" />
-        </div>
-        <h3 className="text-xl font-bold text-gray-900 mb-2">No appointments yet</h3>
-        <p className="text-gray-500 mb-6">Book your first appointment to get started with Dentwise.</p>
-        <Button asChild className="gradient-primary text-white rounded-xl px-6">
-          <Link href="/appointments">Book your first appointment</Link>
-        </Button>
+      <Card className="rounded-2xl border border-gray-100 shadow-sm p-6 bg-white flex justify-center py-10">
+        <EmptyState
+          icon={Calendar}
+          title="No Appointments Yet"
+          description="You have not booked any appointments. Schedule your first visit with one of our dentists."
+          actionLabel="Book Appointment"
+          actionHref="/appointments"
+          size="md"
+        />
       </Card>
     )
   }

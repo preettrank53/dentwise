@@ -10,6 +10,11 @@ import {
   getRecentActivity 
 } from '@/actions/admin.actions'
 
+export const metadata = {
+  title: 'Analytics — Dentwise Admin',
+  description: 'View clinic analytics, appointment trends, and doctor performance.',
+}
+
 import AppointmentTrendsChart from '@/components/admin/AppointmentTrendsChart'
 import DoctorPerformanceChart from '@/components/admin/DoctorPerformanceChart'
 import RevenueChart from '@/components/admin/RevenueChart'

@@ -35,7 +35,17 @@ export default function BookingWizard() {
     setCurrentStep((prev) => prev + 1)
   }
 
-  const prevStep = () => setCurrentStep((prev) => prev - 1)
+  const prevStep = () => {
+    // Going from Step 2 back to Step 1: clear date/time/reason
+    // so that selecting a new doctor gives a fresh time selection
+    if (currentStep === 2) {
+      setSelectedDate(null)
+      setSelectedTimeSlot(null)
+      setSelectedDateTime(null)
+      setReason('')
+    }
+    setCurrentStep((prev) => prev - 1)
+  }
 
   const handleConfirm = () => {
     const formData = {
@@ -119,8 +129,8 @@ export default function BookingWizard() {
       </div>
 
       {/* Step Content */}
-      <Card className="border-0 shadow-lg bg-white/50 backdrop-blur-sm rounded-3xl overflow-hidden min-h-[500px]">
-        <CardContent className="p-6 sm:p-10">
+      <Card className="border-0 shadow-lg bg-white/50 backdrop-blur-sm rounded-3xl overflow-hidden min-h-[450px]">
+        <CardContent className="p-4 sm:p-6 md:p-10 pb-8 sm:pb-10">
           {currentStep === 1 && (
             <StepSelectDoctor 
               onSelect={setSelectedDoctorId} 
@@ -153,12 +163,12 @@ export default function BookingWizard() {
 
       {/* Navigation Buttons */}
       {currentStep < 3 && (
-        <div className="flex items-center justify-between pt-4">
+        <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-6 px-4 sm:px-0">
           <Button
             variant="ghost"
             onClick={prevStep}
             className={cn(
-              "text-muted-foreground rounded-full px-8",
+              "text-muted-foreground rounded-full px-8 w-full sm:w-auto h-12 sm:h-auto",
               currentStep === 1 && "invisible"
             )}
           >
@@ -172,7 +182,7 @@ export default function BookingWizard() {
               (currentStep === 1 && !selectedDoctorId) ||
               (currentStep === 2 && (!selectedDate || !selectedTimeSlot))
             }
-            className="gradient-primary text-white rounded-full px-12 shadow-md shadow-primary/20 hover:opacity-90"
+            className="gradient-primary text-white rounded-full px-12 shadow-md shadow-primary/20 hover:opacity-90 w-full sm:w-auto h-12 sm:h-auto font-bold"
           >
             Next
             <ChevronRight className="ml-2 h-4 w-4" />
@@ -190,14 +200,14 @@ function ProgressStep({ step, currentStep, label }) {
   return (
     <div className="flex flex-col items-center z-10 space-y-2">
       <div className={cn(
-        "h-10 w-10 rounded-full flex items-center justify-center font-bold transition-all duration-500",
+        "h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center font-bold transition-all duration-500",
         isCompleted ? "bg-cyan-500 text-white" : "",
         isActive ? "gradient-primary text-white scale-110 shadow-lg" : "bg-white border-2 border-muted text-muted-foreground"
       )}>
-        {isCompleted ? <CheckCircle2 className="h-5 w-5" /> : step}
+        {isCompleted ? <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" /> : step}
       </div>
       <span className={cn(
-        "text-[10px] sm:text-xs font-bold uppercase tracking-tight absolute -bottom-6 whitespace-nowrap",
+        "text-[10px] sm:text-xs font-bold uppercase tracking-tight absolute -bottom-6 whitespace-nowrap hidden sm:block",
         isActive ? "text-primary" : "text-muted-foreground opacity-60"
       )}>
         {label}

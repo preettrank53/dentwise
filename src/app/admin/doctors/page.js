@@ -5,6 +5,11 @@ import { Button } from '@/components/ui/button'
 import { Plus } from 'lucide-react'
 import Link from 'next/link'
 
+export const metadata = {
+  title: 'Doctors — Dentwise Admin',
+  description: 'Manage clinic doctors, specialties, and availability.',
+}
+
 // This would ideally be a client component wrapper or handled via state in a parent client component
 // but for the sake of the task structure, we'll keep the top-level button logic 
 // potentially inside the DoctorsTable or as a simple header.

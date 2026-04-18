@@ -23,8 +23,8 @@ export default function StepSelectDoctor({ onSelect, selectedDoctorId }) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <Card key={i} className="overflow-hidden">
-            <Skeleton className="h-48 w-full" />
-            <CardContent className="p-4 space-y-2">
+            <Skeleton className="h-40 sm:h-48 w-full" />
+            <CardContent className="p-4 sm:p-5 space-y-2">
               <Skeleton className="h-4 w-3/4" />
               <Skeleton className="h-3 w-1/2" />
               <Skeleton className="h-6 w-20 rounded-full" />
@@ -77,7 +77,7 @@ export default function StepSelectDoctor({ onSelect, selectedDoctorId }) {
             </div>
           )}
 
-          <div className="relative h-48 w-full bg-muted">
+          <div className="relative h-40 sm:h-48 w-full bg-muted">
             {doctor.imageURL ? (
               <Image
                 src={doctor.imageURL}
@@ -92,7 +92,7 @@ export default function StepSelectDoctor({ onSelect, selectedDoctorId }) {
             )}
           </div>
 
-          <CardContent className="p-4 bg-white">
+          <CardContent className="p-4 sm:p-5 bg-white">
             <div className="flex items-start justify-between mb-2">
               <div>
                 <h3 className="font-bold text-lg leading-tight line-clamp-1 text-gray-900">{doctor.name}</h3>

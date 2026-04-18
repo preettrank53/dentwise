@@ -140,9 +140,14 @@ export default function Sidebar() {
             <Link
               key={link.href}
               href={link.href}
-              className="flex flex-col items-center justify-center w-full h-full text-center transition-all"
+              className="flex-1 flex flex-col items-center justify-center h-full py-2 px-3 transition-all min-h-[44px]"
             >
-              <Icon className={cn('h-6 w-6 transition-colors', active ? 'text-cyan-600' : 'text-gray-400')} />
+              <Icon className={cn('h-5 w-5 transition-colors', active ? 'text-cyan-600' : 'text-gray-400')} />
+              {active && (
+                <span className="text-[10px] font-medium text-cyan-600 mt-1 animate-in fade-in slide-in-from-bottom-1">
+                  {link.label.split(' ')[0]}
+                </span>
+              )}
             </Link>
           )
         })}

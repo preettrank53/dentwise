@@ -45,7 +45,7 @@ export default function DoctorStatsTable({ data = [] }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse min-w-[600px]">
+        <table className="w-full text-left border-collapse min-w-[550px]">
           <thead className="bg-gray-50 border-b border-gray-100">
             <tr>
               <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -70,7 +70,7 @@ export default function DoctorStatsTable({ data = [] }) {
                 <div className="flex items-center gap-1">Completed <SortIcon field="completed" /></div>
               </th>
               <th 
-                className={`px-6 py-3 text-xs uppercase tracking-wider cursor-pointer transition-colors ${sortField === 'completionRate' ? 'text-gray-900 font-semibold' : 'text-gray-500 hover:text-gray-900'}`}
+                className={`px-6 py-3 text-xs uppercase tracking-wider cursor-pointer transition-colors hidden md:table-cell ${sortField === 'completionRate' ? 'text-gray-900 font-semibold' : 'text-gray-500 hover:text-gray-900'}`}
                 onClick={() => handleSort('completionRate')}
               >
                 <div className="flex items-center gap-1">Rate <SortIcon field="completionRate" /></div>
@@ -121,7 +121,7 @@ export default function DoctorStatsTable({ data = [] }) {
                     <td className="px-6 py-4">
                       <span className="text-sm font-medium text-gray-700">{doc.completed}</span>
                     </td>
-                    <td className="px-6 py-4 min-w-[120px]">
+                    <td className="px-6 py-4 min-w-[120px] hidden md:table-cell">
                       <div className="flex flex-col gap-1 w-24">
                         <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
                           <div 

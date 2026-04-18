@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
 import { Calendar as CalendarIcon, Clock, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import NoSlotsAvailable from './NoSlotsAvailable'
 
 /**
  * Step 2: Select Date, Time and Provide Reason
@@ -58,7 +59,7 @@ export default function StepSelectDateTime({
           <span>Select a Date</span>
         </div>
         
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex flex-nowrap gap-3 overflow-x-auto pb-3 scrollbar-hide -mx-1 px-1">
           {nextWorkingDays.map((date) => {
             const isSelected = selectedDate?.toDateString() === date.toDateString()
             return (
@@ -101,14 +102,21 @@ export default function StepSelectDateTime({
           </div>
 
           {slotsLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {[...Array(8)].map((_, i) => (
-                <Skeleton key={i} className="h-10 rounded-lg" />
+                <Skeleton key={i} className="h-12 rounded-xl" />
               ))}
             </div>
+          ) : slots && availableSlotsCount === 0 ? (
+            <NoSlotsAvailable 
+              selectedDate={selectedDate} 
+              onSelectDate={onSelectDate} 
+              doctorId={doctorId} 
+            />
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {slots?.map((slot) => {
+
                 const isSelected = selectedTime?.datetime === slot.datetime
                 return (
                   <Button
@@ -118,15 +126,15 @@ export default function StepSelectDateTime({
                     disabled={slot.isBooked}
                     onClick={() => onSelectTime(slot)}
                     className={cn(
-                      "h-10 border-2 font-medium relative overflow-hidden transition-all",
-                      slot.isBooked && "bg-muted text-muted-foreground/50 border-transparent cursor-not-allowed opacity-60",
+                      "h-12 border-2 font-bold relative overflow-hidden transition-all text-sm",
+                      slot.isBooked && "bg-muted text-muted-foreground/30 border-transparent cursor-not-allowed opacity-60",
                       isSelected && "gradient-primary border-transparent scale-105"
                     )}
                   >
                     {slot.isBooked ? (
                       <span className="line-through text-xs italic">Booked</span>
                     ) : (
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1.5">
                         {isSelected && <Check className="h-3 w-3" />}
                         {slot.time}
                       </div>

@@ -19,9 +19,11 @@ import {
   useToggleDoctorStatus,
 } from '@/hooks/useDoctors'
 import DoctorFormModal from './DoctorFormModal'
-import { Edit, RefreshCcw, UserMinus, UserCheck, AlertCircle } from 'lucide-react'
+import { Edit, RefreshCcw, UserMinus, UserCheck, AlertCircle, UserX } from 'lucide-react'
+import EmptyState from '@/components/ui/EmptyState'
+import ErrorState from '@/components/ui/ErrorState'
 
-export default function DoctorsTable() {
+export default function DoctorsTable({ onAddDoctor }) {
   const { data: doctors, isLoading, error, refetch } = useGetDoctors()
   const toggleMutation = useToggleDoctorStatus()
   
@@ -72,45 +74,40 @@ export default function DoctorsTable() {
   }
 
   if (error) {
-    return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
-        <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
-        <h3 className="text-lg font-bold">Failed to load doctors</h3>
-        <p className="text-muted-foreground mb-4">{error.message}</p>
-        <Button onClick={() => refetch()} variant="outline">
-          <RefreshCcw className="mr-2 h-4 w-4" /> Retry
-        </Button>
-      </div>
-    )
+    return <ErrorState onRetry={() => refetch()} />
   }
 
   if (!doctors || doctors.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed rounded-xl bg-gray-50/50">
-        <p className="text-muted-foreground mb-4">No doctors found. Add your first doctor.</p>
-        <Button 
-          onClick={() => {
-            setSelectedDoctor(null)
-            setIsModalOpen(true)
-          }} 
-          className="gradient-primary text-white border-0"
-        >
-          Add First Doctor
-        </Button>
+      <div className="py-12 flex justify-center bg-gray-50/50 rounded-xl border border-gray-100">
+        <EmptyState
+          icon={UserX}
+          title="No Doctors Found"
+          description="Your doctor roster is empty. Add your first doctor to start accepting appointments."
+          actionLabel="Add First Doctor"
+          actionOnClick={() => {
+            if (onAddDoctor) onAddDoctor();
+            else {
+              setSelectedDoctor(null);
+              setIsModalOpen(true);
+            }
+          }}
+          size="md"
+        />
       </div>
     )
   }
 
   return (
     <>
-      <div className="rounded-xl border bg-white overflow-hidden shadow-sm">
-        <Table>
+      <div className="rounded-xl border bg-white shadow-sm overflow-x-auto">
+        <Table className="min-w-[600px]">
           <TableHeader className="bg-gray-50/50">
             <TableRow>
               <TableHead>Doctor</TableHead>
               <TableHead>Specialty</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Gender</TableHead>
+              <TableHead className="hidden lg:table-cell">Email</TableHead>
+              <TableHead className="hidden md:table-cell">Gender</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right px-6">Actions</TableHead>
             </TableRow>
@@ -130,8 +127,8 @@ export default function DoctorsTable() {
                   </div>
                 </TableCell>
                 <TableCell>{doctor.specialty}</TableCell>
-                <TableCell className="text-muted-foreground lowercase">{doctor.email}</TableCell>
-                <TableCell className="capitalize text-xs">{doctor.gender.toLowerCase()}</TableCell>
+                <TableCell className="text-muted-foreground lowercase hidden lg:table-cell">{doctor.email}</TableCell>
+                <TableCell className="capitalize text-xs hidden md:table-cell">{doctor.gender.toLowerCase()}</TableCell>
                 <TableCell>
                   <Badge variant={doctor.isActive ? 'success' : 'secondary'} className="rounded-full px-2.5">
                     {doctor.isActive ? 'Active' : 'Inactive'}

@@ -19,6 +19,11 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+export const metadata = {
+  title: 'Dashboard — Dentwise',
+  description: 'Your dental health overview, upcoming appointments, and quick actions.',
+}
+
 export default async function DashboardPage() {
   const session = await auth()
 
@@ -85,21 +90,21 @@ export default async function DashboardPage() {
       
       {/* Welcome Banner */}
       <div className="relative overflow-hidden border-0 shadow-sm rounded-2xl">
-        <div className="gradient-primary p-6 md:p-10 text-white relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-4 text-center md:text-left">
-            <h1 className="text-3xl md:text-4xl font-black italic">
+        <div className="gradient-primary p-6 md:p-10 text-white relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="space-y-4 text-center sm:text-left">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black italic">
               Welcome back, {session.user?.name?.split(' ')[0]}!
             </h1>
-            <p className="text-white/90 max-w-md text-lg leading-relaxed">
+            <p className="text-white/90 max-w-sm sm:max-w-md text-base sm:text-lg leading-relaxed">
               {upcomingCount > 0 
                 ? `You have ${upcomingCount} upcoming appointment${upcomingCount > 1 ? 's' : ''}`
                 : "Ready to book your first appointment?"}
             </p>
           </div>
-          <div className="hidden sm:block">
-            <Avatar className="h-24 w-24 border-4 border-white/20 shadow-2xl ring-4 ring-white/10">
+          <div className="shrink-0">
+            <Avatar className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 border-4 border-white/20 shadow-2xl ring-4 ring-white/10">
               <AvatarImage src={session.user?.image} />
-              <AvatarFallback className="bg-white/10 text-white text-3xl font-bold">
+              <AvatarFallback className="bg-white/10 text-white text-2xl sm:text-3xl font-bold">
                 {session.user?.name?.charAt(0)}
               </AvatarFallback>
             </Avatar>
@@ -111,18 +116,18 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {stats.map((stat) => {
           const Icon = stat.icon
           return (
             <Card key={stat.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-shadow hover:shadow-md">
-              <CardContent className="p-6 flex items-center gap-4">
-                <div className={cn('h-12 w-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm', stat.color)}>
-                  <Icon className="h-6 w-6" />
+              <CardContent className="p-4 sm:p-6 flex items-center gap-3 sm:gap-4">
+                <div className={cn('h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm', stat.color)}>
+                  <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-gray-500 mt-0.5">{stat.label}</p>
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-[10px] sm:text-xs md:text-sm text-gray-500 mt-0.5 uppercase tracking-wide font-medium">{stat.label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -135,27 +140,27 @@ export default async function DashboardPage() {
         
         {/* Left: Quick Actions & Recent Activity */}
         <div className="lg:col-span-2 space-y-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Button 
               size="lg" 
-              className="gradient-primary text-white border-0 h-16 text-lg font-bold group shadow-md shadow-cyan-100 hover:shadow-lg rounded-2xl transition-all"
+              className="gradient-primary text-white border-0 h-14 sm:h-16 text-base sm:text-lg font-bold group shadow-md shadow-cyan-100 hover:shadow-lg rounded-2xl transition-all w-full sm:flex-1"
               asChild
             >
               <Link href="/appointments">
-                <Plus className="mr-2 h-6 w-6" />
-                Book New Appointment
-                <ArrowRight className="ml-2 h-5 w-5 opacity-50 group-hover:translate-x-1 transition-transform" />
+                <Plus className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
+                Book Now
+                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 opacity-50 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
             <Button 
               size="lg" 
               variant="outline" 
-              className="h-16 text-lg font-bold border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all rounded-2xl shadow-sm hover:shadow"
+              className="h-14 sm:h-16 text-base sm:text-lg font-bold border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all rounded-2xl shadow-sm hover:shadow w-full sm:flex-1"
               asChild
             >
               <Link href="/appointments/my">
-                <Calendar className="mr-2 h-6 w-6 text-gray-500" />
-                View My Appointments
+                <Calendar className="mr-2 h-5 w-5 sm:h-6 sm:w-6 text-gray-500" />
+                My Visits
               </Link>
             </Button>
           </div>
