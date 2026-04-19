@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
   getDoctors,
+  getAllDoctors,
   getDoctorById,
   createDoctor,
   updateDoctor,
@@ -17,6 +18,16 @@ export const useGetDoctors = () => {
   return useQuery({
     queryKey: ['doctors'],
     queryFn: () => getDoctors(),
+  })
+}
+
+/**
+ * Hook to fetch all doctors for admin management
+ */
+export const useGetAllDoctors = () => {
+  return useQuery({
+    queryKey: ['admin-doctors'],
+    queryFn: () => getAllDoctors(),
   })
 }
 
@@ -46,6 +57,7 @@ export const useCreateDoctor = () => {
         duration: 3000,
       })
       queryClient.invalidateQueries({ queryKey: ['doctors'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-doctors'] })
     },
     onError: (error) => {
       console.error('Error creating doctor:', error)
@@ -71,6 +83,7 @@ export const useUpdateDoctor = () => {
         duration: 3000,
       })
       queryClient.invalidateQueries({ queryKey: ['doctors'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-doctors'] })
       queryClient.invalidateQueries({ queryKey: ['doctors', variables.id] })
     },
     onError: (error) => {
@@ -94,16 +107,17 @@ export const useToggleDoctorStatus = () => {
     onSuccess: (data) => {
       if (data?.isActive) {
         toast.success('Doctor Activated', {
-          description: `${data.name} is now accepting appointments.`,
+          description: `Dr. ${data.name} is now accepting appointments`,
           duration: 3000,
         })
       } else if (data && !data.isActive) {
-        toast('Doctor Deactivated', {
-          description: `${data.name} has been deactivated.`,
+        toast.success('Doctor Deactivated', {
+          description: `Dr. ${data.name} has been deactivated`,
           duration: 3000,
         })
       }
       queryClient.invalidateQueries({ queryKey: ['doctors'] })
+      queryClient.invalidateQueries({ queryKey: ['admin-doctors'] })
     },
     onError: (error) => {
       console.error('Error toggling doctor status:', error)

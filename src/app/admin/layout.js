@@ -24,7 +24,7 @@ export default async function AdminLayout({ children }) {
   ])
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-[#F8FAFB]">
       {/* Admin Sidebar */}
       <AdminSidebar 
         totalPatients={totalUsers} 
@@ -32,7 +32,7 @@ export default async function AdminLayout({ children }) {
       />
 
       {/* Main Administrative Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 pb-20 md:pb-0">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0 pb-20 md:pb-0">
         
         {/* Dynamic Client Header */}
         <AdminHeader 
@@ -41,7 +41,7 @@ export default async function AdminLayout({ children }) {
         />
 
         {/* Dynamic Admin View */}
-        <main className="flex-1 overflow-y-auto bg-gray-50">
+        <main className="flex-1 overflow-y-auto bg-[#F8FAFB]">
           <div className="max-w-7xl mx-auto w-full px-6 py-8">
             {children}
           </div>

@@ -24,12 +24,14 @@ import { Calendar, Clock, Timer, FileText, Loader2, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import EmptyState from '@/components/ui/EmptyState'
 import ErrorState from '@/components/ui/ErrorState'
+import RescheduleModal from '@/components/appointments/RescheduleModal'
 
 export default function UserAppointmentsList() {
   const { data: appointments, isLoading, isError, refetch } = useGetUserAppointments()
   const cancelMutation = useCancelAppointment()
   const [cancellingId, setCancellingId] = useState(null)
   const [dialogOpenId, setDialogOpenId] = useState(null)
+  const [rescheduleAppointment, setRescheduleAppointment] = useState(null)
 
   if (isLoading) {
     return (
@@ -134,7 +136,7 @@ export default function UserAppointmentsList() {
             </div>
 
             {/* Right: Status & Actions */}
-            <div className="flex items-center justify-between md:justify-end gap-6 min-w-[140px]">
+            <div className="flex items-center justify-between md:justify-end gap-3 min-w-[220px]">
               <Badge className={cn(
                 "rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wider",
                 appointment.status === 'CONFIRMED' && "bg-cyan-50 text-cyan-700 hover:bg-cyan-50 border-0",
@@ -145,15 +147,22 @@ export default function UserAppointmentsList() {
               </Badge>
 
               {appointment.status === 'CONFIRMED' && (
-                <AlertDialog
-                  open={dialogOpenId === appointment.id}
-                  onOpenChange={(open) => setDialogOpenId(open ? appointment.id : null)}
-                >
-                  <AlertDialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-xl"
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setRescheduleAppointment(appointment)}
+                    className="inline-flex items-center border border-[#619BB6] text-[#619BB6] hover:bg-[#EDF5F8] rounded-[6px] px-3 py-1.5 text-xs font-medium transition-colors"
+                  >
+                    <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                    Reschedule
+                  </button>
+
+                  <AlertDialog
+                    open={dialogOpenId === appointment.id}
+                    onOpenChange={(open) => setDialogOpenId(open ? appointment.id : null)}
+                  >
+                    <AlertDialogTrigger
+                      className="inline-flex items-center justify-center border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-[6px] text-xs font-medium px-3 py-1.5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       disabled={cancellingId === appointment.id}
                     >
                       {cancellingId === appointment.id ? (
@@ -161,51 +170,57 @@ export default function UserAppointmentsList() {
                       ) : (
                         'Cancel'
                       )}
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent className="bg-white sm:rounded-2xl p-6 shadow-xl max-w-md border-gray-100">
-                    <AlertDialogHeader>
-                      <AlertDialogTitle className="text-xl font-bold">Cancel Appointment?</AlertDialogTitle>
-                      <AlertDialogDescription className="text-gray-500">
-                        This action cannot be undone. Your slot will be released.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter className="mt-4 flex gap-3 sm:justify-end">
-                      <AlertDialogCancel className="rounded-xl border-gray-200 m-0 hover:bg-gray-50">Keep Appointment</AlertDialogCancel>
-                      <AlertDialogAction 
-                        onClick={async (e) => {
-                          e.preventDefault()
-                          setCancellingId(appointment.id)
-                          try {
-                            await cancelMutation.mutateAsync(appointment.id)
-                            setDialogOpenId(null)
-                          } catch (error) {
-                            setDialogOpenId(null)
-                          } finally {
-                            setCancellingId(null)
-                          }
-                        }}
-                        className="bg-red-600 hover:bg-red-700 text-white rounded-xl border-0 m-0"
-                        disabled={cancellingId === appointment.id}
-                      >
-                        {cancellingId === appointment.id ? (
-                            <>
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                              Cancelling...
-                            </>
-                          ) : (
-                            "Yes, Cancel"
-                          )}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="bg-white sm:rounded-2xl p-6 shadow-xl max-w-md border-gray-100">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="text-xl font-bold">Cancel Appointment?</AlertDialogTitle>
+                        <AlertDialogDescription className="text-gray-500">
+                          This action cannot be undone. Your slot will be released.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter className="mt-4 flex gap-3 sm:justify-end">
+                        <AlertDialogCancel className="rounded-xl border-gray-200 m-0 hover:bg-gray-50">Keep Appointment</AlertDialogCancel>
+                        <AlertDialogAction 
+                          onClick={async (e) => {
+                            e.preventDefault()
+                            setCancellingId(appointment.id)
+                            try {
+                              await cancelMutation.mutateAsync(appointment.id)
+                              setDialogOpenId(null)
+                            } catch (error) {
+                              setDialogOpenId(null)
+                            } finally {
+                              setCancellingId(null)
+                            }
+                          }}
+                          className="bg-red-600 hover:bg-red-700 text-white rounded-xl border-0 m-0"
+                          disabled={cancellingId === appointment.id}
+                        >
+                          {cancellingId === appointment.id ? (
+                              <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Cancelling...
+                              </>
+                            ) : (
+                              "Yes, Cancel"
+                            )}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               )}
             </div>
             
           </div>
         </Card>
       ))}
+
+      <RescheduleModal
+        isOpen={rescheduleAppointment !== null}
+        onClose={() => setRescheduleAppointment(null)}
+        appointment={rescheduleAppointment}
+      />
     </div>
   )
 }

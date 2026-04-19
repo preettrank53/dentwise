@@ -37,6 +37,43 @@ export async function getDoctors() {
 }
 
 /**
+ * Fetch all doctors for admin management (active + inactive)
+ */
+export async function getAllDoctors() {
+  try {
+    const session = await auth()
+    if (!session?.user?.email) {
+      throw new Error('Unauthorized')
+    }
+    if (session.user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('Unauthorized: Admin access required')
+    }
+
+    const doctors = await prisma.doctor.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        specialty: true,
+        bio: true,
+        imageURL: true,
+        gender: true,
+        isActive: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return doctors
+  } catch (error) {
+    console.error('Error in getAllDoctors:', error)
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Something went wrong')
+  }
+}
+
+/**
  * Fetch a single doctor by ID
  */
 export async function getDoctorById(id) {

@@ -114,7 +114,7 @@ export default function AppointmentsTable() {
 
         {isLoading &&
           [...Array(6)].map((_, i) => (
-            <div key={i} className="table-row grid grid-cols-12 gap-3 items-center">
+            <div key={i} className="admin-table-row grid grid-cols-12 gap-3 items-center">
               <div className="col-span-3"><Skeleton className="h-8 w-40" /></div>
               <div className="col-span-3"><Skeleton className="h-8 w-36" /></div>
               <div className="col-span-2"><Skeleton className="h-6 w-28" /></div>
@@ -156,7 +156,7 @@ export default function AppointmentsTable() {
 
         {!isLoading && !isError &&
           currentData.map((apt) => (
-            <div key={apt.id} className="table-row grid grid-cols-12 gap-3 items-center">
+            <div key={apt.id} className="admin-table-row grid grid-cols-12 gap-3 items-center">
               <div className="col-span-3 flex items-center gap-3 min-w-0">
                 <Avatar className="h-8 w-8 rounded-full border border-[#E2EDF2] shrink-0">
                   <AvatarImage src={apt.user.image} />

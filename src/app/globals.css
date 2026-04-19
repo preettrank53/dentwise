@@ -382,17 +382,17 @@
     border-bottom: 1px solid var(--color-border);
   }
 
-  .table-row {
+  .admin-table-row {
     padding: 1rem 1.5rem;
     border-bottom: 1px solid #F0F6F8;
     transition: background-color 100ms ease;
   }
 
-  .table-row:hover {
+  .admin-table-row:hover {
     background-color: #FAFCFD;
   }
 
-  .table-row:last-child {
+  .admin-table-row:last-child {
     border-bottom: none;
   }
 

@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useState } from 'react'
-import Image from 'next/image'
 import {
   Table,
   TableBody,
@@ -15,20 +14,21 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
-  useGetDoctors,
+  useGetAllDoctors,
   useToggleDoctorStatus,
 } from '@/hooks/useDoctors'
 import DoctorFormModal from './DoctorFormModal'
-import { Edit, RefreshCcw, UserMinus, UserCheck, AlertCircle, UserX } from 'lucide-react'
+import { Edit, Loader2, UserCheck, UserMinus, UserX } from 'lucide-react'
 import EmptyState from '@/components/ui/EmptyState'
 import ErrorState from '@/components/ui/ErrorState'
 
 export default function DoctorsTable({ onAddDoctor }) {
-  const { data: doctors, isLoading, error, refetch } = useGetDoctors()
+  const { data: doctors, isLoading, error, refetch } = useGetAllDoctors()
   const toggleMutation = useToggleDoctorStatus()
   
   const [selectedDoctor, setSelectedDoctor] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [togglingId, setTogglingId] = useState(null)
 
   const handleEdit = (doctor) => {
     setSelectedDoctor(doctor)
@@ -36,7 +36,10 @@ export default function DoctorsTable({ onAddDoctor }) {
   }
 
   const handleToggleStatus = (id) => {
-    toggleMutation.mutate(id)
+    setTogglingId(id)
+    toggleMutation.mutate(id, {
+      onSettled: () => setTogglingId(null),
+    })
   }
 
   if (isLoading) {
@@ -130,27 +133,41 @@ export default function DoctorsTable({ onAddDoctor }) {
                 <TableCell className="text-muted-foreground lowercase hidden lg:table-cell">{doctor.email}</TableCell>
                 <TableCell className="capitalize text-xs hidden md:table-cell">{doctor.gender.toLowerCase()}</TableCell>
                 <TableCell>
-                  <Badge variant={doctor.isActive ? 'success' : 'secondary'} className="rounded-full px-2.5">
+                  <Badge
+                    className={doctor.isActive
+                      ? 'rounded-full px-2.5 bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-50'
+                      : 'rounded-full px-2.5 bg-slate-100 text-slate-700 border border-slate-200 hover:bg-slate-100'}
+                  >
                     {doctor.isActive ? 'Active' : 'Inactive'}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-right space-x-1 px-6">
+                <TableCell className="text-right px-6">
                   <Button 
                     variant="ghost" 
-                    size="icon" 
+                    size="sm"
                     onClick={() => handleEdit(doctor)}
-                    className="h-8 w-8 text-muted-foreground hover:text-cyan-600"
+                    className="h-8 text-muted-foreground hover:text-cyan-600"
                   >
                     <Edit className="h-4 w-4" />
+                    <span className="ml-1">Edit</span>
                   </Button>
                   <Button 
-                    variant="ghost" 
-                    size="icon" 
+                    variant={doctor.isActive ? 'outline' : 'default'}
+                    size="sm"
                     onClick={() => handleToggleStatus(doctor.id)}
-                    disabled={toggleMutation.isPending}
-                    className="h-8 w-8 text-muted-foreground hover:text-red-600"
+                    disabled={toggleMutation.isPending && togglingId === doctor.id}
+                    className={doctor.isActive
+                      ? 'h-8 ml-2 text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700'
+                      : 'h-8 ml-2 bg-emerald-600 hover:bg-emerald-700 text-white'}
                   >
-                    {doctor.isActive ? <UserMinus className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
+                    {toggleMutation.isPending && togglingId === doctor.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : doctor.isActive ? (
+                      <UserMinus className="h-4 w-4" />
+                    ) : (
+                      <UserCheck className="h-4 w-4" />
+                    )}
+                    <span className="ml-1">{doctor.isActive ? 'Deactivate' : 'Activate'}</span>
                   </Button>
                 </TableCell>
               </TableRow>

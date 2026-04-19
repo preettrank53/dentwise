@@ -89,7 +89,7 @@ export default function DoctorFormModal({ isOpen, onClose, doctor }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[720px]">
+      <DialogContent className="sm:max-w-[720px] bg-white text-[#1A2832] border border-[#E2EDF2] rounded-[12px] shadow-[0_16px_40px_rgba(26,40,50,0.16)]">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold text-[#1A2832]">
             {isEdit ? 'Edit Doctor' : 'Add New Doctor'}

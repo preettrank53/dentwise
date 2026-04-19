@@ -2,8 +2,7 @@ import React from 'react'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import AppointmentsTable from '@/components/admin/AppointmentsTable'
-import { Button } from '@/components/ui/button'
-import { Download } from 'lucide-react'
+import ExportButton from '@/components/admin/ExportButton'
 
 export const metadata = {
   title: 'Appointments — Dentwise Admin',
@@ -24,10 +23,10 @@ export default async function AdminAppointmentsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
           <p className="text-sm text-gray-500 mt-1">Manage all clinic appointments</p>
         </div>
-        <Button variant="outline" className="rounded-xl font-medium border-gray-200 shadow-sm">
-          <Download className="h-4 w-4 mr-2 text-gray-500" />
-          Export
-        </Button>
+        <div className="flex flex-col items-start sm:items-end gap-1">
+          <ExportButton />
+          <p className="text-xs text-[#A8C4CF]">Exports all appointments</p>
+        </div>
       </header>
 
       <section>
