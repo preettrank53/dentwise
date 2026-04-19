@@ -17,52 +17,57 @@ export default async function BillingPage() {
   }
 
   const subscription = await getUserSubscription()
+  const currentPlan = subscription?.plan || 'FREE'
+
+  const planTone = {
+    FREE: 'bg-[#F5F5F5] text-[#6B7280] border-[#D0D0D0]',
+    BASIC: 'bg-[#EDF5F8] text-[#4A7D96] border-[#BAD7E1]',
+    AI_PRO: 'bg-[#EDF5F8] text-[#1A2832] border-[#BAD7E1]',
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 -mx-4 sm:-mx-6 lg:-mx-8 -mt-8">
-      
-      {/* Hero Section */}
-      <section className="w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 pt-20 pb-24 px-4 relative overflow-hidden">
-        {/* Subtle glowing elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-cyan-500/10 rounded-full blur-[80px] translate-y-1/2 -translate-x-1/2" />
-        
-        <div className="max-w-3xl mx-auto text-center relative z-10 flex flex-col items-center">
-          <div className="border border-cyan-500/30 text-cyan-400 bg-cyan-500/10 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full mb-6 whitespace-nowrap">
-            Flexible Plans
+    <div className="page-container pb-20 pt-8 space-y-8">
+      <section className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-6 md:p-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[#619BB6] mb-2">
+              Billing and Plans
+            </p>
+            <h1 className="text-3xl md:text-4xl font-semibold text-[#1A2832] tracking-tight">
+              Choose the right plan for your clinic
+            </h1>
+            <p className="text-sm md:text-base text-[#4A6572] mt-3 max-w-2xl">
+              Upgrade anytime, cancel anytime, and manage your subscription securely with Stripe.
+            </p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight drop-shadow-md">
-            Choose Your <span className="text-gradient pr-2 italic">Plan</span>
-          </h1>
-          <p className="text-gray-400 text-sm sm:text-base max-w-md mx-auto leading-relaxed font-medium">
-            Upgrade anytime. Cancel anytime. No hidden fees. Select the perfect tier for your dental health tracking journey.
-          </p>
+
+          <div className={`inline-flex items-center border rounded-[4px] px-2 py-1 text-xs font-medium uppercase tracking-wider w-fit ${planTone[currentPlan] || planTone.FREE}`}>
+            Current: {currentPlan.replace('_', ' ')}
+          </div>
         </div>
       </section>
 
-      {/* Pricing Plans Wrapper */}
-      <section className="max-w-5xl mx-auto px-4 -mt-8 relative z-20">
-        <PricingPlans currentPlan={subscription.plan} />
+      <section>
+        <PricingPlans currentPlan={currentPlan} />
       </section>
 
-      {/* FAQ Strip */}
-      <section className="max-w-5xl mx-auto px-4 mt-16 mb-8">
+      <section>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-gray-50 rounded-2xl p-5 shadow-sm transition-shadow hover:shadow-md border border-gray-100">
-            <h4 className="text-sm font-semibold text-gray-900 mb-1">Can I cancel anytime?</h4>
-            <p className="text-sm text-gray-500 leading-relaxed font-medium">
+          <div className="bg-white rounded-[12px] p-5 shadow-[0_1px_3px_rgba(26,40,50,0.06)] transition-shadow hover:shadow-[0_4px_12px_rgba(26,40,50,0.08)] border border-[#E2EDF2]">
+            <h4 className="text-sm font-semibold text-[#1A2832] mb-1">Can I cancel anytime?</h4>
+            <p className="text-sm text-[#4A6572] leading-relaxed">
               Yes, cancel from your billing portal with one click.
             </p>
           </div>
-          <div className="bg-gray-50 rounded-2xl p-5 shadow-sm transition-shadow hover:shadow-md border border-gray-100">
-            <h4 className="text-sm font-semibold text-gray-900 mb-1">What payment methods?</h4>
-            <p className="text-sm text-gray-500 leading-relaxed font-medium">
+          <div className="bg-white rounded-[12px] p-5 shadow-[0_1px_3px_rgba(26,40,50,0.06)] transition-shadow hover:shadow-[0_4px_12px_rgba(26,40,50,0.08)] border border-[#E2EDF2]">
+            <h4 className="text-sm font-semibold text-[#1A2832] mb-1">What payment methods?</h4>
+            <p className="text-sm text-[#4A6572] leading-relaxed">
                All major credit and debit cards via Stripe.
             </p>
           </div>
-          <div className="bg-gray-50 rounded-2xl p-5 shadow-sm transition-shadow hover:shadow-md border border-gray-100">
-            <h4 className="text-sm font-semibold text-gray-900 mb-1">Is my data safe?</h4>
-            <p className="text-sm text-gray-500 leading-relaxed font-medium">
+          <div className="bg-white rounded-[12px] p-5 shadow-[0_1px_3px_rgba(26,40,50,0.06)] transition-shadow hover:shadow-[0_4px_12px_rgba(26,40,50,0.08)] border border-[#E2EDF2]">
+            <h4 className="text-sm font-semibold text-[#1A2832] mb-1">Is my data safe?</h4>
+            <p className="text-sm text-[#4A6572] leading-relaxed">
               Yes, payments handled by Stripe. We never store card details.
             </p>
           </div>

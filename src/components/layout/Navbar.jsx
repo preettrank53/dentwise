@@ -39,20 +39,22 @@ export default function Navbar() {
 
   return (
     <header className={cn(
-      "fixed top-0 z-50 w-full transition-all duration-300 ease-in-out",
+      'fixed top-0 z-50 w-full h-16 transition-all duration-300',
       isScrolled 
-        ? "bg-white/85 backdrop-blur-md border-b border-gray-100 shadow-sm"
-        : "bg-transparent border-transparent"
+        ? 'bg-white/92 backdrop-blur-md border-b border-[#E2EDF2] shadow-[0_1px_0_rgba(26,40,50,0.06)]'
+        : 'bg-transparent border-b border-transparent'
     )}>
       <div className="page-container">
         <div className="flex h-16 items-center justify-between">
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
+            <div className="h-8 w-8 rounded-[8px] bg-[#619BB6] flex items-center justify-center">
               <Stethoscope className="h-4 w-4 text-white" />
             </div>
-            <span className={cn("text-xl font-bold", isScrolled ? "text-gradient" : "text-white")}>Dentwise</span>
+            <span className={cn('text-base font-semibold', isScrolled ? 'text-[#1A2832]' : 'text-[#1A2832]')}>
+              Dentwise
+            </span>
           </Link>
 
           {/* Desktop Nav */}
@@ -62,8 +64,8 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-sm font-medium transition-colors",
-                  isScrolled ? "text-gray-600 hover:text-gray-900" : "text-white/80 hover:text-white"
+                  'text-sm font-medium transition-colors duration-200',
+                  isScrolled ? 'text-[#4A6572] hover:text-[#1A2832]' : 'text-[#4A6572] hover:text-[#1A2832]'
                 )}
               >
                 {link.label}
@@ -74,13 +76,13 @@ export default function Navbar() {
           {/* Desktop Auth */}
           <div className="hidden md:flex items-center gap-3">
             {status === 'loading' ? (
-              <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+              <div className="h-8 w-20 rounded-[6px] bg-[#EDF5F8] animate-pulse" />
             ) : session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar className="cursor-pointer h-8 w-8">
+                  <Avatar className="cursor-pointer h-8 w-8 rounded-full border border-[#E2EDF2]">
                     <AvatarImage src={session.user?.image} />
-                    <AvatarFallback className="gradient-primary text-white text-xs">
+                    <AvatarFallback className="bg-[#EDF5F8] text-[#4A7D96] text-xs rounded-full">
                       {session.user?.name?.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
@@ -110,10 +112,27 @@ export default function Navbar() {
               </DropdownMenu>
             ) : (
               <>
-                <Button variant="ghost" size="sm" asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    'rounded-[6px] text-sm font-medium',
+                    isScrolled ? 'text-[#4A6572] hover:text-[#1A2832]' : 'text-[#4A6572] hover:text-[#1A2832] hover:bg-[#EDF5F8]'
+                  )}
+                  asChild
+                >
                   <Link href="/login">Sign in</Link>
                 </Button>
-                <Button size="sm" className="gradient-primary text-white border-0" asChild>
+                <Button
+                  size="sm"
+                  className={cn(
+                    'rounded-[6px] px-4 py-2 text-sm font-medium h-auto border-0',
+                    isScrolled
+                      ? 'bg-[#619BB6] text-white hover:bg-[#4A7D96]'
+                      : 'bg-white text-[#619BB6] hover:bg-[#EDF5F8]'
+                  )}
+                  asChild
+                >
                   <Link href="/login">Get Started</Link>
                 </Button>
               </>
@@ -122,41 +141,59 @@ export default function Navbar() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 rounded-md"
+            className={cn(
+              'md:hidden h-9 w-9 rounded-[6px] flex items-center justify-center transition-colors',
+              isScrolled ? 'border border-[#E2EDF2]' : 'border border-[#E2EDF2]'
+            )}
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle navigation"
           >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {mobileOpen ? (
+              <X className={cn('h-5 w-5', isScrolled ? 'text-[#4A6572]' : 'text-[#4A6572]')} />
+            ) : (
+              <Menu className={cn('h-5 w-5', isScrolled ? 'text-[#4A6572]' : 'text-[#4A6572]')} />
+            )}
           </button>
         </div>
 
         {/* Mobile Menu */}
         {mobileOpen && (
-          <div className="md:hidden border-t py-4 space-y-3">
+          <div className="md:hidden bg-white border-b border-[#E2EDF2] px-4 py-4 space-y-1">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="block px-2 py-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+                className="block py-2 px-3 rounded-[6px] text-sm font-medium text-[#4A6572] hover:bg-[#EDF5F8] hover:text-[#1A2832] transition-colors"
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <div className="pt-3 border-t flex flex-col gap-2">
+            <div className="pt-3 border-t border-[#E2EDF2] flex flex-col gap-2">
               {session ? (
                 <Button
                   variant="outline"
                   size="sm"
+                  className="w-full py-2 text-sm rounded-[6px] border border-[#619BB6] text-[#619BB6] bg-transparent hover:bg-[#EDF5F8]"
                   onClick={() => signOut({ callbackUrl: '/' })}
                 >
                   Sign out
                 </Button>
               ) : (
                 <>
-                  <Button variant="outline" size="sm" asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full py-2 text-sm rounded-[6px] border border-[#619BB6] text-[#619BB6] bg-transparent hover:bg-[#EDF5F8]"
+                    asChild
+                  >
                     <Link href="/login">Sign in</Link>
                   </Button>
-                  <Button size="sm" className="gradient-primary text-white border-0" asChild>
+                  <Button
+                    size="sm"
+                    className="w-full py-2 text-sm rounded-[6px] bg-[#619BB6] text-white hover:bg-[#4A7D96] border-0"
+                    asChild
+                  >
                     <Link href="/login">Get Started</Link>
                   </Button>
                 </>

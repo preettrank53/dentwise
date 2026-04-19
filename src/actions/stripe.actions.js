@@ -4,11 +4,17 @@ import { stripe } from '@/lib/stripe'
 import { PLANS } from '@/lib/plans'
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
+import { handlePrismaError } from '@/lib/prismaErrors'
 
 export async function createCheckoutSession(planKey) {
   try {
     const session = await auth()
-    if (!session?.user?.email) throw new Error('Not authenticated')
+    if (!session?.user?.email) throw new Error('Unauthorized')
+
+    const validPlans = ['BASIC', 'AI_PRO']
+    if (!validPlans.includes(planKey)) {
+      throw new Error('Invalid plan selected')
+    }
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email }
@@ -18,6 +24,10 @@ export async function createCheckoutSession(planKey) {
     let subscription = await prisma.subscription.findUnique({
       where: { userId: user.id }
     })
+
+    if (subscription?.plan === planKey) {
+      throw new Error('You are already on this plan')
+    }
 
     let stripeCustomerId = subscription?.stripeCustomerId
 
@@ -42,7 +52,9 @@ export async function createCheckoutSession(planKey) {
     }
 
     const priceId = PLANS[planKey]?.priceId
-    if (!priceId) throw new Error('Invalid plan or missing price ID')
+    if (!priceId) {
+      throw new Error('This plan is not currently available. Please contact support.')
+    }
 
     const nextAuthUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
 
@@ -59,7 +71,10 @@ export async function createCheckoutSession(planKey) {
     return { url: checkoutSession.url }
   } catch (error) {
     console.error('Checkout Session Error:', error)
-    throw new Error('Failed to create checkout session: ' + error.message)
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Something went wrong')
   }
 }
 
@@ -91,7 +106,10 @@ export async function createBillingPortalSession() {
     return { url: portalSession.url }
   } catch (error) {
     console.error('Billing Portal Error:', error)
-    throw new Error('Failed to create billing portal session: ' + error.message)
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Something went wrong')
   }
 }
 
@@ -120,6 +138,9 @@ export async function getUserSubscription() {
     return subscription
   } catch (error) {
     console.error('Get Subscription Error:', error)
-    throw new Error('Failed to fetch user subscription: ' + error.message)
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Something went wrong')
   }
 }

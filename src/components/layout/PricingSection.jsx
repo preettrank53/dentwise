@@ -1,7 +1,3 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { Check } from 'lucide-react'
 import Link from 'next/link'
 
@@ -12,7 +8,7 @@ const plans = [
     period: 'forever',
     description: 'Perfect for getting started',
     badge: null,
-    highlight: false,
+    key: 'free',
     features: [
       'Book up to 2 appointments/month',
       'View doctor profiles',
@@ -28,7 +24,7 @@ const plans = [
     period: 'per month',
     description: 'For regular dental care',
     badge: 'Most Popular',
-    highlight: true,
+    key: 'basic',
     features: [
       'Unlimited appointments',
       'Priority booking',
@@ -44,8 +40,8 @@ const plans = [
     price: '$19',
     period: 'per month',
     description: 'Full AI-powered experience',
-    badge: 'Best Value',
-    highlight: false,
+    badge: null,
+    key: 'pro',
     features: [
       'Everything in Basic',
       'AI Voice Assistant access',
@@ -60,87 +56,108 @@ const plans = [
 
 export default function PricingSection() {
   return (
-    <section id="pricing" className="bg-gray-50">
+    <section id="pricing" className="bg-[#F8FAFB]">
       <div className="page-container section-padding">
+        <div className="max-w-xl mx-auto text-center mb-12">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <span className="h-px w-6 bg-[#619BB6]" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#619BB6]">
+              Pricing
+            </span>
+          </div>
 
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <Badge
-            variant="secondary"
-            className="mb-4 bg-cyan-50 text-cyan-700 border-cyan-200"
-          >
-            Pricing
-          </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Simple,{' '}
-            <span className="text-gradient">Transparent Pricing</span>
-          </h2>
-          <p className="text-muted-foreground text-lg">
-            Choose the plan that fits your dental care needs.
-            Upgrade or cancel anytime.
+          <h2 className="text-3xl font-semibold text-[#1A2832]">Simple, Transparent Pricing</h2>
+          <p className="text-base text-[#4A6572] leading-relaxed mt-3">
+            Choose the plan that fits your care journey. Upgrade or cancel anytime.
           </p>
         </div>
 
-        {/* Pricing Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {plans.map((plan) => (
-            <Card
-              key={plan.name}
-              className={`relative flex flex-col ${
-                plan.highlight
-                  ? 'border-cyan-500 border-2 shadow-lg shadow-cyan-100'
-                  : 'border'
-              }`}
-            >
-              {plan.badge && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="gradient-primary text-white border-0 px-4">
-                    {plan.badge}
-                  </Badge>
-                </div>
-              )}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {plans.map((plan) => {
+            const isFree = plan.key === 'free'
+            const isBasic = plan.key === 'basic'
+            const isPro = plan.key === 'pro'
 
-              <CardHeader className="p-6 pb-0">
-                <div className="flex flex-col gap-2">
-                  <h3 className="font-bold text-lg">{plan.name}</h3>
-                  <p className="text-muted-foreground text-sm">
-                    {plan.description}
-                  </p>
-                  <div className="flex items-end gap-1 mt-2">
-                    <span className="text-4xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground text-sm mb-1">
-                      /{plan.period}
-                    </span>
-                  </div>
-                </div>
-              </CardHeader>
+            return (
+              <article
+                key={plan.name}
+                className={[
+                  'rounded-[12px] p-8 flex flex-col relative',
+                  isFree && 'bg-white border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)]',
+                  isBasic && 'bg-[#619BB6] border border-[#619BB6] shadow-[0_8px_24px_rgba(97,155,182,0.25)] pt-12',
+                  isPro && 'bg-[#1A2832] border border-[#1A2832] shadow-[0_8px_24px_rgba(26,40,50,0.15)]',
+                ].join(' ')}
+              >
+                {isBasic && (
+                  <span className="absolute top-3 left-1/2 -translate-x-1/2 text-center bg-white/20 text-white rounded-[4px] px-3 py-1 text-xs font-medium whitespace-nowrap">
+                    Most Popular
+                  </span>
+                )}
 
-              <CardContent className="p-6 flex flex-col flex-1 gap-6">
-                <Separator />
-                <ul className="space-y-3 flex-1">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2">
-                      <Check className="h-4 w-4 text-cyan-600 mt-0.5 shrink-0" />
-                      <span className="text-sm text-muted-foreground">
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  className={`w-full ${
-                    plan.highlight
-                      ? 'gradient-primary text-white border-0'
-                      : ''
-                  }`}
-                  variant={plan.highlight ? 'default' : 'outline'}
-                  asChild
+                <p className={[
+                  'text-xs font-semibold uppercase tracking-widest mb-4',
+                  isBasic ? 'text-white/70' : isPro ? 'text-white/70' : 'text-[#7A9BAD]'
+                ].join(' ')}>
+                  {plan.name}
+                </p>
+
+                <p className={[
+                  'text-4xl font-semibold mb-1',
+                  isBasic || isPro ? 'text-white' : 'text-[#1A2832]'
+                ].join(' ')}>
+                  {plan.price}
+                </p>
+
+                <p className={[
+                  'text-sm',
+                  isBasic || isPro ? 'text-white/70' : 'text-[#7A9BAD]'
+                ].join(' ')}>
+                  /{plan.period}
+                </p>
+
+                <p className={[
+                  'text-sm mb-6 mt-3',
+                  isBasic || isPro ? 'text-white/70' : 'text-[#7A9BAD]'
+                ].join(' ')}>
+                  {plan.description}
+                </p>
+
+                <div className={[
+                  'border-t pt-6 mb-6',
+                  isBasic ? 'border-white/20' : isPro ? 'border-white/20' : 'border-[#E2EDF2]'
+                ].join(' ')}>
+                  <ul className="space-y-3">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-2.5">
+                        <Check className={[
+                          'h-4 w-4 mt-0.5 shrink-0',
+                          isBasic ? 'text-white' : 'text-[#619BB6]'
+                        ].join(' ')} />
+                        <span className={[
+                          'text-sm',
+                          isBasic || isPro ? 'text-white/90' : 'text-[#4A6572]'
+                        ].join(' ')}>
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <Link
+                  href={plan.href}
+                  className={[
+                    'w-full mt-auto rounded-[6px] py-2.5 text-sm text-center transition-colors',
+                    isFree && 'border border-[#E2EDF2] text-[#4A6572] hover:border-[#619BB6] hover:text-[#619BB6]',
+                    isBasic && 'bg-white text-[#619BB6] font-medium hover:bg-[#EDF5F8]',
+                    isPro && 'bg-[#619BB6] text-white font-medium hover:bg-[#4A7D96]',
+                  ].join(' ')}
                 >
-                  <Link href={plan.href}>{plan.cta}</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  {plan.cta}
+                </Link>
+              </article>
+            )
+          })}
         </div>
       </div>
     </section>

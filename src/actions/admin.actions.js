@@ -2,16 +2,25 @@
 
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
+import { handlePrismaError } from '@/lib/prismaErrors'
+
+async function verifyAdmin() {
+  const session = await auth()
+  if (!session) {
+    throw new Error('Unauthorized: Please sign in')
+  }
+  if (session.user.email !== process.env.ADMIN_EMAIL) {
+    throw new Error('Unauthorized: Admin access required')
+  }
+  return session
+}
 
 /**
  * Fetch all appointments with optional filters for admin dashboard
  */
 export async function getAllAppointments(filters = {}) {
   try {
-    const session = await auth()
-    if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
-      throw new Error('Unauthorized')
-    }
+    await verifyAdmin()
 
     const { status, search } = filters
     
@@ -42,7 +51,10 @@ export async function getAllAppointments(filters = {}) {
     return appointments
   } catch (error) {
     console.error('Error fetching admin appointments:', error)
-    throw new Error('Failed to fetch appointments')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Failed to fetch appointments')
   }
 }
 
@@ -51,9 +63,28 @@ export async function getAllAppointments(filters = {}) {
  */
 export async function updateAppointmentStatus(id, status) {
   try {
-    const session = await auth()
-    if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
-      throw new Error('Unauthorized')
+    await verifyAdmin()
+
+    if (!id || typeof id !== 'string') {
+      throw new Error('Invalid appointment ID')
+    }
+
+    const validStatuses = ['CONFIRMED', 'COMPLETED', 'CANCELLED']
+    if (!validStatuses.includes(status)) {
+      throw new Error('Invalid status value')
+    }
+
+    const existingAppointment = await prisma.appointment.findUnique({
+      where: { id },
+      select: { id: true, status: true },
+    })
+
+    if (!existingAppointment) {
+      throw new Error('Appointment not found')
+    }
+
+    if (existingAppointment.status === 'CANCELLED') {
+      throw new Error('Cancelled appointments cannot be updated')
     }
 
     const appointment = await prisma.appointment.update({
@@ -64,7 +95,10 @@ export async function updateAppointmentStatus(id, status) {
     return appointment
   } catch (error) {
     console.error('Error updating appointment status:', error)
-    throw new Error('Failed to update status')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Failed to update status')
   }
 }
 
@@ -73,10 +107,7 @@ export async function updateAppointmentStatus(id, status) {
  */
 export async function getAdminStats() {
   try {
-    const session = await auth()
-    if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
-      throw new Error('Unauthorized')
-    }
+    await verifyAdmin()
 
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -113,7 +144,10 @@ export async function getAdminStats() {
     }
   } catch (error) {
     console.error('Error fetching admin stats:', error)
-    throw new Error('Failed to fetch stats')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Failed to fetch stats')
   }
 }
 
@@ -122,10 +156,7 @@ export async function getAdminStats() {
  */
 export async function getAppointmentTrends() {
   try {
-    const session = await auth()
-    if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
-      throw new Error('Unauthorized')
-    }
+    await verifyAdmin()
 
     const months = []
     const now = new Date()
@@ -166,7 +197,10 @@ export async function getAppointmentTrends() {
     return trendsData
   } catch (error) {
     console.error('Error fetching appointment trends:', error)
-    throw new Error('Failed to fetch appointment trends')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Failed to fetch appointment trends')
   }
 }
 
@@ -175,10 +209,7 @@ export async function getAppointmentTrends() {
  */
 export async function getDoctorPerformance() {
   try {
-    const session = await auth()
-    if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
-      throw new Error('Unauthorized')
-    }
+    await verifyAdmin()
 
     const doctors = await prisma.doctor.findMany()
 
@@ -211,7 +242,10 @@ export async function getDoctorPerformance() {
     return performanceData
   } catch (error) {
     console.error('Error fetching doctor performance:', error)
-    throw new Error('Failed to fetch doctor performance')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Failed to fetch doctor performance')
   }
 }
 
@@ -220,10 +254,7 @@ export async function getDoctorPerformance() {
  */
 export async function getRevenueStats() {
   try {
-    const session = await auth()
-    if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
-      throw new Error('Unauthorized')
-    }
+    await verifyAdmin()
 
     const [basicCount, proCount] = await Promise.all([
       prisma.subscription.count({
@@ -249,7 +280,10 @@ export async function getRevenueStats() {
     }
   } catch (error) {
     console.error('Error fetching revenue stats:', error)
-    throw new Error('Failed to fetch revenue stats')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Failed to fetch revenue stats')
   }
 }
 
@@ -258,10 +292,7 @@ export async function getRevenueStats() {
  */
 export async function getRecentActivity() {
   try {
-    const session = await auth()
-    if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
-      throw new Error('Unauthorized')
-    }
+    await verifyAdmin()
 
     const recentAppointments = await prisma.appointment.findMany({
       orderBy: { createdAt: 'desc' },
@@ -284,7 +315,10 @@ export async function getRecentActivity() {
     return mappedActivity
   } catch (error) {
     console.error('Error fetching recent activity:', error)
-    throw new Error('Failed to fetch recent activity')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Failed to fetch recent activity')
   }
 }
 
@@ -293,10 +327,7 @@ export async function getRecentActivity() {
  */
 export async function getAllSubscriptions() {
   try {
-    const session = await auth()
-    if (!session || session.user.email !== process.env.ADMIN_EMAIL) {
-      throw new Error('Unauthorized')
-    }
+    await verifyAdmin()
 
     const subscriptions = await prisma.subscription.findMany({
       orderBy: { createdAt: 'desc' }
@@ -328,6 +359,9 @@ export async function getAllSubscriptions() {
     return subscriptionsWithUsers
   } catch (error) {
     console.error('Error fetching subscriptions:', error)
-    throw new Error('Failed to fetch subscriptions')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Failed to fetch subscriptions')
   }
 }

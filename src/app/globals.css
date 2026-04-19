@@ -1,8 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+@import "tailwindcss";
+@config "../../tailwind.config.mjs";
 
 @layer base {
   :root {
@@ -82,7 +79,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: rgb(var(--border));
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
   }
@@ -481,6 +478,18 @@
     display: flex;
     align-items: center;
     gap: 0.25rem;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 
   /* ── ANIMATIONS ── */

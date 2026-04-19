@@ -2,10 +2,9 @@
 
 import React, { useMemo } from 'react'
 import { useGetAvailableSlots } from '@/hooks/useAppointments'
-import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
-import { Calendar as CalendarIcon, Clock, Check } from 'lucide-react'
+import { Calendar as CalendarIcon, Clock } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import NoSlotsAvailable from './NoSlotsAvailable'
 
@@ -24,7 +23,9 @@ export default function StepSelectDateTime({
   onSelectDate,
   selectedTime,
   onSelectTime,
-  onSelectReason
+  onSelectReason,
+  showDateError,
+  showTimeError
 }) {
   // Generate next 5 working days
   const nextWorkingDays = useMemo(() => {
@@ -50,16 +51,16 @@ export default function StepSelectDateTime({
   const availableSlotsCount = slots?.filter(s => !s.isBooked).length || 0
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="space-y-6">
       
       {/* Date Selection */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-2 text-primary font-semibold">
-          <CalendarIcon className="h-4 w-4" />
-          <span>Select a Date</span>
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <CalendarIcon className="h-4 w-4 text-[#619BB6]" />
+          <span className="text-sm font-semibold text-[#1A2832]">Select a Date</span>
         </div>
         
-        <div className="flex flex-nowrap gap-3 overflow-x-auto pb-3 scrollbar-hide -mx-1 px-1">
+        <div className="flex gap-2 overflow-x-auto pb-1">
           {nextWorkingDays.map((date) => {
             const isSelected = selectedDate?.toDateString() === date.toDateString()
             return (
@@ -67,44 +68,48 @@ export default function StepSelectDateTime({
                 key={date.toISOString()}
                 onClick={() => onSelectDate(date)}
                 className={cn(
-                  "flex flex-col items-center justify-center min-w-[80px] h-24 rounded-2xl border-2 transition-all shrink-0",
+                  'flex-shrink-0 flex flex-col items-center w-14 py-2.5 px-2 rounded-[8px] border transition-all duration-150',
                   isSelected 
-                    ? "gradient-primary border-transparent text-white shadow-md scale-105" 
-                    : "bg-white border-border hover:border-primary/50 text-muted-foreground"
+                    ? 'bg-[#619BB6] border-[#619BB6]'
+                    : 'bg-white border-[#E2EDF2] hover:border-[#BAD7E1]'
                 )}
               >
-                <span className="text-[10px] uppercase font-bold tracking-widest opacity-80">
+                <span className={cn('text-[10px] font-medium uppercase', isSelected ? 'text-white/70' : 'text-[#7A9BAD]')}>
                   {date.toLocaleDateString('en-US', { weekday: 'short' })}
                 </span>
-                <span className="text-2xl font-black py-0.5">
+                <span className={cn('text-lg font-semibold leading-tight my-0.5', isSelected ? 'text-white' : 'text-[#1A2832]')}>
                   {date.getDate()}
                 </span>
-                <span className="text-[10px] font-bold">
+                <span className={cn('text-[10px]', isSelected ? 'text-white/70' : 'text-[#7A9BAD]')}>
                   {date.toLocaleDateString('en-US', { month: 'short' })}
                 </span>
               </button>
             )
           })}
         </div>
+
+        {showDateError && (
+          <p className="form-error">Please select a date</p>
+        )}
       </div>
 
       {/* Time Slot Selection */}
       {selectedDate && (
-        <div className="space-y-4 animate-in fade-in duration-500">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-primary font-semibold">
-              <Clock className="h-4 w-4" />
-              <span>Available Slots</span>
+        <div>
+          <div className="flex justify-between items-center mb-3 mt-5">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-[#619BB6]" />
+              <span className="text-sm font-semibold text-[#1A2832]">Available Slots</span>
             </div>
-            <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-md">
-              {availableSlotsCount} slots available
+            <span className="text-xs text-[#7A9BAD]">
+              {availableSlotsCount} slots
             </span>
           </div>
 
           {slotsLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {[...Array(8)].map((_, i) => (
-                <Skeleton key={i} className="h-12 rounded-xl" />
+                <Skeleton key={i} className="h-10 rounded-[6px]" />
               ))}
             </div>
           ) : slots && availableSlotsCount === 0 ? (
@@ -114,48 +119,52 @@ export default function StepSelectDateTime({
               doctorId={doctorId} 
             />
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
               {slots?.map((slot) => {
-
                 const isSelected = selectedTime?.datetime === slot.datetime
                 return (
-                  <Button
+                  <button
                     key={slot.datetime}
                     type="button"
-                    variant={isSelected ? "default" : "outline"}
                     disabled={slot.isBooked}
                     onClick={() => onSelectTime(slot)}
                     className={cn(
-                      "h-12 border-2 font-bold relative overflow-hidden transition-all text-sm",
-                      slot.isBooked && "bg-muted text-muted-foreground/30 border-transparent cursor-not-allowed opacity-60",
-                      isSelected && "gradient-primary border-transparent scale-105"
+                      'py-2.5 px-3 text-center rounded-[6px] border text-sm transition-all duration-100',
+                      slot.isBooked && 'bg-[#F8FAFB] border-[#E2EDF2] text-[#A8C4CF] cursor-not-allowed line-through',
+                      !slot.isBooked && isSelected && 'bg-[#619BB6] border-[#619BB6] text-white font-medium',
+                      !slot.isBooked && !isSelected && 'bg-white border-[#E2EDF2] text-[#4A6572] font-medium hover:border-[#619BB6] hover:text-[#619BB6] hover:bg-[#EDF5F8]'
                     )}
                   >
-                    {slot.isBooked ? (
-                      <span className="line-through text-xs italic">Booked</span>
-                    ) : (
-                      <div className="flex items-center gap-1.5">
-                        {isSelected && <Check className="h-3 w-3" />}
-                        {slot.time}
-                      </div>
-                    )}
-                  </Button>
+                    {slot.isBooked ? 'Booked' : slot.time}
+                  </button>
                 )
               })}
             </div>
+          )}
+
+          {showTimeError && (
+            <p className="form-error mt-3">Please select a time slot</p>
           )}
         </div>
       )}
 
       {/* Reason for Visit */}
       {selectedTime && (
-        <div className="space-y-4 animate-in fade-in duration-500">
-          <label className="block text-sm font-semibold text-primary">
-            Reason for visit (optional)
+        <div>
+          <label className="form-label mt-5">
+            Reason for Visit
+            <span style={{
+              color: '#A8C4CF',
+              fontWeight: 400,
+              marginLeft: '4px',
+            }}>
+              (optional)
+            </span>
           </label>
           <Textarea
             placeholder="Describe your dental concern (e.g., Toothache, Regular checkup, Cleaning...)"
-            className="min-h-[100px] bg-white border-2 focus:border-primary transition-all resize-none rounded-xl"
+            rows={3}
+            className="input-field resize-none"
             onChange={(e) => onSelectReason(e.target.value)}
           />
         </div>

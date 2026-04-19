@@ -1,19 +1,16 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
+import { profileSchema } from '@/lib/validations'
 import { useGetUserProfile, useUpdateUserProfile } from '@/hooks/useProfile'
 import { useGetUserSubscription } from '@/hooks/useStripe'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Loader2, CheckCircle, AlertCircle, Crown } from 'lucide-react'
+import { Loader2, AlertCircle, Crown, Lock } from 'lucide-react'
 import SubscriptionActions from '@/components/billing/SubscriptionActions'
 import StripeCallback from '@/components/billing/StripeCallback'
 
@@ -23,72 +20,68 @@ const GoogleIcon = () => (
   </svg>
 )
 
-const formSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  phone: z.string().optional(),
-})
-
 export default function ProfileClient() {
   const { data: user, isLoading, isError } = useGetUserProfile()
   const { data: subscription, isLoading: isSubLoading } = useGetUserSubscription()
-  const { mutate: updateUser, isPending: isUpdating } = useUpdateUserProfile()
-  
-  const [successMsg, setSuccessMsg] = useState('')
-  const [errorMsg, setErrorMsg] = useState('')
+  const mutation = useUpdateUserProfile()
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isDirty },
-  } = useForm({
-    resolver: zodResolver(formSchema),
+  const form = useForm({
+    resolver: zodResolver(profileSchema),
     defaultValues: {
       name: '',
       phone: '',
     },
+    mode: 'onBlur',
   })
 
   useEffect(() => {
     if (user) {
-      reset({
+      form.reset({
         name: user.name || '',
         phone: user.phone || '',
       })
     }
-  }, [user, reset])
+  }, [user, form])
 
-  const onSubmit = (data) => {
-    setSuccessMsg('')
-    setErrorMsg('')
-    
-    updateUser(data, {
-      onSuccess: () => {
-        setSuccessMsg('Profile updated successfully')
-        reset(data) // Reset form with new data to make isDirty false
-        setTimeout(() => setSuccessMsg(''), 5000)
-      },
-      onError: (error) => {
-        setErrorMsg(error.message || 'Failed to update profile')
-      }
-    })
+  const onSubmit = async (validatedData) => {
+    mutation.mutate(validatedData)
   }
 
   if (isLoading || isSubLoading) {
     return (
       <main className="page-container section-padding">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col items-center gap-4">
-            <Skeleton className="h-24 w-24 rounded-full" />
-            <Skeleton className="h-6 w-32" />
-            <Skeleton className="h-4 w-48" />
+        <div className="space-y-6">
+          <div className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <Skeleton className="h-20 w-20 rounded-[12px]" />
+                <div className="space-y-2">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-4 w-48" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:w-[280px]">
+                <Skeleton className="h-16 w-full rounded-[8px]" />
+                <Skeleton className="h-16 w-full rounded-[8px]" />
+              </div>
+            </div>
           </div>
-          <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-            <Skeleton className="h-8 w-48 mb-6" />
-            <div className="space-y-4">
-              <Skeleton className="h-12 w-full rounded-xl" />
-              <Skeleton className="h-12 w-full rounded-xl" />
-              <Skeleton className="h-12 w-full rounded-xl" />
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-6">
+              <Skeleton className="h-5 w-28 mb-4" />
+              <div className="space-y-3">
+                <Skeleton className="h-10 w-full rounded-[6px]" />
+                <Skeleton className="h-10 w-full rounded-[6px]" />
+              </div>
+            </div>
+            <div className="lg:col-span-2 bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-6">
+              <Skeleton className="h-8 w-48 mb-6" />
+              <div className="space-y-4">
+                <Skeleton className="h-11 w-full rounded-[6px]" />
+                <Skeleton className="h-11 w-full rounded-[6px]" />
+                <Skeleton className="h-11 w-full rounded-[6px]" />
+              </div>
             </div>
           </div>
         </div>
@@ -99,7 +92,7 @@ export default function ProfileClient() {
   if (isError || !user) {
     return (
       <main className="page-container section-padding">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 text-center text-red-500">
+        <div className="bg-white rounded-[12px] border border-[#E8A09A] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-6 text-center text-[#C0392B]">
           Failed to load profile. Please try again later.
         </div>
       </main>
@@ -107,169 +100,206 @@ export default function ProfileClient() {
   }
 
   return (
-    <main className="page-container section-padding animate-in fade-in duration-700">
+    <main className="page-container section-padding animate-in fade-in duration-700 space-y-6">
       <StripeCallback />
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Left Section - Profile Card */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col items-center gap-4 text-center h-fit">
-          <Avatar className="h-24 w-24 border-4 border-white shadow-md">
-            <AvatarImage src={user.image} />
-            <AvatarFallback className="gradient-primary text-white text-3xl font-bold">
-              {user.name?.charAt(0) || 'U'}
-            </AvatarFallback>
-          </Avatar>
-          
-          <div className="space-y-1">
-            <h2 className="text-xl font-bold text-gray-900">{user.name}</h2>
-            <p className="text-sm text-gray-500">{user.email}</p>
-          </div>
-          
-          <Badge className="bg-cyan-50 text-cyan-700 border-0 rounded-full uppercase tracking-widest font-bold px-3 py-1 mt-1 hover:bg-cyan-50">
-            {user.role || 'PATIENT'}
-          </Badge>
 
-          <div className="grid grid-cols-2 gap-4 w-full border-t border-gray-100 pt-6 mt-2">
-            <div className="text-center space-y-1">
-              <p className="text-2xl font-black text-gray-900">
-                {user._count?.appointments || 0}
-              </p>
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Appointments</p>
+      <section className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+          <div className="flex items-center gap-4 min-w-0">
+            <Avatar className="h-20 w-20 rounded-full border border-[#E2EDF2] shadow-sm">
+              <AvatarImage src={user.image} />
+              <AvatarFallback className="bg-[#EDF5F8] text-[#4A7D96] text-2xl font-semibold rounded-full">
+                {user.name?.charAt(0) || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0 space-y-1">
+              <h1 className="text-xl md:text-2xl font-semibold text-[#1A2832] truncate">{user.name}</h1>
+              <p className="text-sm text-[#7A9BAD] truncate">{user.email}</p>
+              <Badge className="bg-[#EDF5F8] text-[#4A7D96] border border-[#BAD7E1] rounded-[4px] uppercase tracking-[0.08em] font-medium px-2 py-0.5 mt-1 hover:bg-[#EDF5F8]">
+                {user.role || 'PATIENT'}
+              </Badge>
             </div>
-            <div className="text-center space-y-1">
-              <p className="text-2xl font-black text-gray-900">
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 sm:w-[320px]">
+            <div className="bg-[#F8FAFB] border border-[#E2EDF2] rounded-[8px] px-4 py-3 text-center">
+              <p className="text-lg font-semibold text-[#1A2832]">{user._count?.appointments || 0}</p>
+              <p className="text-xs text-[#7A9BAD] uppercase tracking-wide">Appointments</p>
+            </div>
+            <div className="bg-[#F8FAFB] border border-[#E2EDF2] rounded-[8px] px-4 py-3 text-center">
+              <p className="text-sm font-semibold text-[#1A2832]">
                 {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
               </p>
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">Member Since</p>
+              <p className="text-xs text-[#7A9BAD] uppercase tracking-wide">Member Since</p>
             </div>
-          </div>
-
-          <div className="w-full pt-6 mt-2 border-t border-gray-100">
-            <p className="text-xs text-gray-400">
-              Profile photo and email are managed by Google.
-            </p>
           </div>
         </div>
+      </section>
 
-        {/* Right Section - Edit Form */}
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 md:p-8">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Personal Information</h2>
-            <p className="text-sm text-gray-500 mt-1">Update your details below</p>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <aside className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-6 h-fit space-y-4">
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#1A2832]">Account Access</h2>
+            <p className="text-xs text-[#7A9BAD] mt-1">Your sign-in and identity provider details.</p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-sm font-medium text-gray-700">Full Name</Label>
-                <Input 
-                  id="name" 
-                  {...register('name')} 
-                  className="rounded-xl border-gray-200 focus-visible:ring-cyan-500/30"
-                />
-                {errors.name && (
-                  <p className="text-xs text-red-500">{errors.name.message}</p>
-                )}
-              </div>
+          <div className="bg-[#F8FAFB] border border-[#E2EDF2] rounded-[8px] p-4 space-y-3">
+            <div className="flex justify-between items-center text-sm gap-3">
+              <span className="text-[#4A6572] font-medium">Sign-in Method</span>
+              <span className="inline-flex items-center gap-1.5 font-medium text-[#1A2832] border border-[#E2EDF2] bg-white px-2 py-1 rounded-[6px] shadow-sm">
+                <GoogleIcon />
+                Google OAuth
+              </span>
+            </div>
+            <Separator className="bg-[#E2EDF2]" />
+            <div className="flex justify-between items-center text-sm gap-3">
+              <span className="text-[#4A6572] font-medium">Last Updated</span>
+              <span className="font-medium text-[#1A2832]">
+                {new Date(user.updatedAt).toLocaleDateString()}
+              </span>
+            </div>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email Address</Label>
-                <Input 
-                  id="email" 
-                  value={user.email} 
-                  disabled
-                  className="bg-gray-50 text-gray-400 cursor-not-allowed rounded-xl border-gray-200"
-                />
-                <p className="text-xs text-gray-400 mt-1">
-                  Email is managed by your Google account
+          <p className="text-xs text-[#7A9BAD]">
+            Profile photo and email are managed by Google.
+          </p>
+        </aside>
+
+        <section className="lg:col-span-2 bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-6 md:p-8">
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold text-[#1A2832]">Personal Information</h2>
+            <p className="text-sm text-[#7A9BAD] mt-1">Update your details below</p>
+          </div>
+
+          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <div className="mb-5">
+              <label className="form-label">
+                Full Name
+              </label>
+              <input
+                {...form.register('name')}
+                className="input-field"
+                placeholder="Your full name"
+                style={{
+                  borderColor: form.formState.errors.name ? '#C0392B' : undefined,
+                }}
+              />
+              {form.formState.errors.name && (
+                <p className="form-error">
+                  <AlertCircle className="h-3 w-3" />
+                  {form.formState.errors.name.message}
                 </p>
-              </div>
+              )}
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="text-sm font-medium text-gray-700">Phone Number</Label>
-                <Input 
-                  id="phone" 
-                  type="tel"
-                  placeholder="+1 (555) 000-0000"
-                  {...register('phone')} 
-                  className="rounded-xl border-gray-200 focus-visible:ring-cyan-500/30"
+            <div className="mb-5">
+              <label className="form-label">
+                Email Address
+              </label>
+              <div className="relative">
+                <input
+                  value={user?.email || ''}
+                  disabled
+                  className="input-field pr-9"
+                  style={{
+                    background: '#F8FAFB',
+                    color: '#A8C4CF',
+                    cursor: 'not-allowed',
+                    borderColor: '#E2EDF2',
+                  }}
                 />
-                {errors.phone && (
-                  <p className="text-xs text-red-500">{errors.phone.message}</p>
-                )}
+                <Lock
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#A8C4CF]"
+                />
               </div>
+              <p style={{
+                fontSize: '11px',
+                color: '#A8C4CF',
+                marginTop: '4px',
+              }}>
+                Managed by Google - cannot be changed
+              </p>
             </div>
 
-            {/* Account Info display */}
-            <div className="bg-gray-50 rounded-xl p-4 space-y-3 mt-8 mb-6">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500 font-medium">Account Type</span>
-                <span className="flex items-center gap-1.5 font-medium text-gray-900 border border-gray-200 bg-white px-2 py-1 rounded-md shadow-sm">
-                  <GoogleIcon />
-                  Google OAuth
+            <div className="mb-5">
+              <label className="form-label">
+                Phone Number
+                <span style={{
+                  color: '#A8C4CF',
+                  marginLeft: '4px',
+                  fontWeight: 400,
+                }}>
+                  (optional)
                 </span>
-              </div>
-              <Separator className="bg-gray-200" />
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500 font-medium">Last Updated</span>
-                <span className="font-medium text-gray-900">
-                  {new Date(user.updatedAt).toLocaleDateString()}
-                </span>
-              </div>
+              </label>
+              <input
+                {...form.register('phone')}
+                className="input-field"
+                placeholder="+1 (555) 000-0000"
+                type="tel"
+                style={{
+                  borderColor: form.formState.errors.phone ? '#C0392B' : undefined,
+                }}
+              />
+              {form.formState.errors.phone && (
+                <p className="form-error">
+                  <AlertCircle className="h-3 w-3" />
+                  {form.formState.errors.phone.message}
+                </p>
+              )}
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 pt-4 border-t border-gray-100">
-              {successMsg && (
-                <div className="text-sm text-green-600 flex items-center gap-1.5 font-medium mr-auto">
-                  <CheckCircle className="h-4 w-4" />
-                  {successMsg}
-                </div>
-              )}
-              {errorMsg && (
-                <div className="text-sm text-red-600 flex items-center gap-1.5 font-medium mr-auto">
-                  <AlertCircle className="h-4 w-4" />
-                  {errorMsg}
-                </div>
-              )}
-              
-              <Button 
-                type="submit" 
-                disabled={!isDirty || isUpdating}
-                className="gradient-primary text-white rounded-xl px-8 py-2.5 w-full sm:w-auto h-auto font-bold shadow-md shadow-cyan-100 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none border-0"
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 pt-4 border-t border-[#E2EDF2]">
+              <button
+                onClick={form.handleSubmit(onSubmit)}
+                disabled={!form.formState.isDirty || mutation.isPending}
+                className="btn-primary"
+                style={{
+                  opacity: !form.formState.isDirty || mutation.isPending ? 0.4 : 1,
+                }}
               >
-                {isUpdating ? (
+                {mutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Saving...
                   </>
                 ) : (
                   'Save Changes'
                 )}
-              </Button>
+              </button>
             </div>
           </form>
-        </div>
-        
+        </section>
       </div>
 
-      {/* Subscription Status Card */}
-      <div className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <section className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="space-y-1.5">
-          <h3 className="text-base font-semibold text-gray-900">Subscription Plan</h3>
+          <h3 className="text-base font-semibold text-[#1A2832]">Subscription Plan</h3>
           <div className="flex items-center">
-             {subscription?.plan === 'FREE' && <Badge className="bg-gray-100 text-gray-600 border-0 rounded-full uppercase hover:bg-gray-100 font-bold tracking-wider px-3 py-1 text-xs">Free</Badge>}
-             {subscription?.plan === 'BASIC' && <Badge className="bg-cyan-50 text-cyan-700 border-0 rounded-full uppercase hover:bg-cyan-50 font-bold tracking-wider px-3 py-1 text-xs">Basic</Badge>}
-             {subscription?.plan === 'AI_PRO' && <Badge className="bg-purple-50 text-purple-700 border-0 rounded-full uppercase hover:bg-purple-50 flex items-center px-3 py-1 text-xs font-bold tracking-wider"><Crown className="h-3 w-3 mr-1.5" /> AI Pro</Badge>}
+            {subscription?.plan === 'FREE' && (
+              <Badge className="bg-[#F5F5F5] text-[#6B7280] border border-[#D0D0D0] rounded-[4px] uppercase hover:bg-[#F5F5F5] font-medium tracking-wider px-2 py-0.5 text-xs">
+                Free
+              </Badge>
+            )}
+            {subscription?.plan === 'BASIC' && (
+              <Badge className="bg-[#EDF5F8] text-[#4A7D96] border border-[#BAD7E1] rounded-[4px] uppercase hover:bg-[#EDF5F8] font-medium tracking-wider px-2 py-0.5 text-xs">
+                Basic
+              </Badge>
+            )}
+            {subscription?.plan === 'AI_PRO' && (
+              <Badge className="bg-[#EDF5F8] text-[#1A2832] border border-[#BAD7E1] rounded-[4px] uppercase hover:bg-[#EDF5F8] flex items-center px-2 py-0.5 text-xs font-medium tracking-wider">
+                <Crown className="h-3 w-3 mr-1" /> AI Pro
+              </Badge>
+            )}
           </div>
-          <p className="text-xs text-gray-500 font-medium">
-            {(!subscription || subscription.plan === 'FREE')
-               ? "Free plan — no billing"
-               : `Renews on ${new Date(subscription?.currentPeriodEnd).toLocaleDateString()}`}
+          <p className="text-xs text-[#7A9BAD] font-medium">
+            {!subscription || subscription.plan === 'FREE'
+              ? 'Free plan - no billing'
+              : `Renews on ${new Date(subscription?.currentPeriodEnd).toLocaleDateString()}`}
           </p>
         </div>
         <SubscriptionActions plan={subscription?.plan || 'FREE'} />
-      </div>
-
+      </section>
     </main>
   )
 }

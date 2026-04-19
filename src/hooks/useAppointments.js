@@ -8,6 +8,7 @@ import {
   getUserAppointments,
   cancelAppointment,
   getBookedSlotsForDoctor,
+  rescheduleAppointment,
 } from '@/actions/appointment.actions'
 
 /**
@@ -103,5 +104,31 @@ export const useGetBookedSlots = (doctorId, date) => {
     queryKey: ['booked-slots', doctorId, date],
     queryFn: () => getBookedSlotsForDoctor(doctorId, date),
     enabled: !!doctorId && !!date,
+  })
+}
+
+/**
+ * 6. Hook to reschedule an existing appointment
+ */
+export const useRescheduleAppointment = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ appointmentId, newDateTime }) =>
+      rescheduleAppointment(appointmentId, newDateTime),
+    onSuccess: () => {
+      toast.success('Appointment Rescheduled', {
+        description: 'Your appointment has been moved to the new time.',
+        duration: 5000,
+      })
+      queryClient.invalidateQueries({ queryKey: ['user-appointments'] })
+      queryClient.invalidateQueries({ queryKey: ['slots'], exact: false })
+    },
+    onError: (error) => {
+      toast.error('Reschedule Failed', {
+        description: error.message || 'Could not reschedule. Please try again.',
+        duration: 5000,
+      })
+    },
   })
 }

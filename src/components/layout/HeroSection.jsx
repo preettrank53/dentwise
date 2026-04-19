@@ -1,81 +1,89 @@
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { ArrowRight, Star, Shield, Clock } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 
 export default function HeroSection() {
-  const stats = [
-    { icon: Star, label: '4.9 Rating', sub: 'From 2,000+ patients' },
-    { icon: Shield, label: '100% Safe', sub: 'Certified doctors' },
-    { icon: Clock, label: '24/7 Support', sub: 'AI assistant always on' },
-  ]
-
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-[90vh] flex flex-col justify-center">
-      {/* Background decoration */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-cyan-500/10 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
-      </div>
+    <section className="bg-[#F8FAFB]">
+      <div className="h-1 w-full bg-[#619BB6]" />
 
-      <div className="page-container section-padding relative z-10 w-full mt-16 md:mt-0">
-        <div className="flex flex-col items-center text-center max-w-4xl mx-auto gap-8 py-12 md:py-20">
+      <div className="page-container section-padding py-20 md:py-28">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Left */}
+          <div>
+            <div className="flex items-center gap-2 mb-6">
+              <span className="h-px w-8 bg-[#619BB6]" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#619BB6]">
+                Advanced Dental Care
+              </span>
+            </div>
 
-          {/* Badge */}
-          <div className="bg-white/10 border border-white/20 text-cyan-400 text-xs font-medium rounded-full px-4 py-1.5 inline-flex items-center">
-            ✨ AI-Powered Dental Care
-          </div>
+            <h1 className="text-4xl md:text-5xl lg:text-[52px] font-semibold text-[#1A2832] tracking-tight leading-[1.1]">
+              <span className="block">Your Smile,</span>
+              <span className="block">Our Expertise.</span>
+            </h1>
 
-          {/* Heading */}
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight">
-            Your Smile Deserves<br/>
-            <span className="text-gradient">
-              Smart Care
-            </span>
-          </h1>
+            <p className="text-base text-[#4A6572] leading-relaxed max-w-md mt-6">
+              Book appointments with certified dental specialists, get AI-powered dental advice,
+              and manage your oral health - all in one platform.
+            </p>
 
-          {/* Subheading */}
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl leading-relaxed">
-            Book appointments with top dental specialists, get instant AI-powered
-            dental advice, and manage your oral health — all in one place.
-          </p>
-
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 w-full justify-center mt-2">
-            <Button
-              size="lg"
-              className="gradient-primary text-white border-0 rounded-xl h-12 px-8 font-bold"
-              asChild
-            >
-              <Link href="/appointments">
+            <div className="flex flex-col sm:flex-row gap-3 mt-8">
+              <Link
+                href="/appointments"
+                className="bg-[#619BB6] text-white rounded-[6px] px-6 py-3 text-sm font-medium hover:bg-[#4A7D96] transition-colors text-center"
+              >
                 Book Appointment
-                <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-            </Button>
-            <Button
-              size="lg"
-              className="bg-white/10 text-white border border-white/20 hover:bg-white/20 rounded-xl h-12 px-8 font-bold"
-              asChild
-            >
-              <Link href="/voice">
+              <Link
+                href="/voice"
+                className="bg-white text-[#619BB6] border border-[#619BB6] rounded-[6px] px-6 py-3 text-sm font-medium hover:bg-[#EDF5F8] transition-colors text-center"
+              >
                 Try AI Assistant
               </Link>
-            </Button>
+            </div>
+
+            <div className="flex items-center gap-4 mt-8 pt-8 border-t border-[#E2EDF2]">
+              <div>
+                <p className="text-sm font-semibold text-[#1A2832]">4.9 ★ Rating</p>
+                <p className="text-xs text-[#7A9BAD]">2,000+ patients</p>
+              </div>
+              <span className="h-8 w-px bg-[#E2EDF2]" />
+              <div>
+                <p className="text-sm font-semibold text-[#1A2832]">98% Retention</p>
+                <p className="text-xs text-[#7A9BAD]">long-term care</p>
+              </div>
+              <span className="h-8 w-px bg-[#E2EDF2]" />
+              <div>
+                <p className="text-sm font-semibold text-[#1A2832]">Same-day Slots</p>
+                <p className="text-xs text-[#7A9BAD]">quick bookings</p>
+              </div>
+            </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-2xl pt-10 mt-6 border-t border-white/10">
-            {stats.map(({ icon: Icon, label, sub }) => (
-              <div key={label} className="flex flex-col items-center gap-3">
-                <div className="flex items-center justify-center rounded-xl bg-white/10 p-2.5">
-                  <Icon className="h-5 w-5 text-cyan-400" />
-                </div>
-                <div className="flex flex-col">
-                  <p className="font-semibold text-white">{label}</p>
-                  <p className="text-xs text-gray-400">{sub}</p>
-                </div>
+          {/* Right */}
+          <div className="relative lg:flex lg:justify-center">
+            <div className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_8px_32px_rgba(26,40,50,0.08)] p-5 w-full max-w-[430px]">
+              <div className="h-48 w-full rounded-[8px] bg-[#EDF5F8] overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=1200&q=80"
+                  alt="Dentist profile"
+                  className="h-full w-full object-cover object-center"
+                />
               </div>
-            ))}
+
+              <div className="mt-3">
+                <p className="text-sm font-semibold text-[#1A2832]">Dr. Amelia Foster, DDS</p>
+                <p className="text-xs text-[#7A9BAD]">Cosmetic & Preventive Dentistry</p>
+                <span className="badge badge-confirmed mt-2">Available Today</span>
+              </div>
+            </div>
+
+            <div className="absolute -bottom-4 -left-8 bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_4px_16px_rgba(26,40,50,0.10)] px-4 py-3 flex items-center gap-3">
+              <span className="h-5 w-5 text-[#619BB6] bg-[#EDF5F8] rounded-[6px] p-1.5 inline-flex items-center justify-center">
+                <CheckCircle2 className="h-5 w-5" />
+              </span>
+              <span className="text-xs font-medium text-[#1A2832]">Appointment Confirmed</span>
+            </div>
           </div>
         </div>
       </div>

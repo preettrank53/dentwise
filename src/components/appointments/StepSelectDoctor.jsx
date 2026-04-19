@@ -3,11 +3,8 @@
 import React from 'react'
 import Image from 'next/image'
 import { useGetDoctors } from '@/hooks/useDoctors'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
-import { CheckCircle2, User } from 'lucide-react'
+import { Check, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 /**
@@ -20,28 +17,31 @@ export default function StepSelectDoctor({ onSelect, selectedDoctorId }) {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
-          <Card key={i} className="overflow-hidden">
-            <Skeleton className="h-40 sm:h-48 w-full" />
-            <CardContent className="p-4 sm:p-5 space-y-2">
-              <Skeleton className="h-4 w-3/4" />
-              <Skeleton className="h-3 w-1/2" />
-              <Skeleton className="h-6 w-20 rounded-full" />
-            </CardContent>
-          </Card>
-        ))}
+      <div>
+        <h2 className="text-sm font-semibold text-[#1A2832] uppercase tracking-wider mb-4">Select a Doctor</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="bg-white rounded-[12px] border border-[#E2EDF2] p-5">
+              <Skeleton className="w-full aspect-[4/3] rounded-[8px] mb-4" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+                <Skeleton className="h-5 w-16 rounded-[4px]" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
 
   if (isError) {
     return (
-      <div className="text-center py-12 bg-muted/30 rounded-xl border border-dashed">
-        <p className="text-destructive font-medium mb-4">Failed to load doctors.</p>
+      <div className="text-center py-12 bg-[#F8FAFB] rounded-[12px] border border-[#E2EDF2]">
+        <p className="text-sm font-medium text-[#1A2832] mb-4">Failed to load doctors.</p>
         <button 
           onClick={() => refetch()}
-          className="text-sm px-4 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity"
+          className="text-sm px-4 py-2 bg-[#619BB6] text-white rounded-[6px] hover:bg-[#4A7D96] transition-colors"
         >
           Try Again
         </button>
@@ -51,67 +51,63 @@ export default function StepSelectDoctor({ onSelect, selectedDoctorId }) {
 
   if (!doctors || doctors.length === 0) {
     return (
-      <div className="text-center py-12 bg-muted/30 rounded-xl border border-dashed">
-        <p className="text-muted-foreground">No active doctors available at the moment.</p>
+      <div className="text-center py-12 bg-[#F8FAFB] rounded-[12px] border border-[#E2EDF2]">
+        <p className="text-sm text-[#7A9BAD]">No active doctors available at the moment.</p>
       </div>
     )
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {doctors.map((doctor) => (
-        <Card
-          key={doctor.id}
-          className={cn(
-            "group card-hover cursor-pointer border-2 transition-all relative overflow-hidden",
-            selectedDoctorId === doctor.id 
-              ? "border-primary ring-1 ring-primary" 
-              : "border-border hover:border-primary/50"
-          )}
-          onClick={() => onSelect(doctor.id)}
-        >
-          {/* Selected Indicator Overlay */}
-          {selectedDoctorId === doctor.id && (
-            <div className="absolute top-3 right-3 z-10 shadow-lg rounded-full bg-white flex items-center justify-center">
-              <CheckCircle2 className="h-7 w-7 text-white fill-cyan-600" />
-            </div>
-          )}
+    <div>
+      <h2 className="text-sm font-semibold text-[#1A2832] uppercase tracking-wider mb-4">Select a Doctor</h2>
 
-          <div className="relative h-40 sm:h-48 w-full bg-muted">
-            {doctor.imageURL ? (
-              <Image
-                src={doctor.imageURL}
-                alt={doctor.name}
-                fill
-                className="object-cover object-top transition-transform group-hover:scale-105"
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <User className="h-12 w-12 text-muted-foreground/50" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {doctors.map((doctor) => {
+          const isSelected = selectedDoctorId === doctor.id
+
+          return (
+            <article
+              key={doctor.id}
+              className={cn(
+                'relative p-5 cursor-pointer rounded-[12px] transition-all duration-150',
+                isSelected
+                  ? 'bg-[#EDF5F8] border-2 border-[#619BB6]'
+                  : 'bg-white border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] hover:border-[#BAD7E1] hover:shadow-[0_4px_12px_rgba(26,40,50,0.08)]'
+              )}
+              onClick={() => onSelect(doctor.id)}
+            >
+              {isSelected && (
+                <div className="absolute top-3 right-3 h-6 w-6 rounded-full bg-[#619BB6] border-2 border-white flex items-center justify-center z-10 shadow-[0_2px_6px_rgba(26,40,50,0.15)]">
+                  <Check className="h-3.5 w-3.5 text-white" />
+                </div>
+              )}
+
+              <div className="relative w-full aspect-[4/3] rounded-[8px] overflow-hidden mb-4 border border-[#E2EDF2] bg-[#F8FAFB]">
+                {doctor.imageURL ? (
+                  <Image
+                    src={doctor.imageURL}
+                    alt={doctor.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center">
+                    <User className="h-8 w-8 text-[#A8C4CF]" />
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          <CardContent className="p-4 sm:p-5 bg-white">
-            <div className="flex items-start justify-between mb-2">
               <div>
-                <h3 className="font-bold text-lg leading-tight line-clamp-1 text-gray-900">{doctor.name}</h3>
-                <p className="text-sm text-gray-500">{doctor.specialty}</p>
+                <h3 className="text-sm font-semibold text-[#1A2832] line-clamp-1">{doctor.name}</h3>
+                <p className="text-xs text-[#7A9BAD] mt-0.5">{doctor.specialty}</p>
+                <span className="badge mt-2 rounded-[4px] text-[10px] bg-[#EDF5F8] text-[#4A7D96] border border-[#BAD7E1]">
+                  {doctor.gender}
+                </span>
               </div>
-              <Avatar className="h-10 w-10 border-2 border-background shadow-sm -mt-8 bg-white">
-                <AvatarImage src={doctor.imageURL} />
-                <AvatarFallback className="gradient-primary text-white text-xs">
-                  {doctor.name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-            </div>
-
-            <Badge variant="secondary" className="mt-2 font-normal text-[10px] uppercase tracking-wider">
-              {doctor.gender}
-            </Badge>
-          </CardContent>
-        </Card>
-      ))}
+            </article>
+          )
+        })}
+      </div>
     </div>
   )
 }

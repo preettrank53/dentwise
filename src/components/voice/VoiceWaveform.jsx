@@ -34,39 +34,39 @@ export default function VoiceWaveform({
   }, [isSpeaking, isUserSpeaking, volumeLevel])
 
   // Determine bar color
-  let barColorClass = 'bg-gray-200'
+  let barColorClass = 'bg-[#D0E4EA]'
   if (isSpeaking) {
-    barColorClass = 'bg-gradient-to-t from-cyan-500 to-blue-500'
+    barColorClass = 'bg-[#619BB6]'
   } else if (isUserSpeaking) {
-    barColorClass = 'bg-gradient-to-t from-purple-500 to-pink-500'
+    barColorClass = 'bg-[#4A7D96]'
   }
 
   const isActive = callStatus === 'active'
   
   const ringClass = isActive 
-    ? 'ring-4 ring-cyan-500/20 animate-pulse' 
-    : 'ring-2 ring-gray-100'
+    ? 'ring-2 ring-[#BAD7E1] animate-pulse' 
+    : 'ring-1 ring-[#E2EDF2]'
 
-  let dotColorClass = 'bg-gray-300'
-  if (callStatus === 'connecting') dotColorClass = 'bg-amber-400 animate-pulse'
-  else if (callStatus === 'active') dotColorClass = 'bg-green-500 animate-pulse'
-  else if (callStatus === 'ending') dotColorClass = 'bg-red-400 animate-pulse'
+  let dotColorClass = 'bg-[#A8C4CF]'
+  if (callStatus === 'connecting') dotColorClass = 'bg-[#B7791F] animate-pulse'
+  else if (callStatus === 'active') dotColorClass = 'bg-[#2D7A4F] animate-pulse'
+  else if (callStatus === 'ending') dotColorClass = 'bg-[#C0392B] animate-pulse'
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className={`h-24 w-24 rounded-full flex items-end justify-center gap-0.5 pb-3 transition-shadow duration-300 ${ringClass}`}>
+      <div className={`h-24 w-24 rounded-[12px] bg-[#F8FAFB] border border-[#E2EDF2] flex items-end justify-center gap-0.5 pb-3 transition-shadow duration-300 ${ringClass}`}>
         {bars.map((height, i) => (
           <div 
             key={i}
-            className={`w-1 rounded-full mx-0.5 transition-all duration-100 ${barColorClass}`}
+            className={`w-1 rounded-[4px] mx-0.5 transition-all duration-100 ${barColorClass}`}
             style={{ height: `${height}px`, minHeight: '4px', maxHeight: '48px' }}
           />
         ))}
       </div>
       
       <div className="flex items-center gap-2">
-        <div className={`h-2 w-2 rounded-full ${dotColorClass}`} />
-        <span className="text-xs text-gray-500 font-medium">
+        <div className={`h-2 w-2 rounded-[4px] ${dotColorClass}`} />
+        <span className="text-xs text-[#7A9BAD] font-medium">
           {getStatusMessage(callStatus)}
         </span>
       </div>

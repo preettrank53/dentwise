@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
+import { handlePrismaError } from '@/lib/prismaErrors'
 
 /**
  * 1. getAvailableTimeSlots(doctorId, date)
@@ -70,7 +71,10 @@ export async function getAvailableTimeSlots(doctorId, date) {
     return results
   } catch (error) {
     console.error('getAvailableTimeSlots Error:', error)
-    throw new Error('Failed to fetch available slots')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Failed to fetch available slots')
   }
 }
 
@@ -83,44 +87,69 @@ export async function createAppointment(formData) {
     const session = await auth()
     if (!session?.user?.email) throw new Error('Unauthorized')
 
-    const { doctorId, dateTime, reason, note } = formData
-
-    if (!doctorId || !dateTime) {
-      throw new Error('Missing required fields')
-    }
-    
-    const validReason = reason || 'General Consultation'
-
-    // Get the user from DB
     const user = await prisma.user.findUnique({
       where: { email: session.user.email }
     })
 
     if (!user) throw new Error('User not found')
 
-    // Check for slot conflict
-    const existingAppointment = await prisma.appointment.findFirst({
+    if (!formData?.doctorId || typeof formData.doctorId !== 'string') {
+      throw new Error('Please select a doctor')
+    }
+    if (!formData?.dateTime || typeof formData.dateTime !== 'string') {
+      throw new Error('Please select a date and time')
+    }
+
+    const dt = new Date(formData.dateTime)
+    if (isNaN(dt.getTime())) {
+      throw new Error('Invalid date')
+    }
+    if (dt <= new Date()) {
+      throw new Error('Appointment must be in the future')
+    }
+
+    const day = dt.getDay()
+    if (day === 0 || day === 6) {
+      throw new Error('Appointments are only available Monday to Friday')
+    }
+
+    const hour = dt.getHours()
+    if (hour < 9 || hour >= 17) {
+      throw new Error('Appointments available between 9:00 AM and 5:00 PM')
+    }
+
+    const doctor = await prisma.doctor.findFirst({
       where: {
-        doctorId,
-        dateTime: new Date(dateTime),
+        id: formData.doctorId,
+        isActive: true,
+      }
+    })
+
+    if (!doctor) {
+      throw new Error('Doctor not found or not accepting appointments')
+    }
+
+    const conflict = await prisma.appointment.findFirst({
+      where: {
+        doctorId: formData.doctorId,
+        dateTime: dt,
         status: {
           not: 'CANCELLED'
         }
       }
     })
 
-    if (existingAppointment) {
-      throw new Error('This slot is already taken. Please choose another time.')
+    if (conflict) {
+      throw new Error('This time slot is no longer available. Please choose another time.')
     }
 
-    // Create the appointment
     const appointment = await prisma.appointment.create({
       data: {
         userId: user.id,
-        doctorId,
-        dateTime: new Date(dateTime),
-        reason: validReason,
-        note: note || '',
+        doctorId: formData.doctorId,
+        dateTime: dt,
+        reason: formData.reason?.trim() || null,
+        note: formData.note?.trim() || null,
         duration: 30,
         status: 'CONFIRMED'
       },
@@ -136,9 +165,10 @@ export async function createAppointment(formData) {
     return appointment
   } catch (error) {
     console.error('createAppointment Error:', error)
-    // Pass along user-friendly error messages
-    if (error.message.includes('taken')) throw error
-    throw new Error(error.message || 'Failed to create appointment')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Something went wrong')
   }
 }
 
@@ -162,7 +192,14 @@ export async function getUserAppointments() {
         userId: user.id
       },
       include: {
-        doctor: true
+        doctor: {
+          select: {
+            id: true,
+            name: true,
+            specialty: true,
+            imageURL: true,
+          }
+        }
       },
       orderBy: {
         dateTime: 'desc'
@@ -172,7 +209,10 @@ export async function getUserAppointments() {
     return appointments
   } catch (error) {
     console.error('getUserAppointments Error:', error)
-    throw new Error('Failed to load your appointments')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Failed to load your appointments')
   }
 }
 
@@ -185,9 +225,16 @@ export async function cancelAppointment(appointmentId) {
     const session = await auth()
     if (!session?.user?.email) throw new Error('Unauthorized')
 
+    if (!appointmentId || typeof appointmentId !== 'string') {
+      throw new Error('Invalid appointment')
+    }
+
     const user = await prisma.user.findUnique({
       where: { email: session.user.email }
     })
+    if (!user) {
+      throw new Error('User not found')
+    }
 
     const appointment = await prisma.appointment.findUnique({
       where: { id: appointmentId }
@@ -195,9 +242,12 @@ export async function cancelAppointment(appointmentId) {
 
     if (!appointment) throw new Error('Appointment not found')
 
-    // Security check: Verify ownership
-    if (appointment.userId !== user.id && session.user.role !== 'ADMIN') {
-      throw new Error('You do not have permission to cancel this appointment')
+    if (appointment.userId !== user.id) {
+      throw new Error('Unauthorized: This is not your appointment')
+    }
+
+    if (appointment.status !== 'CONFIRMED') {
+      throw new Error('Only confirmed appointments can be cancelled')
     }
 
     const updatedAppointment = await prisma.appointment.update({
@@ -213,6 +263,9 @@ export async function cancelAppointment(appointmentId) {
     return updatedAppointment
   } catch (error) {
     console.error('cancelAppointment Error:', error)
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
     throw new Error(error.message || 'Failed to cancel appointment')
   }
 }
@@ -246,6 +299,144 @@ export async function getBookedSlotsForDoctor(doctorId, date) {
     return appointments.map(app => app.dateTime)
   } catch (error) {
     console.error('getBookedSlotsForDoctor Error:', error)
-    throw new Error('Failed to fetch booked slots')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Failed to fetch booked slots')
+  }
+}
+
+/**
+ * 6. rescheduleAppointment(appointmentId, newDateTime)
+ * Reschedules a confirmed appointment owned by the logged-in user.
+ */
+export async function rescheduleAppointment(appointmentId, newDateTime) {
+  try {
+    const session = await auth()
+    if (!session) {
+      throw new Error('Unauthorized')
+    }
+
+    if (!appointmentId || typeof appointmentId !== 'string') {
+      throw new Error('Invalid appointment ID')
+    }
+
+    if (!newDateTime) {
+      throw new Error('Please select a new date and time')
+    }
+
+    const dt = new Date(newDateTime)
+    if (isNaN(dt.getTime())) {
+      throw new Error('Invalid date format')
+    }
+
+    if (dt <= new Date()) {
+      throw new Error('New appointment must be in the future')
+    }
+
+    const day = dt.getDay()
+    if (day === 0 || day === 6) {
+      throw new Error('Appointments are only available Monday to Friday')
+    }
+
+    const hour = dt.getHours()
+    if (hour < 9 || hour >= 17) {
+      throw new Error('Appointments available between 9:00 AM and 5:00 PM')
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user?.email }
+    })
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    const appointment = await prisma.appointment.findUnique({
+      where: { id: appointmentId },
+      include: {
+        doctor: true,
+      },
+    })
+
+    if (!appointment) {
+      throw new Error('Appointment not found')
+    }
+
+    if (appointment.userId !== user.id) {
+      throw new Error('Unauthorized: This is not your appointment')
+    }
+
+    if (appointment.status !== 'CONFIRMED') {
+      throw new Error('Only confirmed appointments can be rescheduled')
+    }
+
+    const currentTime = new Date(appointment.dateTime).getTime()
+    if (currentTime === dt.getTime()) {
+      throw new Error('New time is the same as current appointment time')
+    }
+
+    const conflict = await prisma.appointment.findFirst({
+      where: {
+        doctorId: appointment.doctorId,
+        dateTime: dt,
+        status: { not: 'CANCELLED' },
+        id: { not: appointmentId },
+      }
+    })
+
+    if (conflict) {
+      throw new Error('This time slot is already taken. Please choose a different time.')
+    }
+
+    const updated = await prisma.appointment.update({
+      where: { id: appointmentId },
+      data: {
+        dateTime: dt,
+        updatedAt: new Date(),
+      },
+      include: {
+        doctor: {
+          select: {
+            id: true,
+            name: true,
+            specialty: true,
+            imageURL: true,
+          }
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          }
+        }
+      }
+    })
+
+    fetch(
+      process.env.NEXTAUTH_URL + '/api/send-reschedule-email',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          patientName: updated.user.name,
+          patientEmail: updated.user.email,
+          doctorName: updated.doctor.name,
+          doctorSpecialty: updated.doctor.specialty,
+          newDate: updated.dateTime,
+          oldDate: appointment.dateTime,
+        })
+      }
+    ).catch(console.error)
+
+    return updated
+  } catch (error) {
+    if (error.code?.startsWith('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Failed to reschedule appointment')
   }
 }

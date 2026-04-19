@@ -3,12 +3,9 @@
 import React, { useState, useEffect } from 'react'
 import { useGetAllAppointments, useUpdateAppointmentStatus } from '@/hooks/useAdmin'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Search, ChevronLeft, ChevronRight, Loader2, User, CalendarX } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -25,263 +22,225 @@ export default function AppointmentsTable() {
   const { mutate: updateStatus } = useUpdateAppointmentStatus()
   const [updatingId, setUpdatingId] = useState(null)
 
-  // Debounce search
   useEffect(() => {
     const timer = setTimeout(() => {
-      setFilters(prev => ({ ...prev, search: searchInput }))
+      setFilters((prev) => ({ ...prev, search: searchInput }))
       setCurrentPage(1)
     }, 500)
     return () => clearTimeout(timer)
   }, [searchInput])
 
   const handleStatusChange = (value) => {
-    setFilters(prev => ({ ...prev, status: value }))
+    setFilters((prev) => ({ ...prev, status: value }))
     setCurrentPage(1)
   }
 
   const handleMarkComplete = (id) => {
     setUpdatingId(id)
-    updateStatus({ id, status: 'COMPLETED' }, {
-      onSuccess: () => {
-        toast.success("Appointment marked as completed")
-      },
-      onError: () => {
-        toast.error("Failed to update status")
-      },
-      onSettled: () => {
-        setUpdatingId(null)
+    updateStatus(
+      { id, status: 'COMPLETED' },
+      {
+        onSuccess: () => {
+          toast.success('Appointment marked as completed')
+        },
+        onError: () => {
+          toast.error('Failed to update status')
+        },
+        onSettled: () => {
+          setUpdatingId(null)
+        },
       }
-    })
+    )
   }
 
-  const getFilteredData = () => {
-    if (!appointments) return []
-    return appointments
-  }
-
-  let tableData = getFilteredData()
+  const tableData = appointments || []
   const totalPages = Math.ceil(tableData.length / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
   const currentData = tableData.slice(startIndex, startIndex + itemsPerPage)
 
+  const getStatusClass = (status) => {
+    if (status === 'CONFIRMED') return 'badge-confirmed'
+    if (status === 'COMPLETED') return 'badge-completed'
+    if (status === 'CANCELLED') return 'badge-cancelled'
+    return 'badge-cancelled'
+  }
+
   return (
     <div className="space-y-6">
-      {/* Filters Bar */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col sm:flex-row gap-3 items-center">
-        <div className="relative w-full sm:flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input 
-            placeholder="Search patient or doctor..." 
-            className="pl-10 rounded-xl border-gray-200 focus:ring-2 focus:ring-cyan-500/20"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-          />
-        </div>
-        <Select value={filters.status} onValueChange={handleStatusChange}>
-          <SelectTrigger className="w-full sm:w-[180px] rounded-xl border-gray-200">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="ALL">All Statuses</SelectItem>
-            <SelectItem value="CONFIRMED">Confirmed</SelectItem>
-            <SelectItem value="COMPLETED">Completed</SelectItem>
-            <SelectItem value="CANCELLED">Cancelled</SelectItem>
-          </SelectContent>
-        </Select>
-        <div className="text-sm text-gray-500 font-medium px-2 whitespace-nowrap hidden sm:block">
-          Showing {tableData.length} appointments
+      {/* Filters */}
+      <div className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#A8C4CF]" />
+            <label htmlFor="search-input" className="sr-only">
+              Search appointments
+            </label>
+            <Input
+              id="search-input"
+              placeholder="Search patient or doctor..."
+              className="input-field pl-9"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+          </div>
+
+          <Select value={filters.status} onValueChange={handleStatusChange}>
+            <SelectTrigger className="input-field w-full sm:w-44">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">All Statuses</SelectItem>
+              <SelectItem value="CONFIRMED">Confirmed</SelectItem>
+              <SelectItem value="COMPLETED">Completed</SelectItem>
+              <SelectItem value="CANCELLED">Cancelled</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <p className="text-xs text-[#7A9BAD] hidden sm:block self-center ml-auto">
+            Showing {tableData.length} appointments
+          </p>
         </div>
       </div>
 
-      {/* Table Container */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left min-w-[700px]">
-            <thead className="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100">
-              <tr>
-                <th className="px-6 py-4">Patient</th>
-                <th className="px-6 py-4">Doctor</th>
-                <th className="px-6 py-4">Date & Time</th>
-                <th className="px-6 py-4">Reason</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {isLoading && (
-                [...Array(5)].map((_, i) => (
-                  <tr key={i} className="bg-white">
-                    <td className="px-6 py-4"><Skeleton className="h-10 w-40" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-10 w-40" /></td>
-                    <td className="px-6 py-4">
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-24" />
-                        <Skeleton className="h-3 w-16" />
-                      </div>
-                    </td>
-                    <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-6 w-20 rounded-full" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-8 w-24 ml-auto rounded-xl" /></td>
-                  </tr>
-                ))
-              )}
-
-              {isError && (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-red-500">
-                    <ErrorState onRetry={() => refetch()} />
-                  </td>
-                </tr>
-              )}
-
-              {!isLoading && !isError && currentData.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-6 py-12 bg-white">
-                    {filters.search !== '' || filters.status !== 'ALL' ? (
-                      <EmptyState
-                        icon={Search}
-                        title="No Results Found"
-                        description="No appointments match your current filters. Try adjusting your search or filter criteria."
-                        actionLabel="Clear Filters"
-                        actionOnClick={() => {
-                          setSearchInput('')
-                          setFilters({ search: '', status: 'ALL' })
-                        }}
-                        size="md"
-                      />
-                    ) : (
-                      <EmptyState
-                        icon={CalendarX}
-                        title="No Appointments Yet"
-                        description="No appointments have been booked at the clinic yet."
-                        size="md"
-                      />
-                    )}
-                  </td>
-                </tr>
-              )}
-
-              {!isLoading && !isError && currentData.map(apt => (
-                <tr key={apt.id} className="hover:bg-gray-50/50 transition-colors bg-white">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10 border border-gray-100">
-                        <AvatarImage src={apt.user.image} />
-                        <AvatarFallback><User className="h-4 w-4 text-gray-400" /></AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium text-gray-900 leading-tight">{apt.user.name}</p>
-                        <p className="text-xs text-gray-500 max-w-[150px] truncate">{apt.user.email}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10 border border-gray-100">
-                        <AvatarImage src={apt.doctor.imageURL} />
-                        <AvatarFallback>DR</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium text-gray-900 leading-tight">{apt.doctor.name}</p>
-                        <p className="text-xs text-gray-500 max-w-[150px] truncate">{apt.doctor.specialty}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <p className="font-medium text-gray-900">
-                      {new Date(apt.dateTime).toLocaleDateString('en-US', {
-                        month: 'short', day: 'numeric', year: 'numeric'
-                      })}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {new Date(apt.dateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
-                      {' • 30 min'}
-                    </p>
-                  </td>
-                  <td className="px-6 py-4">
-                    {apt.reason ? (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <span className="cursor-help inline-block max-w-[150px] truncate text-gray-600 font-medium border-b border-dashed border-gray-300 pb-0.5">
-                              {apt.reason}
-                            </span>
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-xs">
-                            <p>{apt.reason}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    ) : (
-                      <span className="text-gray-400 font-medium">—</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <Badge className={cn(
-                      "rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wider",
-                      apt.status === 'CONFIRMED' && "bg-cyan-50 text-cyan-700 hover:bg-cyan-50 border-0",
-                      apt.status === 'COMPLETED' && "bg-green-50 text-green-700 hover:bg-green-50 border-0",
-                      apt.status === 'CANCELLED' && "bg-gray-100 text-gray-500 hover:bg-gray-100 border-0"
-                    )}>
-                      {apt.status}
-                    </Badge>
-                  </td>
-                  <td className="px-6 py-4 text-right whitespace-nowrap">
-                    {apt.status === 'CONFIRMED' && (
-                      <Button 
-                        size="sm" 
-                        variant="ghost"
-                        onClick={() => handleMarkComplete(apt.id)}
-                        disabled={updatingId === apt.id}
-                        className="bg-cyan-50 text-cyan-700 hover:bg-cyan-100 rounded-xl text-xs px-3 py-1.5 h-auto transition-colors font-medium border-0"
-                      >
-                        {updatingId === apt.id ? (
-                          <>
-                            <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
-                            Updating
-                          </>
-                        ) : (
-                          "Mark Complete"
-                        )}
-                      </Button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Table */}
+      <div className="table-container">
+        <div className="table-header grid grid-cols-12 gap-3 items-center">
+          <div className="col-span-3 text-[10px] font-semibold text-[#7A9BAD] uppercase tracking-wider">Patient</div>
+          <div className="col-span-3 text-[10px] font-semibold text-[#7A9BAD] uppercase tracking-wider">Doctor</div>
+          <div className="col-span-2 text-[10px] font-semibold text-[#7A9BAD] uppercase tracking-wider">Date</div>
+          <div className="col-span-2 text-[10px] font-semibold text-[#7A9BAD] uppercase tracking-wider">Status</div>
+          <div className="col-span-2 text-[10px] font-semibold text-[#7A9BAD] uppercase tracking-wider text-right">Action</div>
         </div>
-        
-        {/* Pagination Container */}
-        {tableData.length > 0 && (
-          <div className="flex justify-between items-center bg-white border-t border-gray-100 p-4 text-sm text-gray-500">
-            <div>
-              Showing <span className="font-medium text-gray-900">{startIndex + 1}</span> to <span className="font-medium text-gray-900">{Math.min(startIndex + itemsPerPage, tableData.length)}</span> of <span className="font-medium text-gray-900">{tableData.length}</span>
+
+        {isLoading &&
+          [...Array(6)].map((_, i) => (
+            <div key={i} className="table-row grid grid-cols-12 gap-3 items-center">
+              <div className="col-span-3"><Skeleton className="h-8 w-40" /></div>
+              <div className="col-span-3"><Skeleton className="h-8 w-36" /></div>
+              <div className="col-span-2"><Skeleton className="h-6 w-28" /></div>
+              <div className="col-span-2"><Skeleton className="h-6 w-20" /></div>
+              <div className="col-span-2 flex justify-end"><Skeleton className="h-7 w-24" /></div>
             </div>
-            <div className="flex items-center gap-3">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                disabled={currentPage === 1}
-                className="rounded-lg h-8 px-3 border-gray-200 text-gray-600 hover:text-gray-900"
-              >
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                Prev
-              </Button>
-              <div className="font-medium px-2 text-gray-900">
-                Page {currentPage} of {totalPages || 1}
+          ))}
+
+        {isError && (
+          <div className="p-6">
+            <ErrorState onRetry={() => window.location.reload()} />
+          </div>
+        )}
+
+        {!isLoading && !isError && currentData.length === 0 && (
+          <div className="p-6">
+            {filters.search !== '' || filters.status !== 'ALL' ? (
+              <EmptyState
+                icon={Search}
+                title="No Results Found"
+                description="No appointments match your current filters. Try adjusting your search or filter criteria."
+                actionLabel="Clear Filters"
+                actionOnClick={() => {
+                  setSearchInput('')
+                  setFilters({ search: '', status: 'ALL' })
+                }}
+                size="md"
+              />
+            ) : (
+              <EmptyState
+                icon={CalendarX}
+                title="No Appointments Yet"
+                description="No appointments have been booked at the clinic yet."
+                size="md"
+              />
+            )}
+          </div>
+        )}
+
+        {!isLoading && !isError &&
+          currentData.map((apt) => (
+            <div key={apt.id} className="table-row grid grid-cols-12 gap-3 items-center">
+              <div className="col-span-3 flex items-center gap-3 min-w-0">
+                <Avatar className="h-8 w-8 rounded-full border border-[#E2EDF2] shrink-0">
+                  <AvatarImage src={apt.user.image} />
+                  <AvatarFallback className="rounded-full">
+                    <User className="h-3.5 w-3.5 text-[#7A9BAD]" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-[#1A2832] truncate">{apt.user.name}</p>
+                  <p className="text-xs text-[#7A9BAD] truncate">{apt.user.email}</p>
+                </div>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+
+              <div className="col-span-3 flex items-center gap-2 min-w-0">
+                <Avatar className="h-7 w-7 rounded-full border border-[#E2EDF2] shrink-0">
+                  <AvatarImage src={apt.doctor.imageURL} />
+                  <AvatarFallback className="rounded-full text-[10px]">DR</AvatarFallback>
+                </Avatar>
+                <p className="text-sm text-[#4A6572] truncate">{apt.doctor.name}</p>
+              </div>
+
+              <p className="col-span-2 text-sm text-[#4A6572]">
+                {new Date(apt.dateTime).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                })}
+                {', '}
+                {new Date(apt.dateTime).toLocaleTimeString('en-US', {
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                })}
+              </p>
+
+              <div className="col-span-2">
+                <span className={cn('badge', getStatusClass(apt.status))}>{apt.status}</span>
+              </div>
+
+              <div className="col-span-2 flex justify-end">
+                {apt.status === 'CONFIRMED' ? (
+                  <button
+                    type="button"
+                    onClick={() => handleMarkComplete(apt.id)}
+                    disabled={updatingId === apt.id}
+                    className="text-xs font-medium text-[#619BB6] bg-[#EDF5F8] border border-[#BAD7E1] rounded-[6px] px-3 py-1.5 hover:bg-[#619BB6] hover:text-white transition-colors duration-150 disabled:opacity-40"
+                  >
+                    {updatingId === apt.id ? (
+                      <span className="inline-flex items-center">
+                        <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
+                        Updating
+                      </span>
+                    ) : (
+                      'Mark Complete'
+                    )}
+                  </button>
+                ) : (
+                  <span className="text-xs text-[#A8C4CF]">-</span>
+                )}
+              </div>
+            </div>
+          ))}
+
+        {tableData.length > 0 && (
+          <div className="flex justify-between items-center px-5 py-3 border-t border-[#E2EDF2]">
+            <p className="text-xs text-[#7A9BAD]">Page {currentPage} of {totalPages || 1}</p>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="border border-[#E2EDF2] text-[#4A6572] rounded-[6px] px-3 py-1.5 text-xs hover:bg-[#EDF5F8] disabled:opacity-40 inline-flex items-center"
+              >
+                <ChevronLeft className="h-3.5 w-3.5 mr-1" />
+                Prev
+              </button>
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages || totalPages === 0}
-                className="rounded-lg h-8 px-3 border-gray-200 text-gray-600 hover:text-gray-900"
+                className="border border-[#E2EDF2] text-[#4A6572] rounded-[6px] px-3 py-1.5 text-xs hover:bg-[#EDF5F8] disabled:opacity-40 inline-flex items-center"
               >
                 Next
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
+                <ChevronRight className="h-3.5 w-3.5 ml-1" />
+              </button>
             </div>
           </div>
         )}

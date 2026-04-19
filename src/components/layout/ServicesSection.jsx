@@ -1,7 +1,3 @@
-'use client'
-
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import {
   Smile,
   Shield,
@@ -10,7 +6,6 @@ import {
   Microscope,
   Sparkles,
 } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
 
 const services = [
   {
@@ -19,8 +14,6 @@ const services = [
     description:
       'Routine checkups, cleanings, fillings, and preventive care to keep your teeth healthy.',
     badge: 'Most Popular',
-    color: 'text-cyan-600',
-    bg: 'bg-cyan-50',
   },
   {
     icon: Sparkles,
@@ -28,8 +21,6 @@ const services = [
     description:
       'Professional-grade whitening treatments that deliver visibly brighter results.',
     badge: null,
-    color: 'text-yellow-600',
-    bg: 'bg-yellow-50',
   },
   {
     icon: Zap,
@@ -37,8 +28,6 @@ const services = [
     description:
       'Same-day emergency appointments for toothaches, broken teeth, and urgent issues.',
     badge: '24/7',
-    color: 'text-red-600',
-    bg: 'bg-red-50',
   },
   {
     icon: Shield,
@@ -46,8 +35,6 @@ const services = [
     description:
       'Braces and clear aligners to straighten your teeth and perfect your bite.',
     badge: null,
-    color: 'text-blue-600',
-    bg: 'bg-blue-50',
   },
   {
     icon: Microscope,
@@ -55,8 +42,6 @@ const services = [
     description:
       'Permanent tooth replacement solutions that look, feel, and function like natural teeth.',
     badge: 'Advanced',
-    color: 'text-purple-600',
-    bg: 'bg-purple-50',
   },
   {
     icon: Heart,
@@ -64,84 +49,49 @@ const services = [
     description:
       'Gentle, child-friendly dental care in a calm and welcoming environment.',
     badge: null,
-    color: 'text-pink-600',
-    bg: 'bg-pink-50',
   },
 ]
 
 export default function ServicesSection() {
-  const sectionRef = useRef(null)
-  const [inView, setInView] = useState(false)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setInView(true)
-      }
-    }, { threshold: 0.2 })
-
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current)
-    }
-
-    return () => observer.disconnect()
-  }, [])
-
   return (
-    <section id="services" className="bg-gray-50" ref={sectionRef}>
+    <section id="services" className="bg-white">
       <div className="page-container section-padding">
+        <div className="max-w-xl mb-12">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="h-px w-6 bg-[#619BB6]" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#619BB6]">
+              Our Services
+            </span>
+          </div>
 
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <Badge
-            variant="secondary"
-            className="mb-4 bg-cyan-50 text-cyan-700 border-cyan-200"
-          >
-            Our Services
-          </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Complete Dental Care{' '}
-            <span className="text-gradient">Under One Roof</span>
+          <h2 className="text-3xl font-semibold text-[#1A2832] tracking-tight">
+            Complete Dental Care Under One Roof
           </h2>
-          <p className="text-muted-foreground text-lg">
-            From routine cleanings to advanced procedures, our expert team
-            covers all your dental needs.
+          <p className="text-base text-[#4A6572] leading-relaxed mt-3">
+            From routine cleanings to advanced procedures, our expert team covers every stage of your
+            dental health journey.
           </p>
         </div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {services.map((service, index) => {
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {services.map((service) => {
             const Icon = service.icon
             return (
-              <Card
+              <article
                 key={service.title}
-                className={`card-hover border bg-white group cursor-pointer opacity-0-initial ${inView ? 'animate-fade-up' : ''}`}
-                style={{ animationDelay: `${index * 100}ms` }}
+                className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-6 hover:border-[#BAD7E1] hover:shadow-[0_4px_12px_rgba(26,40,50,0.08)] transition-all duration-150 cursor-pointer"
               >
-                <CardContent className="p-6 flex flex-col gap-4">
-                  <div className="flex items-start justify-between">
-                    <div
-                      className={`flex h-12 w-12 items-center justify-center rounded-xl ${service.bg}`}
-                    >
-                      <Icon className={`h-6 w-6 ${service.color}`} />
-                    </div>
-                    {service.badge && (
-                      <Badge variant="secondary" className="text-xs">
-                        {service.badge}
-                      </Badge>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-foreground mb-2">
-                      {service.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      {service.description}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+                <div className="h-10 w-10 rounded-[8px] bg-[#EDF5F8] flex items-center justify-center mb-4">
+                  <Icon className="h-5 w-5 text-[#619BB6]" />
+                </div>
+
+                <h3 className="text-sm font-semibold text-[#1A2832] mb-2">{service.title}</h3>
+                <p className="text-sm text-[#4A6572] leading-relaxed">{service.description}</p>
+
+                {service.badge && (
+                  <span className="badge badge-confirmed text-[10px] mt-3">{service.badge}</span>
+                )}
+              </article>
             )
           })}
         </div>

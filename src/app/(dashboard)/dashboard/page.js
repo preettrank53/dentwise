@@ -2,25 +2,19 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
-import { 
-  Calendar, 
-  Clock, 
-  CheckCircle, 
-  Crown, 
-  ArrowRight, 
-  Mic,
-  Plus,
-  User
+import {
+  Calendar,
+  Clock,
+  CheckCircle,
+  Crown,
+  CalendarPlus,
+  Sparkles,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export const metadata = {
-  title: 'Dashboard — Dentwise',
+  title: 'Dashboard - Dentwise',
   description: 'Your dental health overview, upcoming appointments, and quick actions.',
 }
 
@@ -59,185 +53,162 @@ export default async function DashboardPage() {
   ])
 
   const stats = [
-    { 
-      label: 'Total Appointments', 
-      value: totalCount.toString(), 
-      icon: Calendar, 
-      color: 'bg-cyan-50 text-cyan-600' 
+    {
+      label: 'Total Appointments',
+      value: totalCount.toString(),
+      icon: Calendar,
     },
-    { 
-      label: 'Upcoming', 
-      value: upcomingCount.toString(), 
-      icon: Clock, 
-      color: 'bg-blue-50 text-blue-600' 
+    {
+      label: 'Upcoming',
+      value: upcomingCount.toString(),
+      icon: Clock,
     },
-    { 
-      label: 'Completed', 
-      value: completedCount.toString(), 
-      icon: CheckCircle, 
-      color: 'bg-green-50 text-green-600' 
+    {
+      label: 'Completed',
+      value: completedCount.toString(),
+      icon: CheckCircle,
     },
-    { 
-      label: 'Sub Plan', 
-      value: subscription?.plan || 'FREE', 
-      icon: Crown, 
-      color: 'bg-purple-50 text-purple-600' 
+    {
+      label: 'Sub Plan',
+      value: subscription?.plan || 'FREE',
+      icon: Crown,
     },
   ]
 
-  return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      
-      {/* Welcome Banner */}
-      <div className="relative overflow-hidden border-0 shadow-sm rounded-2xl">
-        <div className="gradient-primary p-6 md:p-10 text-white relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="space-y-4 text-center sm:text-left">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black italic">
-              Welcome back, {session.user?.name?.split(' ')[0]}!
-            </h1>
-            <p className="text-white/90 max-w-sm sm:max-w-md text-base sm:text-lg leading-relaxed">
-              {upcomingCount > 0 
-                ? `You have ${upcomingCount} upcoming appointment${upcomingCount > 1 ? 's' : ''}`
-                : "Ready to book your first appointment?"}
-            </p>
-          </div>
-          <div className="shrink-0">
-            <Avatar className="h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24 border-4 border-white/20 shadow-2xl ring-4 ring-white/10">
-              <AvatarImage src={session.user?.image} />
-              <AvatarFallback className="bg-white/10 text-white text-2xl sm:text-3xl font-bold">
-                {session.user?.name?.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-        </div>
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-44 h-44 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-      </div>
+  const currentPlan = subscription?.plan || 'FREE'
+  const showUpgradeStrip = currentPlan === 'FREE' || currentPlan === 'BASIC'
 
-      {/* Quick Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+  const statusClassMap = {
+    CONFIRMED: 'badge-confirmed',
+    COMPLETED: 'badge-completed',
+    CANCELLED: 'badge-cancelled',
+    PAST_DUE: 'badge-past-due',
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Welcome Banner */}
+      <section className="bg-white rounded-[12px] border border-[#E2EDF2] border-l-4 border-l-[#619BB6] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-8 flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-[#619BB6] mb-2">
+            Welcome back
+          </p>
+          <h1 className="text-2xl font-semibold text-[#1A2832] tracking-tight">
+            {session.user?.name || 'Patient'}
+          </h1>
+          <p className="text-sm text-[#4A6572] mt-1">
+            {upcomingCount > 0
+              ? `You have ${upcomingCount} upcoming appointment${upcomingCount > 1 ? 's' : ''}.`
+              : 'Ready to book your next appointment?'}
+          </p>
+        </div>
+
+        <Avatar className="h-14 w-14 rounded-full border-2 border-[#E2EDF2] shrink-0">
+          <AvatarImage src={session.user?.image} />
+          <AvatarFallback className="bg-[#EDF5F8] text-[#4A7D96] font-semibold rounded-full">
+            {session.user?.name?.charAt(0)}
+          </AvatarFallback>
+        </Avatar>
+      </section>
+
+      {/* Stat Cards */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => {
           const Icon = stat.icon
           return (
-            <Card key={stat.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-shadow hover:shadow-md">
-              <CardContent className="p-4 sm:p-6 flex items-center gap-3 sm:gap-4">
-                <div className={cn('h-10 w-10 sm:h-12 sm:w-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm', stat.color)}>
-                  <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
-                </div>
-                <div>
-                  <p className="text-xl sm:text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-[10px] sm:text-xs md:text-sm text-gray-500 mt-0.5 uppercase tracking-wide font-medium">{stat.label}</p>
-                </div>
-              </CardContent>
-            </Card>
+            <article key={stat.label} className="stat-card">
+              <div className="stat-icon bg-[#EDF5F8] text-[#619BB6]">
+                <Icon className="h-5 w-5 text-[#619BB6]" />
+              </div>
+              <div>
+                <p className="stat-value">{stat.value}</p>
+                <p className="stat-label">{stat.label}</p>
+              </div>
+            </article>
           )
         })}
-      </div>
+      </section>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Left: Quick Actions & Recent Activity */}
-        <div className="lg:col-span-2 space-y-8">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button 
-              size="lg" 
-              className="gradient-primary text-white border-0 h-14 sm:h-16 text-base sm:text-lg font-bold group shadow-md shadow-cyan-100 hover:shadow-lg rounded-2xl transition-all w-full sm:flex-1"
-              asChild
-            >
-              <Link href="/appointments">
-                <Plus className="mr-2 h-5 w-5 sm:h-6 sm:w-6" />
-                Book Now
-                <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5 opacity-50 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="h-14 sm:h-16 text-base sm:text-lg font-bold border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-all rounded-2xl shadow-sm hover:shadow w-full sm:flex-1"
-              asChild
-            >
-              <Link href="/appointments/my">
-                <Calendar className="mr-2 h-5 w-5 sm:h-6 sm:w-6 text-gray-500" />
-                My Visits
-              </Link>
-            </Button>
-          </div>
+      {/* Quick Actions */}
+      <section className="flex flex-col sm:flex-row gap-3">
+        <Link
+          href="/appointments"
+          className="bg-[#619BB6] text-white rounded-[6px] px-5 py-2.5 text-sm font-medium hover:bg-[#4A7D96] transition-colors flex items-center justify-center gap-2"
+        >
+          <CalendarPlus className="h-4 w-4" />
+          Book Appointment
+        </Link>
 
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Recent Appointments</h2>
-              <Link href="/appointments/my" className="text-sm font-medium text-cyan-600 hover:text-cyan-700 transition-colors">
-                View All
-              </Link>
-            </div>
-            
-            {recentAppointments.length > 0 ? (
-              <div className="divide-y divide-gray-50">
-                {recentAppointments.map((app) => (
-                  <div key={app.id} className="flex flex-wrap sm:flex-nowrap items-center gap-4 py-4 px-2 first:pt-0 last:pb-0 hover:bg-gray-50/50 transition-colors rounded-xl mx-[-8px]">
-                    <Avatar className="h-10 w-10 border border-gray-100 shrink-0">
-                      <AvatarImage src={app.doctor.imageURL} />
-                      <AvatarFallback className="bg-gray-100 text-gray-500 font-medium">DR</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{app.doctor.name}</p>
-                      <p className="text-xs text-gray-500 mt-0.5 truncate gap-1 flex items-center">
-                        {new Date(app.dateTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                        <span className="w-1 h-1 rounded-full bg-gray-300 inline-block mx-1" />
-                        {new Date(app.dateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
-                      </p>
-                    </div>
-                    <Badge 
-                      className={cn(
-                        "ml-auto rounded-full px-2.5 py-1 text-[10px] sm:text-xs font-medium tracking-wider uppercase border-0 shrink-0",
-                        app.status === 'CONFIRMED' && "bg-cyan-50 text-cyan-700 hover:bg-cyan-50",
-                        app.status === 'COMPLETED' && "bg-green-50 text-green-700 hover:bg-green-50",
-                        app.status === 'CANCELLED' && "bg-gray-100 text-gray-500 hover:bg-gray-100"
-                      )}
-                    >
-                      {app.status}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-12 flex flex-col items-center justify-center text-center">
-                <div className="h-12 w-12 bg-gray-50 rounded-full flex items-center justify-center mb-3">
-                  <Calendar className="h-6 w-6 text-gray-400" />
+        <Link
+          href="/appointments/my"
+          className="bg-white text-[#619BB6] border border-[#619BB6] rounded-[6px] px-5 py-2.5 text-sm font-medium hover:bg-[#EDF5F8] transition-colors flex items-center justify-center gap-2"
+        >
+          <Calendar className="h-4 w-4" />
+          My Appointments
+        </Link>
+      </section>
+
+      {/* Recent Appointments */}
+      <section className="space-y-3">
+        <div className="flex justify-between items-center">
+          <h2 className="text-sm font-semibold text-[#1A2832] uppercase tracking-wider">Recent Appointments</h2>
+          <Link href="/appointments/my" className="text-xs text-[#619BB6] hover:text-[#4A7D96] font-medium">
+            View all
+          </Link>
+        </div>
+
+        <div className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] divide-y divide-[#F0F6F8]">
+          {recentAppointments.length > 0 ? (
+            recentAppointments.map((app) => (
+              <div key={app.id} className="px-5 py-4 flex items-center gap-4 hover:bg-[#FAFCFD] transition-colors duration-100">
+                <Avatar className="h-9 w-9 rounded-full border border-[#E2EDF2] shrink-0">
+                  <AvatarImage src={app.doctor.imageURL} />
+                  <AvatarFallback className="bg-[#EDF5F8] text-[#4A7D96] text-xs rounded-full">
+                    DR
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-[#1A2832] truncate">{app.doctor.name}</p>
+                  <p className="text-xs text-[#7A9BAD] mt-0.5 truncate">
+                    {new Date(app.dateTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {' • '}
+                    {new Date(app.dateTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                  </p>
                 </div>
-                <p className="font-medium text-gray-900 mb-1">No recent appointments</p>
-                <p className="text-sm text-gray-500 max-w-[250px] mb-4">
-                  When you book a dental visit, it will appear here.
-                </p>
-                <Button variant="outline" size="sm" className="rounded-xl border-gray-200" asChild>
-                  <Link href="/appointments">Book Now</Link>
-                </Button>
+
+                <span className={cn('badge ml-auto', statusClassMap[app.status] || 'badge-cancelled')}>
+                  {app.status}
+                </span>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right: Promotion or Tips Card */}
-        <div className="lg:col-span-1">
-          <Card className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 overflow-hidden relative group h-full flex flex-col items-center text-center justify-center">
-            <div className="h-16 w-16 bg-cyan-50 rounded-2xl flex items-center justify-center mb-4 text-cyan-600 transition-transform group-hover:scale-110 duration-500">
-              <Mic className="h-8 w-8" />
+            ))
+          ) : (
+            <div className="px-5 py-10 text-center">
+              <p className="text-sm font-medium text-[#1A2832] mb-1">No recent appointments</p>
+              <p className="text-xs text-[#7A9BAD]">When you book a visit, it will appear here.</p>
             </div>
-            <Badge className="bg-cyan-50 text-cyan-700 border-0 mb-3 font-bold hover:bg-cyan-50 px-3 py-1">AI ASSISTANT</Badge>
-            <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">Need help booking?</h3>
-            <p className="text-sm text-gray-500 leading-relaxed mb-6 px-2">
-              Talk to our intelligent voice assistant to schedule or modify your next dental visit hands-free.
-            </p>
-            <Button className="gradient-primary text-white rounded-xl font-bold w-full shadow-md shadow-cyan-100 hover:shadow-lg transition-all" asChild>
-               <Link href="/voice">Talk to AI Assistant</Link>
-            </Button>
-          </Card>
+          )}
         </div>
+      </section>
 
-      </div>
+      {/* AI Pro Upsell Strip */}
+      {showUpgradeStrip && (
+        <section className="bg-[#EDF5F8] rounded-[12px] border border-[#BAD7E1] px-5 py-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between">
+          <div className="flex items-center gap-3">
+            <Sparkles className="h-5 w-5 text-[#619BB6] shrink-0" />
+            <p className="text-sm text-[#4A6572]">
+              Upgrade to AI Pro for voice consultations with Riley
+            </p>
+          </div>
 
+          <Link
+            href="/billing"
+            className="border border-[#619BB6] text-[#619BB6] rounded-[6px] px-4 py-1.5 text-xs font-medium hover:bg-[#619BB6] hover:text-white transition-colors"
+          >
+            Upgrade
+          </Link>
+        </section>
+      )}
     </div>
   )
 }

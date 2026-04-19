@@ -1,6 +1,9 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
+import { auth } from '@/lib/auth'
+import { doctorSchema, validate } from '@/lib/validations'
+import { handlePrismaError } from '@/lib/prismaErrors'
 
 /**
  * Fetch all active doctors ordered by newest first
@@ -11,14 +14,25 @@ export async function getDoctors() {
       where: {
         isActive: true,
       },
-      orderBy: {
-        createdAt: 'desc',
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        specialty: true,
+        bio: true,
+        imageURL: true,
+        gender: true,
+        isActive: true,
       },
+      orderBy: { createdAt: 'desc' },
     })
     return doctors
   } catch (error) {
     console.error('Error in getDoctors:', error)
-    throw new Error('Failed to fetch doctors list')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Something went wrong')
   }
 }
 
@@ -38,6 +52,9 @@ export async function getDoctorById(id) {
     return doctor
   } catch (error) {
     console.error('Error in getDoctorById:', error)
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
     throw new Error(error.message || 'Failed to fetch doctor details')
   }
 }
@@ -47,12 +64,27 @@ export async function getDoctorById(id) {
  */
 export async function createDoctor(formData) {
   try {
-    const { name, email, specialty, bio, imageURL, gender } = formData
-
-    // Validation
-    if (!name || !email || !specialty || !imageURL || !gender) {
-      throw new Error('Missing required fields: name, email, specialty, imageURL, and gender are mandatory')
+    const session = await auth()
+    if (!session?.user?.email) {
+      throw new Error('Unauthorized')
     }
+    if (session.user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('Unauthorized: Admin access required')
+    }
+
+    const validation = validate(doctorSchema, formData)
+    if (!validation.success) {
+      throw new Error(Object.values(validation.errors)[0])
+    }
+
+    const existing = await prisma.doctor.findUnique({
+      where: { email: validation.data.email }
+    })
+    if (existing) {
+      throw new Error('A doctor with this email already exists')
+    }
+
+    const { name, email, specialty, bio, imageURL, gender } = validation.data
 
     const doctor = await prisma.doctor.create({
       data: {
@@ -68,13 +100,11 @@ export async function createDoctor(formData) {
     return doctor
   } catch (error) {
     console.error('Error in createDoctor:', error)
-    
-    // Check for unique constraint violation
-    if (error.code === 'P2002') {
-      throw new Error('A doctor with this email already exists')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
     }
-    
-    throw new Error(error.message || 'Failed to create doctor record')
+
+    throw new Error(error.message || 'Something went wrong')
   }
 }
 
@@ -83,6 +113,19 @@ export async function createDoctor(formData) {
  */
 export async function updateDoctor(id, formData) {
   try {
+    const session = await auth()
+    if (!session?.user?.email) {
+      throw new Error('Unauthorized')
+    }
+    if (session.user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('Unauthorized: Admin access required')
+    }
+
+    const updateValidation = validate(doctorSchema.partial(), formData)
+    if (!updateValidation.success) {
+      throw new Error(Object.values(updateValidation.errors)[0])
+    }
+
     // Check if doctor exists first
     const existingDoctor = await prisma.doctor.findUnique({
       where: { id },
@@ -94,13 +137,16 @@ export async function updateDoctor(id, formData) {
 
     const updatedDoctor = await prisma.doctor.update({
       where: { id },
-      data: formData,
+      data: updateValidation.data,
     })
 
     return updatedDoctor
   } catch (error) {
     console.error('Error in updateDoctor:', error)
-    throw new Error(error.message || 'Failed to update doctor record')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Something went wrong')
   }
 }
 
@@ -109,6 +155,18 @@ export async function updateDoctor(id, formData) {
  */
 export async function toggleDoctorStatus(id) {
   try {
+    const session = await auth()
+    if (!session?.user?.email) {
+      throw new Error('Unauthorized')
+    }
+    if (session.user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('Unauthorized: Admin access required')
+    }
+
+    if (!id || typeof id !== 'string') {
+      throw new Error('Invalid doctor ID')
+    }
+
     const doctor = await prisma.doctor.findUnique({
       where: { id },
       select: { isActive: true },
@@ -128,6 +186,9 @@ export async function toggleDoctorStatus(id) {
     return updatedDoctor
   } catch (error) {
     console.error('Error in toggleDoctorStatus:', error)
-    throw new Error(error.message || 'Failed to toggle doctor status')
+    if (error?.code?.startsWith?.('P')) {
+      throw new Error(handlePrismaError(error))
+    }
+    throw new Error(error.message || 'Something went wrong')
   }
 }

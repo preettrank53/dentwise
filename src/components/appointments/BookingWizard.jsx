@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { CheckCircle2, ChevronLeft, ChevronRight, CalendarCheck } from 'lucide-react'
+import { CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useCreateAppointment } from '@/hooks/useAppointments'
 import StepSelectDoctor from './StepSelectDoctor'
 import StepSelectDateTime from './StepSelectDateTime'
@@ -23,15 +23,60 @@ export default function BookingWizard() {
   const [selectedDateTime, setSelectedDateTime] = useState(null)
   const [reason, setReason] = useState('')
   const [isSuccess, setIsSuccess] = useState(false)
+  const [showDoctorError, setShowDoctorError] = useState(false)
+  const [showDateError, setShowDateError] = useState(false)
+  const [showTimeError, setShowTimeError] = useState(false)
 
-  const { mutate: createAppointment, isPending } = useCreateAppointment()
+  const createAppointmentMutation = useCreateAppointment()
+  const { mutate: createAppointment, isPending } = createAppointmentMutation
+
+  useEffect(() => {
+    if (selectedDoctorId) {
+      setShowDoctorError(false)
+    }
+  }, [selectedDoctorId])
+
+  useEffect(() => {
+    if (selectedDate) {
+      setShowDateError(false)
+    }
+  }, [selectedDate])
+
+  useEffect(() => {
+    if (selectedTimeSlot) {
+      setShowTimeError(false)
+    }
+  }, [selectedTimeSlot])
 
   const nextStep = () => {
+    if (currentStep === 1) {
+      if (!selectedDoctorId) {
+        setShowDoctorError(true)
+        return
+      }
+      setShowDoctorError(false)
+    }
+
     if (currentStep === 2) {
+      if (!selectedDate) {
+        setShowDateError(true)
+        return
+      }
+
+      setShowDateError(false)
+
+      if (!selectedTimeSlot) {
+        setShowTimeError(true)
+        return
+      }
+
+      setShowTimeError(false)
+
       // Create final DateTime object
       const finalDateTime = new Date(selectedTimeSlot.datetime)
       setSelectedDateTime(finalDateTime)
     }
+
     setCurrentStep((prev) => prev + 1)
   }
 
@@ -87,29 +132,40 @@ export default function BookingWizard() {
     setSelectedDateTime(null)
     setReason('')
     setIsSuccess(false)
+    setShowDoctorError(false)
+    setShowDateError(false)
+    setShowTimeError(false)
   }
 
   if (isSuccess) {
     return (
-      <Card className="max-w-xl mx-auto border-2 shadow-2xl">
-        <CardContent className="p-12 text-center space-y-6">
-          <div className="flex justify-center">
-            <div className="rounded-full bg-green-100 p-6 animate-bounce">
-              <CheckCircle2 className="h-20 w-20 text-green-600" />
-            </div>
+      <Card className="max-w-xl mx-auto bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)]">
+        <CardContent className="flex flex-col items-center text-center gap-6 py-12 px-6">
+          <div className="h-16 w-16 rounded-full bg-[#EDF5F8] border border-[#BAD7E1] flex items-center justify-center">
+            <CheckCircle2 className="h-8 w-8 text-[#619BB6]" />
           </div>
-          <h2 className="text-3xl font-black text-primary italic">Appointment Booked!</h2>
-          <p className="text-muted-foreground">
-            Thank you for choosing Dentwise. We've sent a confirmation email with all the details 
-            to your registered address.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
-            <Button size="lg" className="gradient-primary text-white" onClick={resetWizard}>
+
+          <div>
+            <h2 className="text-xl font-semibold text-[#1A2832]">Appointment Confirmed</h2>
+            <p className="text-sm text-[#4A6572] max-w-xs mt-2">
+              A confirmation email has been sent to your inbox.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-1">
+            <button
+              type="button"
+              className="border border-[#619BB6] text-[#619BB6] rounded-[6px] px-5 py-2.5 text-sm font-medium hover:bg-[#EDF5F8] transition-colors"
+              onClick={resetWizard}
+            >
               Book Another
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="/appointments/my">View My Appointments</Link>
-            </Button>
+            </button>
+            <Link
+              href="/appointments/my"
+              className="bg-[#619BB6] text-white rounded-[6px] px-5 py-2.5 text-sm font-medium hover:bg-[#4A7D96] transition-colors"
+            >
+              View My Appointments
+            </Link>
           </div>
         </CardContent>
       </Card>
@@ -118,44 +174,51 @@ export default function BookingWizard() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-20">
-      
       {/* Progress Indicator */}
-      <div className="flex items-center justify-between max-w-lg mx-auto relative px-4 sm:px-0">
-        <ProgressStep step={1} currentStep={currentStep} label="Select Doctor" />
+      <div className="flex items-center justify-center gap-0 mb-8">
+        <ProgressStep step={1} currentStep={currentStep} label="Doctor" />
         <ProgressLine active={currentStep > 1} />
-        <ProgressStep step={2} currentStep={currentStep} label="Choose Time" />
+        <ProgressStep step={2} currentStep={currentStep} label="Date & Time" />
         <ProgressLine active={currentStep > 2} />
         <ProgressStep step={3} currentStep={currentStep} label="Confirm" />
       </div>
 
       {/* Step Content */}
-      <Card className="border-0 shadow-lg bg-white/50 backdrop-blur-sm rounded-3xl overflow-hidden min-h-[450px]">
-        <CardContent className="p-4 sm:p-6 md:p-10 pb-8 sm:pb-10">
+      <Card className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)]">
+        <CardContent className="p-6 sm:p-8">
           {currentStep === 1 && (
-            <StepSelectDoctor 
-              onSelect={setSelectedDoctorId} 
-              selectedDoctorId={selectedDoctorId} 
-            />
+            <>
+              <StepSelectDoctor
+                onSelect={setSelectedDoctorId}
+                selectedDoctorId={selectedDoctorId}
+              />
+              {showDoctorError && (
+                <p className="text-xs text-[#C0392B] mt-3">Please select a doctor to continue</p>
+              )}
+            </>
           )}
 
           {currentStep === 2 && (
-            <StepSelectDateTime 
+            <StepSelectDateTime
               doctorId={selectedDoctorId}
               selectedDate={selectedDate}
               onSelectDate={setSelectedDate}
               selectedTime={selectedTimeSlot}
               onSelectTime={setSelectedTimeSlot}
               onSelectReason={setReason}
+              showDateError={showDateError}
+              showTimeError={showTimeError}
             />
           )}
 
           {currentStep === 3 && (
-            <StepConfirm 
+            <StepConfirm
               doctorId={selectedDoctorId}
               selectedDateTime={selectedDateTime}
               reason={reason}
               onConfirm={handleConfirm}
               isLoading={isPending}
+              mutation={createAppointmentMutation}
             />
           )}
         </CardContent>
@@ -163,30 +226,31 @@ export default function BookingWizard() {
 
       {/* Navigation Buttons */}
       {currentStep < 3 && (
-        <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-6 px-4 sm:px-0">
+        <div className="flex justify-between items-center pt-6 mt-6 border-t border-[#E2EDF2]">
           <Button
             variant="ghost"
             onClick={prevStep}
             className={cn(
-              "text-muted-foreground rounded-full px-8 w-full sm:w-auto h-12 sm:h-auto",
-              currentStep === 1 && "invisible"
+              'rounded-[6px] text-[#4A6572] hover:text-[#1A2832] hover:bg-[#EDF5F8]',
+              currentStep === 1 && 'invisible'
             )}
           >
             <ChevronLeft className="mr-2 h-4 w-4" />
             Back
           </Button>
 
-          <Button
+          <button
+            type="button"
             onClick={nextStep}
             disabled={
               (currentStep === 1 && !selectedDoctorId) ||
               (currentStep === 2 && (!selectedDate || !selectedTimeSlot))
             }
-            className="gradient-primary text-white rounded-full px-12 shadow-md shadow-primary/20 hover:opacity-90 w-full sm:w-auto h-12 sm:h-auto font-bold"
+            className="bg-[#619BB6] text-white rounded-[6px] px-5 py-2.5 text-sm font-medium hover:bg-[#4A7D96] disabled:opacity-40 disabled:cursor-not-allowed transition-colors inline-flex items-center"
           >
             Next
             <ChevronRight className="ml-2 h-4 w-4" />
-          </Button>
+          </button>
         </div>
       )}
     </div>
@@ -198,31 +262,35 @@ function ProgressStep({ step, currentStep, label }) {
   const isActive = currentStep === step
 
   return (
-    <div className="flex flex-col items-center z-10 space-y-2">
-      <div className={cn(
-        "h-8 w-8 sm:h-10 sm:w-10 rounded-full flex items-center justify-center font-bold transition-all duration-500",
-        isCompleted ? "bg-cyan-500 text-white" : "",
-        isActive ? "gradient-primary text-white scale-110 shadow-lg" : "bg-white border-2 border-muted text-muted-foreground"
-      )}>
-        {isCompleted ? <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5" /> : step}
+    <div className="flex items-center">
+      <div className="flex flex-col items-center">
+        <div
+          className={cn(
+            'h-8 w-8 rounded-full flex items-center justify-center',
+            isCompleted && 'bg-[#619BB6] border border-[#619BB6]',
+            isActive && 'bg-white border-2 border-[#619BB6]',
+            !isCompleted && !isActive && 'bg-white border border-[#E2EDF2]'
+          )}
+        >
+          {isCompleted ? (
+            <CheckCircle2 className="h-4 w-4 text-white" />
+          ) : (
+            <span className={cn('text-sm', isActive ? 'font-semibold text-[#619BB6]' : 'text-[#A8C4CF]')}>{step}</span>
+          )}
+        </div>
+        <span
+          className={cn(
+            'text-[10px] font-medium uppercase tracking-wider mt-1 text-center',
+            (isCompleted || isActive) ? 'text-[#619BB6]' : 'text-[#A8C4CF]'
+          )}
+        >
+          {label}
+        </span>
       </div>
-      <span className={cn(
-        "text-[10px] sm:text-xs font-bold uppercase tracking-tight absolute -bottom-6 whitespace-nowrap hidden sm:block",
-        isActive ? "text-primary" : "text-muted-foreground opacity-60"
-      )}>
-        {label}
-      </span>
     </div>
   )
 }
 
 function ProgressLine({ active }) {
-  return (
-    <div className="flex-1 h-[2px] bg-muted mx-2 sm:mx-4 relative top-[-10px]">
-      <div className={cn(
-        "absolute inset-0 bg-cyan-500 transition-all duration-700",
-        active ? "w-full" : "w-0"
-      )} />
-    </div>
-  )
+  return <div className={cn('w-16 h-[1px] mx-2', active ? 'bg-[#619BB6]' : 'bg-[#E2EDF2]')} />
 }

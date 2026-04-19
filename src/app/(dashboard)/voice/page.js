@@ -32,24 +32,22 @@ export default async function VoicePage() {
   }
 
   return (
-    <div className="page-container pb-20">
-      {/* PAGE HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pt-8">
+    <div className="page-container pb-20 pt-8 space-y-6">
+      <div className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">AI Voice Assistant</h1>
+          <h1 className="text-2xl font-semibold text-[#1A2832]">AI Voice Assistant</h1>
           <div className="flex items-center gap-1.5 mt-1">
-            <Mic className="h-4 w-4 text-cyan-500" />
-            <p className="text-sm text-gray-500">Powered by Vapi AI</p>
+            <Mic className="h-4 w-4 text-[#619BB6]" />
+            <p className="text-sm text-[#4A6572]">Powered by Vapi AI</p>
           </div>
         </div>
         
-        <div className="inline-flex items-center gap-1.5 bg-purple-50 text-purple-700 border border-purple-200 rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-wider shrink-0 w-fit">
+        <div className="inline-flex items-center gap-1.5 bg-[#EDF5F8] text-[#1A2832] border border-[#BAD7E1] rounded-[4px] px-2 py-1 text-xs font-medium uppercase tracking-wider shrink-0 w-fit">
           <Crown className="h-4 w-4" />
           AI Pro Active
         </div>
       </div>
 
-      {/* VOICE INTERFACE */}
       <VoiceInterface />
     </div>
   )

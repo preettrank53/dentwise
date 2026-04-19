@@ -27,15 +27,9 @@ import ErrorState from '@/components/ui/ErrorState'
 
 export default function UserAppointmentsList() {
   const { data: appointments, isLoading, isError, refetch } = useGetUserAppointments()
-  const { mutate: cancelAppointment } = useCancelAppointment()
+  const cancelMutation = useCancelAppointment()
   const [cancellingId, setCancellingId] = useState(null)
-
-  const handleCancel = (id) => {
-    setCancellingId(id)
-    cancelAppointment(id, {
-      onSettled: () => setCancellingId(null)
-    })
-  }
+  const [dialogOpenId, setDialogOpenId] = useState(null)
 
   if (isLoading) {
     return (
@@ -151,7 +145,10 @@ export default function UserAppointmentsList() {
               </Badge>
 
               {appointment.status === 'CONFIRMED' && (
-                <AlertDialog>
+                <AlertDialog
+                  open={dialogOpenId === appointment.id}
+                  onOpenChange={(open) => setDialogOpenId(open ? appointment.id : null)}
+                >
                   <AlertDialogTrigger asChild>
                     <Button 
                       variant="outline" 
@@ -176,9 +173,17 @@ export default function UserAppointmentsList() {
                     <AlertDialogFooter className="mt-4 flex gap-3 sm:justify-end">
                       <AlertDialogCancel className="rounded-xl border-gray-200 m-0 hover:bg-gray-50">Keep Appointment</AlertDialogCancel>
                       <AlertDialogAction 
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.preventDefault()
-                          handleCancel(appointment.id)
+                          setCancellingId(appointment.id)
+                          try {
+                            await cancelMutation.mutateAsync(appointment.id)
+                            setDialogOpenId(null)
+                          } catch (error) {
+                            setDialogOpenId(null)
+                          } finally {
+                            setCancellingId(null)
+                          }
                         }}
                         className="bg-red-600 hover:bg-red-700 text-white rounded-xl border-0 m-0"
                         disabled={cancellingId === appointment.id}

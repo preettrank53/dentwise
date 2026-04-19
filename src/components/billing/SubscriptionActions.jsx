@@ -11,7 +11,7 @@ export default function SubscriptionActions({ plan }) {
 
   if (plan === 'FREE') {
     return (
-      <Button asChild className="gradient-primary text-white rounded-xl shadow-sm px-6 font-bold h-10 w-full sm:w-auto mt-4 sm:mt-0">
+      <Button asChild className="bg-[#619BB6] text-white rounded-[6px] shadow-sm px-6 font-medium h-10 w-full sm:w-auto mt-4 sm:mt-0 hover:bg-[#4A7D96] border-0">
         <Link href="/billing">Upgrade Plan</Link>
       </Button>
     )
@@ -20,13 +20,13 @@ export default function SubscriptionActions({ plan }) {
   return (
     <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
       {plan === 'BASIC' && (
-        <Button asChild className="gradient-primary text-white rounded-xl shadow-sm font-bold w-full sm:w-auto h-10 px-6">
+        <Button asChild className="bg-[#619BB6] text-white rounded-[6px] shadow-sm font-medium w-full sm:w-auto h-10 px-6 hover:bg-[#4A7D96] border-0">
           <Link href="/billing">Upgrade</Link>
         </Button>
       )}
       <Button 
         variant="outline" 
-        className="rounded-xl border-gray-200 w-full sm:w-auto h-10 px-6 font-bold text-gray-700"
+        className="rounded-[6px] border-[#D0E4EA] w-full sm:w-auto h-10 px-6 font-medium text-[#4A6572] hover:bg-[#EDF5F8]"
         onClick={() => createPortal()}
         disabled={isPending}
       >
