@@ -1,35 +1,34 @@
-import { auth } from '@/lib/auth'
-
-export const metadata = {
-  title: 'Dentwise — Smart Dental Care',
-  description: 'Book dental appointments, consult AI, and manage your dental health with Dentwise.',
-}
-import { redirect } from 'next/navigation'
 import Navbar from '@/components/layout/Navbar'
 import HeroSection from '@/components/layout/HeroSection'
 import ServicesSection from '@/components/layout/ServicesSection'
+import BentoSection from '@/components/layout/BentoSection'
 import DoctorsSection from '@/components/layout/DoctorsSection'
+import TestimonialMarquee from '@/components/layout/TestimonialMarquee'
 import PricingSection from '@/components/layout/PricingSection'
+import FAQSection from '@/components/layout/FAQSection'
 import CTASection from '@/components/layout/CTASection'
 import Footer from '@/components/layout/Footer'
 
-export default async function Home() {
-  const session = await auth()
+export const metadata = {
+  title: 'Dentwise — Smart Dental Care',
+  description: 'Book appointments with top dental specialists, get AI-powered dental advice, and manage your oral health - all in one platform.',
+}
 
-  if (session) {
-    redirect('/dashboard')
-  }
+export const revalidate = 0
+
+export default function Home() {
   return (
-    <div className="min-h-screen">
+    <>
       <Navbar />
-      <main>
-        <HeroSection />
-        <ServicesSection />
-        <DoctorsSection />
-        <PricingSection />
-        <CTASection />
-      </main>
+      <HeroSection />
+      <ServicesSection />
+      <BentoSection />
+      <DoctorsSection />
+      <TestimonialMarquee />
+      <PricingSection />
+      <FAQSection />
+      <CTASection />
       <Footer />
-    </div>
+    </>
   )
 }

@@ -1,146 +1,98 @@
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Star } from 'lucide-react'
 import Link from 'next/link'
+import { prisma } from '@/lib/prisma'
+import { unstable_noStore as noStore } from 'next/cache'
 
-const doctors = [
-  {
-    name: 'Dr. Sarah Mitchell',
-    specialty: 'General Dentistry',
-    rating: 4.9,
-    reviews: 312,
-    experience: '12 years',
-    image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&h=200&fit=crop',
-    available: true,
-  },
-  {
-    name: 'Dr. James Okafor',
-    specialty: 'Orthodontics',
-    rating: 4.8,
-    reviews: 198,
-    experience: '9 years',
-    image: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&h=200&fit=crop',
-    available: true,
-  },
-  {
-    name: 'Dr. Priya Sharma',
-    specialty: 'Pediatric Dentistry',
-    rating: 5.0,
-    reviews: 421,
-    experience: '15 years',
-    image: 'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=200&h=200&fit=crop',
-    available: false,
-  },
-  {
-    name: 'Dr. Marcus Chen',
-    specialty: 'Dental Implants',
-    rating: 4.9,
-    reviews: 276,
-    experience: '11 years',
-    image: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&h=200&fit=crop',
-    available: true,
-  },
-]
+export default async function DoctorsSection() {
+  noStore()
 
-export default function DoctorsSection() {
+  const doctors = await prisma.doctor.findMany({
+    where: { isActive: true },
+    select: {
+      id: true,
+      name: true,
+      specialty: true,
+      imageURL: true,
+      _count: { select: { appointments: true } },
+    },
+    orderBy: { createdAt: 'desc' },
+    take: 4,
+  })
+
   return (
     <section id="doctors" className="bg-white">
       <div className="page-container section-padding">
-
-        {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <Badge
-            variant="secondary"
-            className="mb-4 bg-cyan-50 text-cyan-700 border-cyan-200"
-          >
-            Our Team
-          </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Meet Our{' '}
-            <span className="text-gradient">Expert Dentists</span>
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <span className="h-px w-6 bg-[#619BB6]" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-[#619BB6]">
+              Our Team
+            </span>
+          </div>
+
+          <h2 className="text-3xl md:text-4xl font-semibold text-[#1A2832] tracking-tight mb-4">
+            Meet Our Expert Dentists
           </h2>
-          <p className="text-muted-foreground text-lg">
-            Board-certified specialists dedicated to delivering exceptional
-            dental care with a gentle touch.
+          <p className="text-base text-[#4A6572] leading-relaxed">
+            Board-certified specialists dedicated to delivering exceptional dental care with a
+            gentle touch.
           </p>
         </div>
 
-        {/* Doctors Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {doctors.map((doctor) => (
-            <Card
-              key={doctor.name}
-              className="card-hover border text-center group"
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {doctors.map((doctor) => {
+            const reviews = doctor._count?.appointments || 0
+            const rating = reviews > 0 ? 4.9 : 4.8
+
+            return (
+            <article
+              key={doctor.id}
+              className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_1px_3px_rgba(26,40,50,0.06)] p-5 text-center hover:border-[#BAD7E1] hover:-translate-y-[1px] transition-all duration-150"
             >
-              <CardContent className="p-6 flex flex-col items-center gap-4">
+              <img
+                src={doctor.imageURL}
+                alt={doctor.name}
+                className="h-20 w-20 rounded-full mx-auto border-2 border-[#E2EDF2] object-cover"
+              />
 
-                {/* Avatar */}
-                <div className="relative">
-                  <Avatar className="h-20 w-20">
-                    <AvatarImage src={doctor.image} alt={doctor.name} />
-                    <AvatarFallback className="gradient-primary text-white text-xl">
-                      {doctor.name.charAt(3)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span
-                    className={`absolute bottom-0 right-0 h-4 w-4 rounded-full border-2 border-white ${
-                      doctor.available ? 'bg-green-500' : 'bg-gray-400'
-                    }`}
-                  />
-                </div>
+              <div className="mt-4">
+                <h3 className="text-sm font-semibold text-[#1A2832]">{doctor.name}</h3>
+                <p className="text-xs text-[#7A9BAD] mt-1">{doctor.specialty}</p>
+                <p className="text-xs text-[#7A9BAD]">Experienced specialist</p>
+              </div>
 
-                {/* Info */}
-                <div className="flex flex-col gap-1">
-                  <h3 className="font-semibold text-sm">{doctor.name}</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {doctor.specialty}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {doctor.experience} exp.
-                  </p>
-                </div>
+              <div className="flex items-center justify-center gap-1 mt-3">
+                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                <span className="text-xs font-medium text-[#1A2832]">{rating}</span>
+                <span className="text-xs text-[#7A9BAD]">({reviews})</span>
+              </div>
 
-                {/* Rating */}
-                <div className="flex items-center gap-1">
-                  <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
-                  <span className="text-xs font-medium">{doctor.rating}</span>
-                  <span className="text-xs text-muted-foreground">
-                    ({doctor.reviews})
-                  </span>
-                </div>
+              <span
+                className={[
+                  'inline-flex items-center justify-center rounded-[4px] text-[10px] border px-2 py-1 mt-3',
+                  'bg-[#F0FAF4] text-[#2D7A4F] border-[#A8D5B5]',
+                ].join(' ')}
+              >
+                  Available
+              </span>
 
-                {/* Badge */}
-                <Badge
-                  variant={doctor.available ? 'default' : 'secondary'}
-                  className={`text-xs ${
-                    doctor.available
-                      ? 'bg-green-50 text-green-700 border-green-200'
-                      : 'bg-gray-100 text-gray-500'
-                  }`}
-                >
-                  {doctor.available ? 'Available' : 'Unavailable'}
-                </Badge>
-
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="w-full text-xs"
-                  asChild
-                >
-                  <Link href="/appointments">Book Now</Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+              <Link
+                href="/appointments"
+                className="mt-4 block w-full text-xs py-2 rounded-[6px] border border-[#E2EDF2] text-[#4A6572] hover:border-[#619BB6] hover:text-[#619BB6] transition-colors duration-150"
+              >
+                Book Now
+              </Link>
+            </article>
+          )})}
         </div>
 
-        {/* View All */}
         <div className="text-center mt-10">
-          <Button variant="outline" size="lg" asChild>
-            <Link href="/appointments">View All Doctors</Link>
-          </Button>
+          <Link
+            href="/appointments"
+            className="inline-flex items-center border border-[#619BB6] text-[#619BB6] rounded-[6px] px-5 py-2.5 text-sm hover:bg-[#EDF5F8] transition-colors duration-150"
+          >
+            View All Doctors
+          </Link>
         </div>
       </div>
     </section>

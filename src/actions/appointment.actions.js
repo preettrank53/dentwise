@@ -4,6 +4,10 @@ import { prisma } from '@/lib/prisma'
 import { auth } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 import { handlePrismaError } from '@/lib/prismaErrors'
+import { Resend } from 'resend'
+import AppointmentConfirmation from '@/components/emails/AppointmentConfirmation'
+
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 /**
  * 1. getAvailableTimeSlots(doctorId, date)
@@ -96,7 +100,7 @@ export async function createAppointment(formData) {
     if (!formData?.doctorId || typeof formData.doctorId !== 'string') {
       throw new Error('Please select a doctor')
     }
-    if (!formData?.dateTime || typeof formData.dateTime !== 'string') {
+    if (!formData?.dateTime) {
       throw new Error('Please select a date and time')
     }
 
@@ -159,10 +163,39 @@ export async function createAppointment(formData) {
       }
     })
 
-    revalidatePath('/dashboard/appointments')
+    revalidatePath('/appointments')
+    revalidatePath('/appointments/my')
     revalidatePath('/admin')
+
+    let emailSent = false
+    if (resend && appointment?.user?.email) {
+      try {
+        await resend.emails.send({
+          from: 'Dentwise <onboarding@resend.dev>',
+          to: [appointment.user.email],
+          subject: 'Appointment Confirmed — Dentwise',
+          react: AppointmentConfirmation({
+            patientName: appointment.user.name || 'Patient',
+            doctorName: appointment.doctor.name,
+            doctorSpecialty: appointment.doctor.specialty,
+            appointmentDate: appointment.dateTime,
+            appointmentTime: appointment.dateTime.toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+            }),
+          }),
+        })
+        emailSent = true
+      } catch (emailError) {
+        console.error('Appointment email failed:', emailError)
+      }
+    }
     
-    return appointment
+    return {
+      ...appointment,
+      emailSent,
+    }
   } catch (error) {
     console.error('createAppointment Error:', error)
     if (error?.code?.startsWith?.('P')) {
@@ -257,7 +290,8 @@ export async function cancelAppointment(appointmentId) {
       }
     })
 
-    revalidatePath('/dashboard/appointments')
+    revalidatePath('/appointments')
+    revalidatePath('/appointments/my')
     revalidatePath('/admin')
 
     return updatedAppointment

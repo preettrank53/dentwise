@@ -43,9 +43,11 @@ export const useCreateAppointment = () => {
 
   return useMutation({
     mutationFn: (formData) => createAppointment(formData),
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.success('Appointment Booked!', {
-        description: 'Check your email for confirmation details.',
+        description: data?.emailSent
+          ? 'Confirmation email sent successfully.'
+          : 'Booking confirmed. You can view details in My Appointments.',
         duration: 5000,
       })
       // Invalidate current user's appointments

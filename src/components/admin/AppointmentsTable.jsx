@@ -8,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/components/ui/skeleton'
 import { Search, ChevronLeft, ChevronRight, Loader2, User, CalendarX } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { toast } from 'sonner'
 import EmptyState from '@/components/ui/EmptyState'
 import ErrorState from '@/components/ui/ErrorState'
 
@@ -40,12 +39,6 @@ export default function AppointmentsTable() {
     updateStatus(
       { id, status: 'COMPLETED' },
       {
-        onSuccess: () => {
-          toast.success('Appointment marked as completed')
-        },
-        onError: () => {
-          toast.error('Failed to update status')
-        },
         onSettled: () => {
           setUpdatingId(null)
         },

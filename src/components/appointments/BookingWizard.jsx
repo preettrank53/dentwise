@@ -4,7 +4,6 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
 import { CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useCreateAppointment } from '@/hooks/useAppointments'
 import StepSelectDoctor from './StepSelectDoctor'
@@ -93,33 +92,23 @@ export default function BookingWizard() {
   }
 
   const handleConfirm = () => {
+    const finalDateTime = selectedDateTime || selectedTimeSlot?.datetime || null
+
+    if (!selectedDoctorId || !finalDateTime) {
+      if (!selectedDate) setShowDateError(true)
+      if (!selectedTimeSlot) setShowTimeError(true)
+      return
+    }
+
     const formData = {
       doctorId: selectedDoctorId,
-      dateTime: selectedDateTime,
+      dateTime: finalDateTime ? new Date(finalDateTime).toISOString() : null,
       reason: reason
     }
 
     createAppointment(formData, {
       onSuccess: (appointment) => {
         setIsSuccess(true)
-        toast.success("Appointment booked successfully!")
-
-        // Trigger Confirmation Email (Fire and forget)
-        fetch('/api/send-appointment-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            patientName: appointment.user.name,
-            patientEmail: appointment.user.email,
-            doctorName: appointment.doctor.name,
-            doctorSpecialty: appointment.doctor.specialty,
-            appointmentDate: selectedDateTime,
-            appointmentTime: selectedTimeSlot.time
-          })
-        }).catch(err => console.error("Email send trigger failed:", err))
-      },
-      onError: (error) => {
-        toast.error(error.message || "Failed to book appointment")
       }
     })
   }
@@ -148,7 +137,7 @@ export default function BookingWizard() {
           <div>
             <h2 className="text-xl font-semibold text-[#1A2832]">Appointment Confirmed</h2>
             <p className="text-sm text-[#4A6572] max-w-xs mt-2">
-              A confirmation email has been sent to your inbox.
+              Your appointment has been booked successfully.
             </p>
           </div>
 

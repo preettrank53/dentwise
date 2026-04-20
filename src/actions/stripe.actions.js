@@ -135,6 +135,55 @@ export async function getUserSubscription() {
       }
     }
 
+    // Reconcile from Stripe if local data is stale (e.g. missed webhook events).
+    if (subscription.stripeCustomerId) {
+      try {
+        const stripeSubs = await stripe.subscriptions.list({
+          customer: subscription.stripeCustomerId,
+          status: 'all',
+          limit: 5,
+        })
+
+        const liveSub = stripeSubs.data.find((s) =>
+          ['active', 'trialing', 'past_due'].includes(s.status)
+        )
+
+        if (liveSub) {
+          const livePriceId = liveSub.items?.data?.[0]?.price?.id || null
+          const livePlan =
+            livePriceId === PLANS.AI_PRO.priceId
+              ? 'AI_PRO'
+              : livePriceId === PLANS.BASIC.priceId
+                ? 'BASIC'
+                : subscription.plan
+
+          const liveStatus = liveSub.status === 'past_due' ? 'PAST_DUE' : 'ACTIVE'
+
+          const needsSync =
+            subscription.plan !== livePlan ||
+            subscription.status !== liveStatus ||
+            subscription.stripeSubscriptionId !== liveSub.id ||
+            subscription.stripePriceId !== livePriceId
+
+          if (needsSync) {
+            const synced = await prisma.subscription.update({
+              where: { id: subscription.id },
+              data: {
+                plan: livePlan,
+                status: liveStatus,
+                stripeSubscriptionId: liveSub.id,
+                stripePriceId: livePriceId,
+                currentPeriodEnd: new Date(liveSub.current_period_end * 1000),
+              },
+            })
+            return synced
+          }
+        }
+      } catch (syncError) {
+        console.error('Subscription reconcile failed:', syncError)
+      }
+    }
+
     return subscription
   } catch (error) {
     console.error('Get Subscription Error:', error)

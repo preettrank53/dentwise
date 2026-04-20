@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
+import { PLANS } from '@/lib/plans'
 
 export async function POST(req) {
   try {
@@ -71,6 +72,12 @@ export async function POST(req) {
         const statusRaw = data.status
         const currentPeriodEnd = new Date(data.current_period_end * 1000)
         const priceId = data.items.data[0].price.id
+        const planFromPrice =
+          priceId === PLANS.AI_PRO.priceId
+            ? 'AI_PRO'
+            : priceId === PLANS.BASIC.priceId
+              ? 'BASIC'
+              : 'FREE'
 
         let dbStatus = 'ACTIVE'
         if (statusRaw === 'active') dbStatus = 'ACTIVE'
@@ -85,6 +92,7 @@ export async function POST(req) {
           await prisma.subscription.update({
             where: { id: existingSub.id },
             data: {
+              plan: planFromPrice,
               status: dbStatus,
               currentPeriodEnd,
               stripePriceId: priceId

@@ -1,53 +1,50 @@
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { ArrowRight, MessageSquare } from 'lucide-react'
+import AnimatedSection from '@/components/ui/AnimatedSection'
 
 export default function CTASection() {
   return (
-    <section className="relative overflow-hidden">
-      <div className="gradient-primary w-full">
-        <div className="page-container section-padding">
-          <div className="relative z-10 flex flex-col items-center text-center max-w-3xl mx-auto gap-8">
-            <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight leading-tight">
-              Ready to Transform Your Smile?
-            </h2>
-            <p className="text-lg md:text-xl text-white/90 leading-relaxed">
-              Join thousands of happy patients who trust Dentwise for their
-              dental health. Book your first appointment today or chat with our
-              AI assistant.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-              <Button
-                size="lg"
-                variant="secondary"
-                className="h-12 px-8 text-base font-semibold bg-white text-cyan-600 hover:bg-white/90 border-0"
-                asChild
-              >
-                <Link href="/appointments">
+    <section>
+      <div className="page-container section-padding">
+        <AnimatedSection direction="up" delay={0}>
+          <div className="relative bg-[#1A2832] rounded-[12px] px-8 py-14 md:py-20 text-center overflow-hidden">
+            <div className="pointer-events-none absolute -top-10 -right-10 w-64 h-64 rounded-full bg-[#619BB6] opacity-[0.06] blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-10 -left-10 w-64 h-64 rounded-full bg-[#619BB6] opacity-[0.04] blur-3xl" />
+
+            <div className="relative z-10 max-w-3xl mx-auto">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#619BB6] mb-4">
+                Get Started Today
+              </p>
+
+              <h2 className="text-3xl md:text-4xl font-semibold text-white tracking-tight leading-tight">
+                Ready to Transform Your Dental Practice?
+              </h2>
+
+              <p className="text-base text-[#4A6572] mt-4 max-w-md mx-auto leading-relaxed">
+                Join patients who manage their dental health smarter with Dentwise. Book your first
+                appointment in minutes.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+                <Link
+                  href="/appointments"
+                  className="bg-[#619BB6] text-white rounded-[6px] px-6 py-3 text-sm font-medium hover:bg-[#4A7D96] transition-colors"
+                >
                   Book Appointment
-                  <ArrowRight className="ml-2 h-4 w-4 text-cyan-500" />
                 </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-12 px-8 text-base font-semibold border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
-                asChild
-              >
-                <Link href="/voice">
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  Try AI Assistant
+                <Link
+                  href="/#pricing"
+                  className="bg-transparent text-white border border-[#2D3F4F] hover:border-[#619BB6] hover:text-[#619BB6] rounded-[6px] px-6 py-3 text-sm font-medium transition-all duration-150"
+                >
+                  View Pricing
                 </Link>
-              </Button>
+              </div>
+
+              <p className="mt-6 text-xs text-[#4A6572]">
+                No credit card required • Free plan available • Cancel anytime
+              </p>
             </div>
           </div>
-        </div>
-
-        {/* Decorative background shapes */}
-        <div className="absolute top-0 left-0 w-full h-full -z-0 opacity-10 pointer-events-none">
-          <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full border-[40px] border-white" />
-          <div className="absolute -bottom-24 -right-24 w-64 h-64 rounded-full border-[20px] border-white" />
-        </div>
+        </AnimatedSection>
       </div>
     </section>
   )

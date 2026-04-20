@@ -109,8 +109,17 @@ export default function Sidebar() {
             </div>
           </div>
 
-          <span className={cn('badge', currentPlan === 'FREE' ? 'badge-free' : 'badge-basic')}>
-            {currentPlan === 'FREE' ? 'Free' : 'Basic'}
+          <span
+            className={cn(
+              'badge',
+              currentPlan === 'FREE'
+                ? 'badge-free'
+                : currentPlan === 'AI_PRO'
+                  ? 'badge-pro'
+                  : 'badge-basic'
+            )}
+          >
+            {currentPlan === 'FREE' ? 'Free' : currentPlan === 'AI_PRO' ? 'AI Pro' : 'Basic'}
           </span>
 
           <button

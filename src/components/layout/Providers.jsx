@@ -25,6 +25,8 @@ export default function Providers({ children }) {
         {children}
         <Toaster
           position="bottom-right"
+          visibleToasts={3}
+          gap={10}
           expand={false}
           richColors
           toastOptions={{

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { CheckCircle2 } from 'lucide-react'
+import AnimatedSection from '@/components/ui/AnimatedSection'
 
 export default function HeroSection() {
   return (
@@ -8,8 +9,7 @@ export default function HeroSection() {
 
       <div className="page-container section-padding py-20 md:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left */}
-          <div>
+          <AnimatedSection direction="left" delay={0}>
             <div className="flex items-center gap-2 mb-6">
               <span className="h-px w-8 bg-[#619BB6]" />
               <span className="text-xs font-semibold uppercase tracking-widest text-[#619BB6]">
@@ -58,10 +58,9 @@ export default function HeroSection() {
                 <p className="text-xs text-[#7A9BAD]">quick bookings</p>
               </div>
             </div>
-          </div>
+          </AnimatedSection>
 
-          {/* Right */}
-          <div className="relative lg:flex lg:justify-center">
+          <AnimatedSection direction="right" delay={100} className="relative lg:flex lg:justify-center">
             <div className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_8px_32px_rgba(26,40,50,0.08)] p-5 w-full max-w-[430px]">
               <div className="h-48 w-full rounded-[8px] bg-[#EDF5F8] overflow-hidden">
                 <img
@@ -84,7 +83,7 @@ export default function HeroSection() {
               </span>
               <span className="text-xs font-medium text-[#1A2832]">Appointment Confirmed</span>
             </div>
-          </div>
+          </AnimatedSection>
         </div>
       </div>
     </section>

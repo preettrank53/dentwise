@@ -1,134 +1,119 @@
 import Link from 'next/link'
-import { Separator } from '@/components/ui/separator'
-import {
-  Stethoscope,
-  Globe,
-  Camera,
-  MessageCircle,
-  Mail,
-  Phone,
-  MapPin,
-} from 'lucide-react'
+import { Globe, Send, Share2, Stethoscope } from 'lucide-react'
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear()
+  const productLinks = [
+    { label: 'Features', href: '/#services' },
+    { label: 'Pricing', href: '/#pricing' },
+    { label: 'AI Assistant', href: '/voice' },
+    { label: 'Book Appointment', href: '/appointments' },
+  ]
 
-  const footerLinks = {
-    company: [
-      { label: 'About Us', href: '/#about' },
-      { label: 'Our Team', href: '/#team' },
-      { label: 'Careers', href: '/#careers' },
-      { label: 'Contact', href: '/#contact' },
-    ],
-    services: [
-      { label: 'General Dentistry', href: '/#services' },
-      { label: 'Teeth Whitening', href: '/#services' },
-      { label: 'Orthodontics', href: '/#services' },
-      { label: 'Dental Implants', href: '/#services' },
-    ],
-    support: [
-      { label: 'Help Center', href: '/#help' },
-      { label: 'Privacy Policy', href: '/privacy' },
-      { label: 'Terms of Service', href: '/terms' },
-      { label: 'Patient Portal', href: '/appointments' },
-    ],
-  }
+  const companyLinks = [
+    { label: 'About', href: '/#' },
+    { label: 'Blog', href: '/#' },
+    { label: 'Careers', href: '/#' },
+    { label: 'Contact', href: '/#' },
+  ]
+
+  const supportLinks = [
+    { label: 'Help Center', href: '/#' },
+    { label: 'Privacy Policy', href: '/#' },
+    { label: 'Terms of Service', href: '/#' },
+    { label: 'Cookie Policy', href: '/#' },
+  ]
 
   return (
-    <footer className="bg-white border-t">
-      <div className="page-container py-12 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-
-          {/* Brand Column */}
-          <div className="flex flex-col gap-6">
+    <footer className="bg-[#1A2832]">
+      <div className="page-container py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+          <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary">
+              <div className="h-8 w-8 rounded-[8px] bg-[#619BB6] flex items-center justify-center">
                 <Stethoscope className="h-4 w-4 text-white" />
               </div>
-              <span className="text-xl font-bold text-gradient">Dentwise</span>
+              <span className="text-white font-semibold text-lg">Dentwise</span>
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Leading the way in modern dental care with AI-powered diagnostics
-              and accessible patient-centric solutions. Your smile is our
-              priority.
+
+            <p className="text-sm text-[#4A6572] mt-3 leading-relaxed max-w-[200px]">
+              Smart dental care management for modern clinics.
             </p>
-            <div className="flex items-center gap-4">
-              <Link href="#" className="text-muted-foreground hover:text-cyan-600 transition-colors">
-                <Globe className="h-5 w-5" />
+
+            <div className="flex items-center gap-3 mt-5">
+              <Link
+                href="#"
+                className="h-8 w-8 rounded-[6px] border border-[#2D3F4F] text-[#4A6572] hover:text-white hover:border-[#619BB6] transition-all duration-150 flex items-center justify-center"
+              >
+                <Globe className="h-4 w-4" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-cyan-600 transition-colors">
-                <Camera className="h-5 w-5" />
+              <Link
+                href="#"
+                className="h-8 w-8 rounded-[6px] border border-[#2D3F4F] text-[#4A6572] hover:text-white hover:border-[#619BB6] transition-all duration-150 flex items-center justify-center"
+              >
+                <Send className="h-4 w-4" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-cyan-600 transition-colors">
-                <MessageCircle className="h-5 w-5" />
+              <Link
+                href="#"
+                className="h-8 w-8 rounded-[6px] border border-[#2D3F4F] text-[#4A6572] hover:text-white hover:border-[#619BB6] transition-all duration-150 flex items-center justify-center"
+              >
+                <Share2 className="h-4 w-4" />
               </Link>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="flex flex-col gap-6">
-            <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground">Company</h4>
-            <ul className="flex flex-col gap-3">
-              {footerLinks.company.map((link) => (
-                <li key={link.label}>
-                  <Link href={link.href} className="text-sm text-muted-foreground hover:text-cyan-600 transition-colors">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <div>
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-[#4A6572] mb-4">Product</h4>
+            {productLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="text-sm text-[#7A9BAD] hover:text-white transition-colors duration-150 block mb-2.5"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
 
-          <div className="flex flex-col gap-6">
-            <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground">Services</h4>
-            <ul className="flex flex-col gap-3">
-              {footerLinks.services.map((link) => (
-                <li key={link.label}>
-                  <Link href={link.href} className="text-sm text-muted-foreground hover:text-cyan-600 transition-colors">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+          <div>
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-[#4A6572] mb-4">Company</h4>
+            {companyLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="text-sm text-[#7A9BAD] hover:text-white transition-colors duration-150 block mb-2.5"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
 
-          {/* Contact Info */}
-          <div className="flex flex-col gap-6">
-            <h4 className="font-semibold text-sm uppercase tracking-wider text-foreground">Contact</h4>
-            <ul className="flex flex-col gap-4">
-              <li className="flex items-start gap-3">
-                <MapPin className="h-4 w-4 text-cyan-500 mt-0.5 shrink-0" />
-                <span className="text-sm text-muted-foreground">
-                  123 Smile Boulevard, Health City, DE 56789
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="h-4 w-4 text-cyan-500 shrink-0" />
-                <span className="text-sm text-muted-foreground">+1 (555) 000-1234</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-cyan-500 shrink-0" />
-                <span className="text-sm text-muted-foreground">hello@dentwise.com</span>
-              </li>
-            </ul>
+          <div>
+            <h4 className="text-xs font-semibold uppercase tracking-widest text-[#4A6572] mb-4">Support</h4>
+            {supportLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                className="text-sm text-[#7A9BAD] hover:text-white transition-colors duration-150 block mb-2.5"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
         </div>
 
-        <Separator className="my-10" />
+        <div className="border-t border-[#2D3F4F] my-8" />
 
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-sm text-muted-foreground">
-            © {currentYear} Dentwise Dental Care. All rights reserved.
-          </p>
-          <div className="flex items-center gap-6">
-            <Link href="/privacy" className="text-xs text-muted-foreground hover:text-cyan-600 underline-offset-4 hover:underline">
-              Privacy Policy
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-[#4A6572]">© 2026 Dentwise. All rights reserved.</p>
+
+          <p className="text-xs text-[#4A6572]">Built with Next.js and ❤</p>
+
+          <div className="flex items-center gap-4">
+            <Link href="/#" className="text-xs text-[#4A6572] hover:text-white transition-colors duration-150">
+              Privacy
             </Link>
-            <Link href="/terms" className="text-xs text-muted-foreground hover:text-cyan-600 underline-offset-4 hover:underline">
-              Terms of Service
-            </Link>
-            <Link href="/cookies" className="text-xs text-muted-foreground hover:text-cyan-600 underline-offset-4 hover:underline">
-              Cookie Policy
+            <Link href="/#" className="text-xs text-[#4A6572] hover:text-white transition-colors duration-150">
+              Terms
             </Link>
           </div>
         </div>
