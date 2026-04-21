@@ -47,7 +47,7 @@ export const useCreateAppointment = () => {
       toast.success('Appointment Booked!', {
         description: data?.emailSent
           ? 'Confirmation email sent successfully.'
-          : 'Booking confirmed. You can view details in My Appointments.',
+          : data?.emailError || 'Booking confirmed. You can view details in My Appointments.',
         duration: 5000,
       })
       // Invalidate current user's appointments

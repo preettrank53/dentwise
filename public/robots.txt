@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Allow: /#services
+Allow: /#pricing
+Allow: /#doctors
+Disallow: /admin/
+Disallow: /appointments/
+Disallow: /profile/
+Disallow: /billing/
+Disallow: /voice/
+Disallow: /api/
+
+Sitemap: https://dentwise.vercel.app/sitemap.xml

@@ -1,0 +1,14 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#1A2832" />
+  <circle cx="180" cy="140" r="56" stroke="#619BB6" stroke-width="16" fill="none" />
+  <rect x="172" y="94" width="16" height="92" fill="#619BB6" />
+  <rect x="134" y="132" width="92" height="16" fill="#619BB6" />
+
+  <g transform="translate(918 96)">
+    <path d="M96 0C129 54 154 104 154 148C154 216 127 272 77 305C27 272 0 216 0 148C0 104 25 54 58 0L77 24L96 0Z" fill="#619BB6"/>
+    <path d="M77 38C102 79 119 114 119 148C119 190 104 225 77 247C50 225 35 190 35 148C35 114 52 79 77 38Z" fill="#1A2832"/>
+  </g>
+
+  <text x="600" y="300" text-anchor="middle" fill="#FFFFFF" style="font-family: 'DM Sans', Arial, sans-serif; font-size: 90px; font-weight: 700; letter-spacing: 1px;">Dentwise</text>
+  <text x="600" y="360" text-anchor="middle" fill="#619BB6" style="font-family: 'DM Sans', Arial, sans-serif; font-size: 36px; font-weight: 500; letter-spacing: 0.6px;">Smart Dental Care</text>
+</svg>

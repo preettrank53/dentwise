@@ -4,8 +4,11 @@ import DoctorsTable from '@/components/admin/DoctorsTable'
 import DoctorManagementHeader from '@/components/admin/DoctorManagementHeader'
 
 export const metadata = {
-  title: 'Doctors — Dentwise Admin',
-  description: 'Manage clinic doctors, specialties, and availability.',
+  title: 'Doctor Management — Admin',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default async function AdminDoctorsPage() {

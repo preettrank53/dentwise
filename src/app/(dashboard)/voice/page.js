@@ -6,8 +6,12 @@ import UpgradePrompt from '@/components/billing/UpgradePrompt'
 import { Mic, Crown } from 'lucide-react'
 
 export const metadata = {
-  title: 'AI Assistant — Dentwise',
-  description: 'Talk to Riley, your AI-powered dental assistant.',
+  title: 'AI Voice Assistant',
+  description: 'Talk to Riley, your AI dental assistant. Get instant dental advice and answers.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default async function VoicePage() {

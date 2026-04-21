@@ -5,8 +5,12 @@ import { getUserSubscription } from '@/actions/stripe.actions'
 import PricingPlans from '@/components/billing/PricingPlans'
 
 export const metadata = {
-  title: 'Billing & Plans — Dentwise',
-  description: 'Manage your subscription plan and billing for Dentwise.',
+  title: 'Plans & Billing',
+  description: 'View and manage your Dentwise subscription plan.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default async function BillingPage() {

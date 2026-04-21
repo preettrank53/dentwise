@@ -4,8 +4,12 @@ import { redirect } from 'next/navigation'
 import BookingWizard from '@/components/appointments/BookingWizard'
 
 export const metadata = {
-  title: 'Book Appointment — Dentwise',
-  description: 'Schedule your next dental visit with our expert doctors.',
+  title: 'Book Appointment',
+  description: 'Book a dental appointment with our certified specialists. Choose your doctor, date, and time.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default async function AppointmentsPage() {

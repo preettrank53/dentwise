@@ -99,7 +99,13 @@ export default function DoctorStatsTable({ data = [] }) {
                       <div className="flex items-center gap-3">
                         <div className="relative h-9 w-9 shrink-0 rounded-xl overflow-hidden bg-gray-100">
                           {doc.imageURL ? (
-                            <Image src={doc.imageURL} alt={doc.name} fill className="object-cover object-top" />
+                            <Image
+                              src={doc.imageURL}
+                              alt={doc.name}
+                              fill
+                              sizes="36px"
+                              className="object-cover object-top"
+                            />
                           ) : (
                             <div className="h-full w-full flex items-center justify-center bg-gray-100 text-gray-400 font-bold text-sm">
                               {doc.name.charAt(0)}

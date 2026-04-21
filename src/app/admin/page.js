@@ -11,8 +11,12 @@ import {
 } from '@/actions/admin.actions'
 
 export const metadata = {
-  title: 'Analytics — Dentwise Admin',
-  description: 'View clinic analytics, appointment trends, and doctor performance.',
+  title: 'Analytics — Admin',
+  description: 'Dentwise admin analytics dashboard.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 import AppointmentTrendsChart from '@/components/admin/AppointmentTrendsChart'

@@ -1,8 +1,12 @@
 import { Resend } from 'resend'
 import { NextResponse } from 'next/server'
+import { render } from '@react-email/render'
 import AppointmentConfirmation from '@/components/emails/AppointmentConfirmation'
+import { getValidResendFromEmail } from '@/lib/email'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
+const FROM_EMAIL = getValidResendFromEmail(process.env.RESEND_FROM_EMAIL)
+const REPLY_TO_EMAIL = process.env.RESEND_REPLY_TO?.trim() || null
 const REQUIRED_FIELDS = [
   'patientName',
   'patientEmail',
@@ -47,18 +51,50 @@ export async function POST(req) {
     // In production, protect this route with IP-based rate limiting
     // to reduce abuse and bot-triggered email flooding.
 
-    const data = await resend.emails.send({
-      from: 'Dentwise <onboarding@resend.dev>',
-      to: [body.patientEmail],
-      subject: 'Appointment Confirmed — Dentwise',
-      react: AppointmentConfirmation({
+    const emailHtml = await render(
+      AppointmentConfirmation({
         patientName: body.patientName,
         doctorName: body.doctorName,
         doctorSpecialty: body.doctorSpecialty,
         appointmentDate: body.appointmentDate,
         appointmentTime: body.appointmentTime,
-      }),
+      })
+    )
+
+    const emailText = [
+      `Hi ${body.patientName},`,
+      '',
+      'Your appointment has been confirmed.',
+      `Doctor: ${body.doctorName}`,
+      `Specialty: ${body.doctorSpecialty}`,
+      `Date: ${new Date(body.appointmentDate).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}`,
+      `Time: ${body.appointmentTime}`,
+      'Duration: 30 minutes',
+      'Status: Confirmed',
+      '',
+      'Thank you for choosing Dentwise.',
+    ].join('\n')
+
+    const data = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: [body.patientEmail],
+      subject: 'Appointment Confirmed — Dentwise',
+      html: emailHtml,
+      text: emailText,
+      ...(REPLY_TO_EMAIL ? { replyTo: REPLY_TO_EMAIL } : {}),
     })
+
+    if (data?.error) {
+      return NextResponse.json(
+        { error: data.error.message || 'Failed to send email', details: data.error },
+        { status: 502 }
+      )
+    }
 
     return NextResponse.json({ message: 'Email sent successfully', data }, { status: 200 })
   } catch (error) {

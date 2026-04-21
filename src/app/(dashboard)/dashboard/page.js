@@ -14,8 +14,12 @@ import {
 import { cn } from '@/lib/utils'
 
 export const metadata = {
-  title: 'Dashboard - Dentwise',
-  description: 'Your dental health overview, upcoming appointments, and quick actions.',
+  title: 'Dashboard',
+  description: 'Your Dentwise dashboard. View upcoming appointments and manage your dental health.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default async function DashboardPage() {

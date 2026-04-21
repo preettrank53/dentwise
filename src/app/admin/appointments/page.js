@@ -5,8 +5,11 @@ import AppointmentsTable from '@/components/admin/AppointmentsTable'
 import ExportButton from '@/components/admin/ExportButton'
 
 export const metadata = {
-  title: 'Appointments — Dentwise Admin',
-  description: 'Manage all clinic appointments and update their status.',
+  title: 'Appointments — Admin',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default async function AdminAppointmentsPage() {

@@ -7,8 +7,12 @@ import { Plus } from 'lucide-react'
 import UserAppointmentsList from '@/components/appointments/UserAppointmentsList'
 
 export const metadata = {
-  title: 'My Appointments — Dentwise',
-  description: 'View and manage your scheduled dental appointments.',
+  title: 'My Appointments',
+  description: 'View and manage your dental appointments.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default async function MyAppointmentsPage() {

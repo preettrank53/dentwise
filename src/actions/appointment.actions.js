@@ -5,9 +5,13 @@ import { auth } from '@/lib/auth'
 import { revalidatePath } from 'next/cache'
 import { handlePrismaError } from '@/lib/prismaErrors'
 import { Resend } from 'resend'
+import { render } from '@react-email/render'
 import AppointmentConfirmation from '@/components/emails/AppointmentConfirmation'
+import { getValidResendFromEmail } from '@/lib/email'
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
+const FROM_EMAIL = getValidResendFromEmail(process.env.RESEND_FROM_EMAIL)
+const REPLY_TO_EMAIL = process.env.RESEND_REPLY_TO?.trim() || null
 
 /**
  * 1. getAvailableTimeSlots(doctorId, date)
@@ -168,33 +172,120 @@ export async function createAppointment(formData) {
     revalidatePath('/admin')
 
     let emailSent = false
+    let emailError = null
+    const appointmentTime = new Date(appointment.dateTime).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    })
+    const emailText = [
+      `Hi ${appointment.user.name || 'Patient'},`,
+      '',
+      'Your appointment has been confirmed.',
+      `Doctor: ${appointment.doctor.name}`,
+      `Specialty: ${appointment.doctor.specialty}`,
+      `Date: ${new Date(appointment.dateTime).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })}`,
+      `Time: ${appointmentTime}`,
+      'Duration: 30 minutes',
+      'Status: Confirmed',
+      '',
+      'Thank you for choosing Dentwise.',
+    ].join('\n')
+
     if (resend && appointment?.user?.email) {
       try {
-        await resend.emails.send({
-          from: 'Dentwise <onboarding@resend.dev>',
-          to: [appointment.user.email],
-          subject: 'Appointment Confirmed — Dentwise',
-          react: AppointmentConfirmation({
+        const emailHtml = await render(
+          AppointmentConfirmation({
             patientName: appointment.user.name || 'Patient',
             doctorName: appointment.doctor.name,
             doctorSpecialty: appointment.doctor.specialty,
             appointmentDate: appointment.dateTime,
-            appointmentTime: appointment.dateTime.toLocaleTimeString('en-US', {
-              hour: 'numeric',
-              minute: '2-digit',
-              hour12: true,
-            }),
+            appointmentTime,
+          })
+        )
+
+        const emailResult = await resend.emails.send({
+          from: FROM_EMAIL,
+          to: [appointment.user.email],
+          subject: 'Appointment Confirmed — Dentwise',
+          html: emailHtml,
+          text: emailText,
+          ...(REPLY_TO_EMAIL ? { replyTo: REPLY_TO_EMAIL } : {}),
+        })
+
+        if (emailResult?.error) {
+          emailError = emailResult.error.message || 'Failed to send confirmation email'
+          console.error('Appointment email failed:', {
+            recipient: appointment.user.email,
+            error: emailResult.error,
+          })
+        } else {
+          emailSent = true
+        }
+      } catch (emailError) {
+        const message = emailError?.message || 'Failed to send confirmation email'
+        console.error('Appointment email failed:', {
+          recipient: appointment.user.email,
+          message,
+        })
+        emailSent = false
+        emailError = message
+      }
+    } else if (!resend) {
+      emailError = 'Email service is not configured (missing RESEND_API_KEY).'
+    } else {
+      emailError = 'User email is missing; confirmation email not sent.'
+    }
+
+    // Fallback to the API route (same delivery path used by reschedule emails).
+    if (!emailSent && appointment?.user?.email) {
+      try {
+        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+        const fallbackResponse = await fetch(`${baseUrl}/api/send-appointment-email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            patientName: appointment.user.name || 'Patient',
+            patientEmail: appointment.user.email,
+            doctorName: appointment.doctor.name,
+            doctorSpecialty: appointment.doctor.specialty,
+            appointmentDate: appointment.dateTime,
+            appointmentTime,
           }),
         })
-        emailSent = true
-      } catch (emailError) {
-        console.error('Appointment email failed:', emailError)
+
+        const fallbackData = await fallbackResponse.json().catch(() => null)
+        if (fallbackResponse.ok) {
+          emailSent = true
+          emailError = null
+        } else {
+          emailError = fallbackData?.error || emailError || 'Failed to send confirmation email'
+          console.error('Appointment email fallback route rejected:', {
+            recipient: appointment.user.email,
+            status: fallbackResponse.status,
+            error: emailError,
+          })
+        }
+      } catch (fallbackErr) {
+        emailError = fallbackErr?.message || emailError || 'Failed to send confirmation email'
+        console.error('Appointment email fallback failed:', {
+          recipient: appointment.user.email,
+          message: emailError,
+        })
       }
     }
     
     return {
       ...appointment,
       emailSent,
+      emailError,
     }
   } catch (error) {
     console.error('createAppointment Error:', error)

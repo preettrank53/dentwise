@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { CheckCircle2 } from 'lucide-react'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 
@@ -63,9 +64,13 @@ export default function HeroSection() {
           <AnimatedSection direction="right" delay={100} className="relative lg:flex lg:justify-center">
             <div className="bg-white rounded-[12px] border border-[#E2EDF2] shadow-[0_8px_32px_rgba(26,40,50,0.08)] p-5 w-full max-w-[430px]">
               <div className="h-48 w-full rounded-[8px] bg-[#EDF5F8] overflow-hidden">
-                <img
+                <Image
                   src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=1200&q=80"
                   alt="Dentist profile"
+                  width={1200}
+                  height={800}
+                  priority={true}
+                  sizes="(max-width: 1024px) 100vw, 430px"
                   className="h-full w-full object-cover object-center"
                 />
               </div>

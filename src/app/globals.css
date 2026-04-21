@@ -96,7 +96,7 @@
   body {
     background-color: var(--color-bg-page);
     color: var(--color-text-primary);
-    font-family: 'DM Sans', -apple-system, 
+    font-family: var(--font-dm-sans), -apple-system,
       BlinkMacSystemFont, sans-serif;
     font-size: 16px;
     font-weight: 400;

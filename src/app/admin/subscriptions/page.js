@@ -8,8 +8,11 @@ import PlanBadge from '@/components/billing/PlanBadge'
 import EmptyState from '@/components/ui/EmptyState'
 
 export const metadata = {
-  title: 'Subscriptions — Dentwise Admin',
-  description: 'Monitor subscriber plans, billing status, and revenue.',
+  title: 'Subscriptions — Admin',
+  robots: {
+    index: false,
+    follow: false,
+  },
 }
 
 export default async function AdminSubscriptionsPage() {
