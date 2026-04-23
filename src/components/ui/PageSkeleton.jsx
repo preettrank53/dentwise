@@ -3,7 +3,7 @@ import { Skeleton } from './skeleton'
 
 export function StatCardSkeleton() {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-6">
       <div className="flex items-center gap-4 mb-4">
         <Skeleton className="h-10 w-10 rounded-xl bg-gray-200" />
         <Skeleton className="h-4 w-20 rounded" />
@@ -18,7 +18,7 @@ export function StatCardSkeleton() {
 
 export function AppointmentCardSkeleton() {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex items-center gap-4">
+    <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-6 flex items-center gap-4">
       <Skeleton className="h-12 w-12 rounded-xl bg-gray-200 shrink-0" />
       <div className="flex-1 space-y-2">
         <Skeleton className="h-4 w-32 rounded" />
@@ -45,7 +45,7 @@ export function TableRowSkeleton() {
 
 export function ChartSkeleton() {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-6">
       <Skeleton className="h-5 w-40 rounded mb-1" />
       <Skeleton className="h-3 w-24 rounded" />
       <div className="mt-6 h-64 w-full rounded-xl bg-gray-100 animate-pulse" />

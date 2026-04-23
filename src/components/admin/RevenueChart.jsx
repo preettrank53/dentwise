@@ -27,7 +27,7 @@ export default function RevenueChart({ data }) {
   const totalPaid = data?.totalPaidSubscribers || 0
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 w-full flex flex-col h-full">
+    <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-6 w-full flex flex-col h-full">
       <div className="mb-2">
         <h3 className="text-base font-semibold text-gray-900">Revenue Overview</h3>
         <p className="text-sm text-gray-500">Active subscriptions</p>
@@ -90,7 +90,7 @@ export default function RevenueChart({ data }) {
           <span className="text-sm font-medium text-gray-700">Total Paid</span>
           <div className={`px-2 py-1 rounded-md text-xs font-bold ${
             totalPaid === 0 ? 'bg-gray-100 text-gray-600' :
-            totalPaid <= 10 ? 'bg-cyan-100 text-cyan-700' :
+            totalPaid <= 10 ? 'bg-[#D7EAF2] text-[#4A7D96]' :
             'bg-green-100 text-green-700'
           }`}>
             {totalPaid} subscribers

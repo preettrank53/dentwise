@@ -16,21 +16,21 @@ export default function EmptyState({
   const sizes = {
     sm: {
       padding: 'py-8',
-      iconContainer: 'h-14 w-14 rounded-2xl',
+      iconContainer: 'h-14 w-14 rounded-[12px]',
       icon: 'h-8 w-8',
       title: 'text-sm font-semibold text-gray-900 mt-4',
       description: 'text-xs text-gray-500 max-w-sm text-center mt-2 leading-relaxed',
     },
     md: {
       padding: 'py-16',
-      iconContainer: 'h-20 w-20 rounded-2xl',
+      iconContainer: 'h-20 w-20 rounded-[12px]',
       icon: 'h-12 w-12',
       title: 'text-lg font-semibold text-gray-900 mt-4',
       description: 'text-sm text-gray-500 max-w-sm text-center mt-2 leading-relaxed',
     },
     lg: {
       padding: 'py-24 max-h-[50vh] flex items-center justify-center flex-col',
-      iconContainer: 'h-24 w-24 rounded-2xl',
+      iconContainer: 'h-24 w-24 rounded-[12px]',
       icon: 'h-16 w-16',
       title: 'text-2xl font-semibold text-gray-900 mt-4',
       description: 'text-base text-gray-500 max-w-sm text-center mt-2 leading-relaxed',

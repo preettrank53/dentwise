@@ -21,13 +21,13 @@ export default function LoginPageClient() {
   if (status === 'loading') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#619BB6]"></div>
       </div>
     )
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-cyan-50/30 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-[#EDF5F8]/30 p-4">
       <Card className="w-full max-w-md border shadow-xl bg-white">
         <CardHeader className="flex flex-col items-center gap-4 pb-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl gradient-primary">
@@ -75,9 +75,9 @@ export default function LoginPageClient() {
           <div className="text-center px-4">
             <p className="text-[11px] text-muted-foreground leading-relaxed">
               By signing in, you agree to our{' '}
-              <a href="/terms" className="underline hover:text-cyan-600">Terms of Service</a>
+              <a href="/terms" className="underline hover:text-[#619BB6]">Terms of Service</a>
               {' '}and{' '}
-              <a href="/privacy" className="underline hover:text-cyan-600">Privacy Policy</a>.
+              <a href="/privacy" className="underline hover:text-[#619BB6]">Privacy Policy</a>.
             </p>
           </div>
         </CardContent>

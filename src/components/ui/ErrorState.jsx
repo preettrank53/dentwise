@@ -9,7 +9,7 @@ export default function ErrorState({
 }) {
   return (
     <div className="flex flex-col items-center text-center py-12 w-full">
-      <div className="bg-red-50 rounded-2xl p-3">
+      <div className="bg-red-50 rounded-[12px] p-3">
         <AlertTriangle className="h-12 w-12 text-red-400" />
       </div>
       

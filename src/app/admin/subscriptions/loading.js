@@ -8,13 +8,13 @@ export default function AdminSubscriptionsLoading() {
 
       {/* 3 Revenue Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="h-32 w-full rounded-2xl bg-gray-100 animate-pulse" />
-        <div className="h-32 w-full rounded-2xl bg-gray-100 animate-pulse" />
-        <div className="h-32 w-full rounded-2xl bg-gray-100 animate-pulse" />
+        <div className="h-32 w-full rounded-[12px] bg-gray-100 animate-pulse" />
+        <div className="h-32 w-full rounded-[12px] bg-gray-100 animate-pulse" />
+        <div className="h-32 w-full rounded-[12px] bg-gray-100 animate-pulse" />
       </div>
 
       {/* Table Container Skeleton */}
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm mt-6">
+      <div className="bg-white rounded-[12px] border border-gray-100 overflow-hidden shadow-sm mt-6">
         <div className="h-12 w-full bg-gray-50 animate-pulse border-b border-gray-100" />
         <div className="divide-y divide-gray-50">
           <TableRowSkeleton />

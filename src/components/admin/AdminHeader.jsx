@@ -38,7 +38,7 @@ export default function AdminHeader({ adminName, adminImage }) {
         </div>
         <Avatar className="h-8 w-8 rounded-xl border border-gray-100">
           <AvatarImage src={adminImage} />
-          <AvatarFallback className="bg-cyan-500 text-white font-bold text-xs rounded-xl">
+          <AvatarFallback className="bg-[#619BB6] text-white font-bold text-xs rounded-xl">
             {adminName ? adminName.charAt(0) : 'A'}
           </AvatarFallback>
         </Avatar>

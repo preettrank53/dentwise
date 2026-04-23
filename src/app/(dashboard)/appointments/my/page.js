@@ -35,7 +35,7 @@ export default async function MyAppointmentsPage() {
         </div>
         <Button 
           asChild 
-          className="gradient-primary text-white rounded-xl px-6 shadow-md shadow-cyan-100 hover:shadow-lg transition-all"
+          className="gradient-primary text-white rounded-xl px-6 shadow-md shadow-[#BAD7E1] hover:shadow-lg transition-all"
         >
           <Link href="/appointments">
             <Plus className="mr-2 h-5 w-5" />

@@ -43,7 +43,7 @@ export default function DoctorStatsTable({ data = [] }) {
   })
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse min-w-[550px]">
           <thead className="bg-gray-50 border-b border-gray-100">
@@ -131,7 +131,7 @@ export default function DoctorStatsTable({ data = [] }) {
                       <div className="flex flex-col gap-1 w-24">
                         <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
                           <div 
-                            className="bg-cyan-500 h-1.5 rounded-full" 
+                            className="bg-[#619BB6] h-1.5 rounded-full" 
                             style={{ width: doc.completionRate }}
                           />
                         </div>

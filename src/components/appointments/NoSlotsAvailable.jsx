@@ -38,7 +38,7 @@ export default function NoSlotsAvailable({ selectedDate, onSelectDate, doctorId 
             <button
               key={idx}
               onClick={() => onSelectDate(date)}
-              className="px-4 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 hover:bg-cyan-50 hover:text-cyan-700 hover:border-cyan-200 transition-colors bg-white shadow-sm"
+              className="px-4 py-2 rounded-xl text-sm font-medium border border-gray-200 text-gray-600 hover:bg-[#EDF5F8] hover:text-[#4A7D96] hover:border-[#BAD7E1] transition-colors bg-white shadow-sm"
             >
               {date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
             </button>

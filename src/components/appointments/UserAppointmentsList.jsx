@@ -36,7 +36,7 @@ export default function UserAppointmentsList() {
     return (
       <div className="space-y-4">
         {[1, 2, 3].map(i => (
-          <Card key={i} className="rounded-2xl border border-gray-100 shadow-sm p-6 bg-white space-y-4">
+          <Card key={i} className="rounded-[12px] border border-gray-100 shadow-sm p-6 bg-white space-y-4">
             <div className="flex justify-between">
               <div className="flex gap-4">
                 <Skeleton className="h-12 w-12 rounded-full" />
@@ -60,7 +60,7 @@ export default function UserAppointmentsList() {
 
   if (isError) {
     return (
-      <Card className="rounded-2xl border border-gray-100 shadow-sm p-6 bg-white flex justify-center">
+      <Card className="rounded-[12px] border border-gray-100 shadow-sm p-6 bg-white flex justify-center">
         <ErrorState onRetry={() => refetch()} />
       </Card>
     )
@@ -68,7 +68,7 @@ export default function UserAppointmentsList() {
 
   if (!appointments || appointments.length === 0) {
     return (
-      <Card className="rounded-2xl border border-gray-100 shadow-sm p-6 bg-white flex justify-center py-10">
+      <Card className="rounded-[12px] border border-gray-100 shadow-sm p-6 bg-white flex justify-center py-10">
         <EmptyState
           icon={Calendar}
           title="No Appointments Yet"
@@ -86,7 +86,7 @@ export default function UserAppointmentsList() {
       {appointments.map(appointment => (
         <Card 
           key={appointment.id} 
-          className="rounded-2xl border border-gray-100 shadow-sm p-6 bg-white hover:shadow-md transition-all duration-200"
+          className="rounded-[12px] border border-gray-100 shadow-sm p-6 bg-white hover:shadow-md transition-all duration-200"
         >
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             
@@ -138,7 +138,7 @@ export default function UserAppointmentsList() {
             <div className="flex items-center justify-between md:justify-end gap-3 min-w-[220px]">
               <Badge className={cn(
                 "rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wider",
-                appointment.status === 'CONFIRMED' && "bg-cyan-50 text-cyan-700 hover:bg-cyan-50 border-0",
+                appointment.status === 'CONFIRMED' && "bg-[#EDF5F8] text-[#4A7D96] hover:bg-[#EDF5F8] border-0",
                 appointment.status === 'COMPLETED' && "bg-green-50 text-green-700 hover:bg-green-50 border-0",
                 appointment.status === 'CANCELLED' && "bg-gray-100 text-gray-500 hover:bg-gray-100 border-0"
               )}>
@@ -170,7 +170,7 @@ export default function UserAppointmentsList() {
                         'Cancel'
                       )}
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="bg-white sm:rounded-2xl p-6 shadow-xl max-w-md border-gray-100">
+                    <AlertDialogContent className="bg-white sm:rounded-[12px] p-6 shadow-xl max-w-md border-gray-100">
                       <AlertDialogHeader>
                         <AlertDialogTitle className="text-xl font-bold">Cancel Appointment?</AlertDialogTitle>
                         <AlertDialogDescription className="text-gray-500">

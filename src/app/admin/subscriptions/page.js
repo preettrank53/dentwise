@@ -54,11 +54,11 @@ export default async function AdminSubscriptionsPage() {
 
       {/* SECTION 2 - REVENUE SUMMARY CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+        <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-900">Monthly Revenue</h3>
-            <div className="h-10 w-10 bg-cyan-50 rounded-xl flex items-center justify-center">
-              <DollarSign className="h-5 w-5 text-cyan-500" />
+            <div className="h-10 w-10 bg-[#EDF5F8] rounded-xl flex items-center justify-center">
+              <DollarSign className="h-5 w-5 text-[#619BB6]" />
             </div>
           </div>
           <div>
@@ -67,7 +67,7 @@ export default async function AdminSubscriptionsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+        <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-900">Total Subscribers</h3>
             <div className="h-10 w-10 bg-purple-50 rounded-xl flex items-center justify-center">
@@ -80,7 +80,7 @@ export default async function AdminSubscriptionsPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+        <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-gray-900">Plan Breakdown</h3>
             <div className="h-10 w-10 bg-blue-50 rounded-xl flex items-center justify-center">
@@ -101,7 +101,7 @@ export default async function AdminSubscriptionsPage() {
       </div>
 
       {/* SECTION 3 - SUBSCRIBERS TABLE */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           {paidSubscriptions.length === 0 ? (
             <div className="min-h-[40vh] flex items-center justify-center">
@@ -133,7 +133,7 @@ export default async function AdminSubscriptionsPage() {
                       <div className="flex items-center gap-3">
                         <Avatar className="h-9 w-9 border border-gray-100">
                           <AvatarImage src={sub.userImage} />
-                          <AvatarFallback className="bg-cyan-50 text-cyan-600 font-bold text-xs">
+                          <AvatarFallback className="bg-[#EDF5F8] text-[#619BB6] font-bold text-xs">
                             {sub.userName ? sub.userName.charAt(0).toUpperCase() : 'U'}
                           </AvatarFallback>
                         </Avatar>
@@ -188,7 +188,7 @@ export default async function AdminSubscriptionsPage() {
 
       {/* FREE USERS SUMMARY */}
       {freeUsersCount > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center justify-between">
+        <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-4 flex items-center justify-between">
           <span className="text-sm font-semibold text-gray-700">Free Plan Users</span>
           <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1 rounded-full text-sm">
             {freeUsersCount}

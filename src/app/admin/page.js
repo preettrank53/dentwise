@@ -91,8 +91,8 @@ export default async function AdminAnalyticsPage() {
       {/* SECTION 2 - STATS GRID */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
         {/* Card 1 */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
-          <div className="rounded-xl p-2 w-fit mb-1 bg-cyan-50 text-cyan-500">
+        <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
+          <div className="rounded-xl p-2 w-fit mb-1 bg-[#EDF5F8] text-[#619BB6]">
             <Stethoscope className="h-5 w-5" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{stats.totalDoctors}</p>
@@ -100,7 +100,7 @@ export default async function AdminAnalyticsPage() {
         </div>
         
         {/* Card 2 */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
+        <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
           <div className="rounded-xl p-2 w-fit mb-1 bg-green-50 text-green-500">
             <UserCheck className="h-5 w-5" />
           </div>
@@ -109,7 +109,7 @@ export default async function AdminAnalyticsPage() {
         </div>
         
         {/* Card 3 */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
+        <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
           <div className="rounded-xl p-2 w-fit mb-1 bg-blue-50 text-blue-500">
             <Calendar className="h-5 w-5" />
           </div>
@@ -118,7 +118,7 @@ export default async function AdminAnalyticsPage() {
         </div>
         
         {/* Card 4 */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
+        <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
           <div className="rounded-xl p-2 w-fit mb-1 bg-amber-50 text-amber-500">
             <Clock className="h-5 w-5" />
           </div>
@@ -127,7 +127,7 @@ export default async function AdminAnalyticsPage() {
         </div>
         
         {/* Card 5 */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
+        <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
           <div className="rounded-xl p-2 w-fit mb-1 bg-green-50 text-green-500">
             <CheckCircle className="h-5 w-5" />
           </div>
@@ -136,7 +136,7 @@ export default async function AdminAnalyticsPage() {
         </div>
         
         {/* Card 6 */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
+        <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-4 flex flex-col gap-2">
           <div className="rounded-xl p-2 w-fit mb-1 bg-purple-50 text-purple-500">
             <Users className="h-5 w-5" />
           </div>

@@ -14,7 +14,7 @@ import {
 
 export default function AppointmentTrendsChart({ data = [] }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 w-full">
+    <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-6 w-full">
       <div className="mb-6">
         <h3 className="text-base font-semibold text-gray-900">Appointment Trends</h3>
         <p className="text-sm text-gray-500">Last 6 months</p>

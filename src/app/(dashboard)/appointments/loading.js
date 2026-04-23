@@ -17,7 +17,7 @@ export default function AppointmentsLoading() {
       </div>
 
       {/* Main Wizard Card */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+      <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-8">
         <div className="h-96 w-full bg-gray-50 animate-pulse rounded-xl" />
       </div>
     </main>

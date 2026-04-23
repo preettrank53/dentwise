@@ -122,7 +122,7 @@ export default function DoctorsTable({ onAddDoctor }) {
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 border">
                       <AvatarImage src={doctor.imageURL} alt={doctor.name} />
-                      <AvatarFallback className="bg-cyan-50 text-cyan-600">
+                      <AvatarFallback className="bg-[#EDF5F8] text-[#619BB6]">
                         {doctor.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
@@ -146,7 +146,7 @@ export default function DoctorsTable({ onAddDoctor }) {
                     variant="ghost" 
                     size="sm"
                     onClick={() => handleEdit(doctor)}
-                    className="h-8 text-muted-foreground hover:text-cyan-600"
+                    className="h-8 text-muted-foreground hover:text-[#619BB6]"
                   >
                     <Edit className="h-4 w-4" />
                     <span className="ml-1">Edit</span>

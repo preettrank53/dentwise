@@ -26,13 +26,13 @@ function getTimeAgo(date) {
 
 export default function RecentActivityFeed({ activities = [] }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 w-full flex flex-col h-full">
+    <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-6 w-full flex flex-col h-full">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-base font-semibold text-gray-900">Recent Activity</h3>
           <p className="text-sm text-gray-500">Latest appointments</p>
         </div>
-        <Link href="/admin/appointments" className="text-sm text-cyan-600 font-medium hover:text-cyan-700 transition-colors">
+        <Link href="/admin/appointments" className="text-sm text-[#619BB6] font-medium hover:text-[#4A7D96] transition-colors">
           View All
         </Link>
       </div>
@@ -59,9 +59,9 @@ export default function RecentActivityFeed({ activities = [] }) {
               >
                 {/* Left Icon */}
                 <div className={`h-9 w-9 shrink-0 rounded-full flex items-center justify-center ${
-                  isConfirmed ? 'bg-cyan-50' : isCompleted ? 'bg-green-50' : 'bg-gray-100'
+                  isConfirmed ? 'bg-[#EDF5F8]' : isCompleted ? 'bg-green-50' : 'bg-gray-100'
                 }`}>
-                  {isConfirmed && <Calendar className="h-4 w-4 text-cyan-600" />}
+                  {isConfirmed && <Calendar className="h-4 w-4 text-[#619BB6]" />}
                   {isCompleted && <CheckCircle className="h-4 w-4 text-green-600" />}
                   {!isConfirmed && !isCompleted && <Clock className="h-4 w-4 text-gray-500" />}
                 </div>
@@ -71,7 +71,7 @@ export default function RecentActivityFeed({ activities = [] }) {
                   <p className="text-sm font-medium text-gray-900 truncate pr-2">
                     {activity.patientName} booked with {activity.doctorName}
                     <span className={`inline-flex items-center ml-2 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                      isConfirmed ? 'bg-cyan-50 text-cyan-700' :
+                      isConfirmed ? 'bg-[#EDF5F8] text-[#4A7D96]' :
                       isCompleted ? 'bg-green-50 text-green-700' :
                       'bg-gray-100 text-gray-600'
                     }`}>

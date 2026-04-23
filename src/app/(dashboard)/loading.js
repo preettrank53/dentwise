@@ -8,7 +8,7 @@ export default function DashboardLoading() {
       <PageHeaderSkeleton />
       
       {/* Welcome Banner Skeleton */}
-      <div className="h-40 w-full rounded-2xl bg-gray-200 animate-pulse" />
+      <div className="h-40 w-full rounded-[12px] bg-gray-200 animate-pulse" />
 
       {/* 4 Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">

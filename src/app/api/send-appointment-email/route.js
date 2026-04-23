@@ -15,12 +15,43 @@ const REQUIRED_FIELDS = [
   'appointmentDate',
   'appointmentTime',
 ]
+const requestCounts = new Map()
+const RATE_LIMIT = 10
+const WINDOW_MS = 60 * 1000
+
+function isRateLimited(ip) {
+  const now = Date.now()
+  const windowStart = now - WINDOW_MS
+
+  if (!requestCounts.has(ip)) {
+    requestCounts.set(ip, [])
+  }
+
+  const requests = requestCounts.get(ip).filter((time) => time > windowStart)
+  requests.push(now)
+  requestCounts.set(ip, requests)
+
+  return requests.length > RATE_LIMIT
+}
 
 export async function POST(req) {
   if (req.method !== 'POST') {
     return NextResponse.json({
       error: 'Method not allowed',
     }, { status: 405 })
+  }
+
+  // TODO: Replace this in-memory limiter with Upstash Redis in production.
+  const forwardedFor = req.headers.get('x-forwarded-for') || ''
+  const ip = forwardedFor.split(',')[0]?.trim()
+    || req.headers.get('x-real-ip')
+    || '127.0.0.1'
+
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { error: 'Too many requests' },
+      { status: 429 }
+    )
   }
 
   try {

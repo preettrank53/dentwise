@@ -17,7 +17,7 @@ import ErrorState from '@/components/ui/ErrorState'
 export default function DoctorPerformanceChart({ data }) {
   if (!data) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 w-full">
+      <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-6 w-full">
          <ErrorState />
       </div>
     )
@@ -26,7 +26,7 @@ export default function DoctorPerformanceChart({ data }) {
   const topDoctors = data.slice(0, 5)
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 w-full">
+    <div className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-6 w-full">
       <div className="mb-6">
         <h3 className="text-base font-semibold text-gray-900">Doctor Performance</h3>
         <p className="text-sm text-gray-500">Top 5 by appointments</p>

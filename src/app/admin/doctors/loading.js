@@ -7,7 +7,7 @@ export default function AdminDoctorsLoading() {
       <PageHeaderSkeleton />
 
       {/* Table Container Skeleton */}
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+      <div className="bg-white rounded-[12px] border border-gray-100 overflow-hidden shadow-sm">
         {/* Header Row */}
         <div className="h-12 w-full bg-gray-50 animate-pulse border-b border-gray-100" />
         

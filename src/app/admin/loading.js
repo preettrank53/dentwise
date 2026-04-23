@@ -9,7 +9,7 @@ export default function AdminDashboardLoading() {
       {/* 6 Stat Cards Row */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <div key={i} className="bg-white rounded-[12px] border border-gray-100 shadow-sm p-4">
              <div className="h-24 w-full animate-pulse bg-gray-50 rounded-xl" />
           </div>
         ))}
