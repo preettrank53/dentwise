@@ -41,7 +41,6 @@ export async function POST(req) {
     }, { status: 405 })
   }
 
-  // TODO: Replace this in-memory limiter with Upstash Redis in production.
   const forwardedFor = req.headers.get('x-forwarded-for') || ''
   const ip = forwardedFor.split(',')[0]?.trim()
     || req.headers.get('x-real-ip')

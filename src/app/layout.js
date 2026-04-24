@@ -44,8 +44,7 @@ export const metadata = {
   authors: [{ name: 'Dentwise' }],
   creator: 'Dentwise',
   publisher: 'Dentwise',
-  metadataBase: new URL(process.env.NEXTAUTH_URL || 'http://localhost:3000'),
-  // TODO: Replace /og-image.png with a professionally designed 1200x630 image before production launch.
+  metadataBase: new URL(process.env.NEXTAUTH_URL),
   openGraph: {
     type: 'website',
     locale: 'en_US',

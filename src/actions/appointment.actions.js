@@ -245,7 +245,7 @@ export async function createAppointment(formData) {
     // Fallback to the API route (same delivery path used by reschedule emails).
     if (!emailSent && appointment?.user?.email) {
       try {
-        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+        const baseUrl = process.env.NEXTAUTH_URL
         const fallbackResponse = await fetch(`${baseUrl}/api/send-appointment-email`, {
           method: 'POST',
           headers: {

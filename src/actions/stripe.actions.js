@@ -56,7 +56,7 @@ export async function createCheckoutSession(planKey) {
       throw new Error('This plan is not currently available. Please contact support.')
     }
 
-    const nextAuthUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+    const nextAuthUrl = process.env.NEXTAUTH_URL
 
     const checkoutSession = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
@@ -96,7 +96,7 @@ export async function createBillingPortalSession() {
       throw new Error('No Stripe customer tracking found')
     }
 
-    const nextAuthUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+    const nextAuthUrl = process.env.NEXTAUTH_URL
 
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: subscription.stripeCustomerId,
