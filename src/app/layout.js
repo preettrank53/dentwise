@@ -44,7 +44,10 @@ export const metadata = {
   authors: [{ name: 'Dentwise' }],
   creator: 'Dentwise',
   publisher: 'Dentwise',
-  metadataBase: new URL(process.env.NEXTAUTH_URL),
+  metadataBase: new URL(
+    process.env.NEXTAUTH_URL || 
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  ),
   openGraph: {
     type: 'website',
     locale: 'en_US',
