@@ -9,6 +9,12 @@ const dmSans = DM_Sans({
   display: 'swap',
 })
 
+const metadataBaseUrl = [
+  process.env.NEXTAUTH_URL,
+  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '',
+  'http://localhost:3000',
+].find((value) => value && value !== 'undefined' && value !== 'null')
+
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
@@ -44,13 +50,7 @@ export const metadata = {
   authors: [{ name: 'Dentwise' }],
   creator: 'Dentwise',
   publisher: 'Dentwise',
-  metadataBase: new URL(
-    process.env.NEXTAUTH_URL
-      ? process.env.NEXTAUTH_URL
-      : process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000'
-  ),
+  metadataBase: new URL(metadataBaseUrl),
   openGraph: {
     type: 'website',
     locale: 'en_US',
