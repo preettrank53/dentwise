@@ -3,31 +3,17 @@ import { getToken } from 'next-auth/jwt'
 
 export async function middleware(req) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
-  const isLoggedIn = !!token
 
   const { pathname } = req.nextUrl
 
   const isAuthRoute = pathname.startsWith('/login')
-  const isDashboardRoute =
-    pathname.startsWith('/appointments') ||
-    pathname.startsWith('/voice') ||
-    pathname.startsWith('/profile') ||
-    pathname.startsWith('/billing')
   const isAdminRoute = pathname.startsWith('/admin')
 
-  if (isAuthRoute && isLoggedIn) {
+  if (isAuthRoute && token) {
     return NextResponse.redirect(new URL('/', req.nextUrl))
   }
 
-  if (isDashboardRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL('/login', req.nextUrl))
-  }
-
-  if (isAdminRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL('/login', req.nextUrl))
-  }
-
-  if (isAdminRoute && isLoggedIn) {
+  if (isAdminRoute && token) {
     const userEmail = token?.email
     const adminEmail = process.env.ADMIN_EMAIL
     if (userEmail !== adminEmail) {
